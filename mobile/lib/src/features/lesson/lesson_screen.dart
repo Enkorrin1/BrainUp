@@ -6,6 +6,17 @@ import '../../domain/family_profile.dart';
 import '../../domain/learning_foundation.dart';
 import '../../l10n/l10n.dart';
 
+class _LessonPalette {
+  static const background = Color(0xFF07132F);
+  static const panel = Color(0xE51A2858);
+  static const text = Colors.white;
+  static const muted = Color(0xFFC6D0FF);
+  static const aqua = Color(0xFF42F4D2);
+  static const coral = Color(0xFFFF6F7D);
+  static const star = Color(0xFFFFD15C);
+  static const violet = Color(0xFF9C6AF2);
+}
+
 class LessonScreen extends StatefulWidget {
   const LessonScreen({
     required this.profile,
@@ -66,50 +77,53 @@ class _LessonScreenState extends State<LessonScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF07132F),
+      backgroundColor: _LessonPalette.background,
       body: Stack(
         children: [
           const Positioned.fill(child: _LessonBackdrop()),
           SafeArea(
             bottom: false,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              children: [
-                _LessonHeader(
-                  currentStep: _stepIndex + 1,
-                  totalSteps: challenges.length,
-                  hearts: child.hearts,
-                ),
-                const SizedBox(height: 16),
-                _LessonQuestionCard(
-                  challenge: challenge,
-                  selectedChoiceId: _selectedChoiceId,
-                  hasSubmitted: _hasSubmitted,
-                  isCorrect: _isCorrect,
-                  showHint: _showHint,
-                  onToggleHint: _toggleHint,
-                  onChoiceSelected: _selectChoice,
-                ),
-                const SizedBox(height: 18),
-                FilledButton.icon(
-                  onPressed: _selectedChoiceId == null || _isSaving
-                      ? null
-                      : () => _submitAnswer(lesson, challenge, challenges),
-                  icon: Icon(
-                    _hasSubmitted && _isCorrect
-                        ? Icons.arrow_forward_rounded
-                        : Icons.check_rounded,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 136),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _LessonHeader(
+                    currentStep: _stepIndex + 1,
+                    totalSteps: challenges.length,
+                    hearts: child.hearts,
                   ),
-                  label: Text(_buttonLabel(context, challenges.length)),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6F7D),
-                    minimumSize: const Size.fromHeight(56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                  const SizedBox(height: 16),
+                  _LessonQuestionCard(
+                    challenge: challenge,
+                    selectedChoiceId: _selectedChoiceId,
+                    hasSubmitted: _hasSubmitted,
+                    isCorrect: _isCorrect,
+                    showHint: _showHint,
+                    onToggleHint: _toggleHint,
+                    onChoiceSelected: _selectChoice,
+                  ),
+                  const SizedBox(height: 18),
+                  FilledButton.icon(
+                    onPressed: _selectedChoiceId == null || _isSaving
+                        ? null
+                        : () => _submitAnswer(lesson, challenge, challenges),
+                    icon: Icon(
+                      _hasSubmitted && _isCorrect
+                          ? Icons.arrow_forward_rounded
+                          : Icons.check_rounded,
+                    ),
+                    label: Text(_buttonLabel(context, challenges.length)),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _LessonPalette.coral,
+                      minimumSize: const Size.fromHeight(58),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -358,7 +372,10 @@ class _LessonHeader extends StatelessWidget {
                 children: [
                   Text(
                     l10n.lessonProgress(currentStep, totalSteps),
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: _LessonPalette.text,
+                          fontWeight: FontWeight.w900,
+                        ),
                   ),
                   const SizedBox(height: 10),
                   ClipRRect(
@@ -366,8 +383,8 @@ class _LessonHeader extends StatelessWidget {
                     child: LinearProgressIndicator(
                       minHeight: 12,
                       value: currentStep / totalSteps,
-                      color: const Color(0xFF18B7AE),
-                      backgroundColor: const Color(0xFFDDF8F4),
+                      color: _LessonPalette.aqua,
+                      backgroundColor: Colors.white.withValues(alpha: 0.12),
                     ),
                   ),
                 ],
@@ -391,8 +408,11 @@ class _HeartPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFFFEEF3),
+        color: _LessonPalette.coral.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: _LessonPalette.coral.withValues(alpha: 0.42),
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -400,13 +420,16 @@ class _HeartPill extends StatelessWidget {
           children: [
             const Icon(
               Icons.favorite_rounded,
-              color: Color(0xFFFF5A7D),
+              color: _LessonPalette.coral,
               size: 22,
             ),
             const SizedBox(width: 5),
             Text(
               '$hearts',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _LessonPalette.text,
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
           ],
         ),
@@ -450,9 +473,23 @@ class _LessonQuestionCard extends StatelessWidget {
                 Container(
                   width: 54,
                   height: 54,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFECA8),
-                    shape: BoxShape.circle,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        _LessonPalette.star,
+                        _LessonPalette.aqua,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(19),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _LessonPalette.aqua.withValues(alpha: 0.26),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
                   child: const _PuzzleSvg(
                     asset: _PuzzleAssets.puzzleCard,
@@ -468,14 +505,20 @@ class _LessonQuestionCard extends StatelessWidget {
                         l10n.titleForChallenge(challenge),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: _LessonPalette.text,
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                       const SizedBox(height: 3),
                       Text(
                         l10n.promptForChallenge(challenge),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: _LessonPalette.muted,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                     ],
                   ),
@@ -489,12 +532,16 @@ class _LessonQuestionCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF9FF),
+                color: _LessonPalette.aqua.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: _LessonPalette.aqua.withValues(alpha: 0.24),
+                ),
               ),
               child: Text(
                 l10n.questionForChallenge(challenge),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: _LessonPalette.text,
                       fontSize: 23,
                     ),
               ),
@@ -569,6 +616,7 @@ class _LessonChoiceTile extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 170),
+        width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: _backgroundColor,
@@ -592,15 +640,17 @@ class _LessonChoiceTile extends StatelessWidget {
                 label,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: _LessonPalette.text,
+                      fontWeight: FontWeight.w800,
+                    ),
               ),
             ),
             if (submitted && (selected || correct)) ...[
               const SizedBox(width: 8),
               Icon(
                 correct ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                color:
-                    correct ? const Color(0xFF18B7AE) : const Color(0xFFFF6F6B),
+                color: correct ? _LessonPalette.aqua : _LessonPalette.coral,
               ),
             ],
           ],
@@ -611,28 +661,28 @@ class _LessonChoiceTile extends StatelessWidget {
 
   Color get _backgroundColor {
     if (submitted && correct) {
-      return const Color(0xFFDDF8F4);
+      return _LessonPalette.aqua.withValues(alpha: 0.20);
     }
     if (submitted && selected && !correct) {
-      return const Color(0xFFFFEFEF);
+      return _LessonPalette.coral.withValues(alpha: 0.18);
     }
     if (selected) {
-      return const Color(0xFFDDF8F4);
+      return _LessonPalette.aqua.withValues(alpha: 0.15);
     }
-    return Colors.white;
+    return Colors.white.withValues(alpha: 0.08);
   }
 
   Color get _borderColor {
     if (submitted && correct) {
-      return const Color(0xFF18B7AE);
+      return _LessonPalette.aqua;
     }
     if (submitted && selected && !correct) {
-      return const Color(0xFFFF6F6B);
+      return _LessonPalette.coral;
     }
     if (selected) {
-      return const Color(0xFF18B7AE);
+      return _LessonPalette.aqua;
     }
-    return const Color(0xFFE4F1EE);
+    return Colors.white.withValues(alpha: 0.14);
   }
 }
 
@@ -653,6 +703,13 @@ class _HintButton extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: OutlinedButton.icon(
         onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _LessonPalette.aqua,
+          side: BorderSide(
+            color: _LessonPalette.aqua.withValues(alpha: 0.42),
+          ),
+          backgroundColor: _LessonPalette.aqua.withValues(alpha: 0.08),
+        ),
         icon: Icon(
           expanded
               ? Icons.visibility_off_rounded
@@ -677,16 +734,16 @@ class _HintPanel extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF3D1),
+        color: _LessonPalette.star.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFFFD77A)),
+        border: Border.all(color: _LessonPalette.star.withValues(alpha: 0.38)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(
             Icons.lightbulb_rounded,
-            color: Color(0xFFFF9D2E),
+            color: _LessonPalette.star,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -696,7 +753,7 @@ class _HintPanel extends StatelessWidget {
                 Text(
                   l10n.lessonHintTitle,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: const Color(0xFF6B5316),
+                        color: _LessonPalette.star,
                         fontWeight: FontWeight.w900,
                       ),
                 ),
@@ -704,7 +761,7 @@ class _HintPanel extends StatelessWidget {
                 Text(
                   l10n.hintForChallenge(challenge),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF6B5316),
+                        color: _LessonPalette.text,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
@@ -1596,16 +1653,22 @@ class _LessonFeedback extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isCorrect ? const Color(0xFFDDF8F4) : const Color(0xFFFFEFE4),
+        color: isCorrect
+            ? _LessonPalette.aqua.withValues(alpha: 0.14)
+            : _LessonPalette.coral.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: isCorrect
+              ? _LessonPalette.aqua.withValues(alpha: 0.34)
+              : _LessonPalette.coral.withValues(alpha: 0.32),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             isCorrect ? Icons.emoji_events_rounded : Icons.tips_and_updates,
-            color:
-                isCorrect ? const Color(0xFF18B7AE) : const Color(0xFFFF8A42),
+            color: isCorrect ? _LessonPalette.aqua : _LessonPalette.coral,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1613,7 +1676,10 @@ class _LessonFeedback extends StatelessWidget {
               isCorrect
                   ? l10n.answerCorrect(l10n.explanationForChallenge(challenge))
                   : l10n.lessonRetryFeedback,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _LessonPalette.text,
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
           ),
         ],
@@ -1646,7 +1712,7 @@ class _LessonCompleteView extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF07132F),
+      backgroundColor: _LessonPalette.background,
       body: Stack(
         children: [
           const Positioned.fill(child: _LessonBackdrop()),
@@ -1665,7 +1731,13 @@ class _LessonCompleteView extends StatelessWidget {
                         Text(
                           l10n.lessonCompleteTitle,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineMedium,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                color: _LessonPalette.text,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -1673,7 +1745,7 @@ class _LessonCompleteView extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: const Color(0xFF4B5876),
+                                    color: _LessonPalette.muted,
                                     fontWeight: FontWeight.w700,
                                   ),
                         ),
@@ -1776,16 +1848,19 @@ class _StickerReward extends StatelessWidget {
           Container(
             width: 164,
             height: 164,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFF3D1),
+            decoration: BoxDecoration(
+              color: _LessonPalette.star.withValues(alpha: 0.18),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: _LessonPalette.star.withValues(alpha: 0.34),
+              ),
             ),
           ),
           Container(
             width: 132,
             height: 132,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.white.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
@@ -1831,9 +1906,11 @@ class _StickerUnlockCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1E9FF),
+        color: _LessonPalette.violet.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFD7C5FF)),
+        border: Border.all(
+          color: _LessonPalette.violet.withValues(alpha: 0.36),
+        ),
       ),
       child: Row(
         children: [
@@ -1857,7 +1934,7 @@ class _StickerUnlockCard extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color(0xFF4C2A8A),
+                        color: _LessonPalette.text,
                         fontWeight: FontWeight.w900,
                       ),
                 ),
@@ -1865,7 +1942,7 @@ class _StickerUnlockCard extends StatelessWidget {
                 Text(
                   body,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF6A558F),
+                        color: _LessonPalette.muted,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
@@ -1898,9 +1975,9 @@ class _LessonReviewCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8FAF8),
+        color: _LessonPalette.aqua.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFC7F1EC)),
+        border: Border.all(color: _LessonPalette.aqua.withValues(alpha: 0.30)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1927,7 +2004,7 @@ class _LessonReviewCard extends StatelessWidget {
                     Text(
                       l10n.lessonReviewTitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: const Color(0xFF164C55),
+                            color: _LessonPalette.text,
                             fontWeight: FontWeight.w900,
                           ),
                     ),
@@ -1937,7 +2014,7 @@ class _LessonReviewCard extends StatelessWidget {
                           ? l10n.lessonReviewPerfectBody
                           : l10n.lessonReviewSupportBody,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFF426A70),
+                            color: _LessonPalette.muted,
                             fontWeight: FontWeight.w700,
                           ),
                     ),
@@ -1992,8 +2069,9 @@ class _ReviewMetric extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 72),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -2001,7 +2079,7 @@ class _ReviewMetric extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: const Color(0xFF164C55),
+                  color: _LessonPalette.text,
                   fontWeight: FontWeight.w900,
                 ),
           ),
@@ -2012,7 +2090,7 @@ class _ReviewMetric extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: const Color(0xFF426A70),
+                  color: _LessonPalette.muted,
                   fontWeight: FontWeight.w800,
                 ),
           ),
@@ -2047,7 +2125,11 @@ class _RewardTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: _LessonPalette.text,
+                  fontWeight: FontWeight.w800,
+                ),
           ),
         ],
       ),
@@ -2057,13 +2139,14 @@ class _RewardTile extends StatelessWidget {
 
 BoxDecoration _panelDecoration() {
   return BoxDecoration(
-    color: Colors.white.withValues(alpha: 0.96),
-    borderRadius: BorderRadius.circular(30),
+    color: _LessonPalette.panel,
+    borderRadius: BorderRadius.circular(28),
+    border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
     boxShadow: [
       BoxShadow(
-        color: const Color(0xFF7ABDB8).withValues(alpha: 0.17),
+        color: Colors.black.withValues(alpha: 0.28),
         blurRadius: 24,
-        offset: const Offset(0, 12),
+        offset: const Offset(0, 14),
       ),
     ],
   );

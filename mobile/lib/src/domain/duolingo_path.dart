@@ -1,4 +1,4 @@
-﻿import 'learning_foundation.dart';
+import 'learning_foundation.dart';
 
 enum PathNodeType {
   lesson,
@@ -245,9 +245,8 @@ class StreakState {
 
   StreakState afterPractice(DateTime practicedAt) {
     final practiceDate = _dateOnly(practicedAt);
-    final previousDate = lastPracticeDate == null
-        ? null
-        : _dateOnly(lastPracticeDate!);
+    final previousDate =
+        lastPracticeDate == null ? null : _dateOnly(lastPracticeDate!);
 
     if (previousDate == practiceDate) {
       return this;
@@ -267,100 +266,122 @@ class StreakState {
 class PrototypeLearningPathCatalog {
   const PrototypeLearningPathCatalog._();
 
-  static const LearningPath mainPath = LearningPath(
+  static final LearningPath mainPath = LearningPath(
     id: 'path.prototype.main',
     titleKey: 'mapLessonTitle',
     subtitleKey: 'mapLessonSubtitle',
-    units: [
-      PathUnit(
-        id: 'unit.patterns',
-        titleKey: 'mapNodePath',
-        descriptionKey: 'mapLessonSubtitle',
-        order: 1,
-        primarySkillTags: [
-          SkillTag.pattern,
-          SkillTag.classification,
-          SkillTag.arithmetic,
-        ],
-        nodes: [
-          PathNode(
-            id: 'path.node.001',
-            unitId: 'unit.patterns',
-            order: 1,
-            titleKey: 'mapNodeStart',
-            lessonId: 'lesson.001',
-            type: PathNodeType.lesson,
-            requiredCompletedNodeIds: [],
-            rewardXp: 24,
-            primarySkillTag: SkillTag.pattern,
-          ),
-          PathNode(
-            id: 'path.node.002',
-            unitId: 'unit.patterns',
-            order: 2,
-            titleKey: 'mapNodeShapes',
-            lessonId: 'lesson.002',
-            type: PathNodeType.lesson,
-            requiredCompletedNodeIds: ['path.node.001'],
-            rewardXp: 28,
-            primarySkillTag: SkillTag.arithmetic,
-          ),
-          PathNode(
-            id: 'path.node.003',
-            unitId: 'unit.patterns',
-            order: 3,
-            titleKey: 'mapNodePairs',
-            lessonId: 'lesson.003',
-            type: PathNodeType.lesson,
-            requiredCompletedNodeIds: ['path.node.002'],
-            rewardXp: 32,
-            primarySkillTag: SkillTag.classification,
-          ),
-          PathNode(
-            id: 'path.node.004',
-            unitId: 'unit.patterns',
-            order: 4,
-            titleKey: 'mapNodeCounting',
-            lessonId: 'lesson.004',
-            type: PathNodeType.review,
-            requiredCompletedNodeIds: ['path.node.003'],
-            rewardXp: 36,
-            primarySkillTag: SkillTag.arithmetic,
-          ),
-          PathNode(
-            id: 'path.node.005',
-            unitId: 'unit.patterns',
-            order: 5,
-            titleKey: 'mapNodeRhythm',
-            lessonId: 'lesson.005',
-            type: PathNodeType.lesson,
-            requiredCompletedNodeIds: ['path.node.004'],
-            rewardXp: 40,
-            primarySkillTag: SkillTag.pattern,
-          ),
-          PathNode(
-            id: 'path.node.006',
-            unitId: 'unit.patterns',
-            order: 6,
-            titleKey: 'mapNodeFinal',
-            lessonId: 'lesson.006',
-            type: PathNodeType.boss,
-            requiredCompletedNodeIds: ['path.node.005'],
-            rewardXp: 44,
-            primarySkillTag: SkillTag.reasoning,
-          ),
-        ],
-      ),
-    ],
+    units: _buildLongRouteUnits(),
   );
 
   static Set<String> completedNodeIdsFromLessons(
     Iterable<String> completedLessonIds,
   ) {
-    final completedLessons = completedLessonIds.toSet();
+    final completedCount = completedLessonIds.length;
+    final nodes = mainPath.nodes;
     return {
-      for (final node in mainPath.nodes)
-        if (completedLessons.contains(node.lessonId)) node.id,
+      for (var index = 0;
+          index < nodes.length && index < completedCount;
+          index += 1)
+        nodes[index].id,
+    };
+  }
+
+  static List<PathUnit> _buildLongRouteUnits() {
+    const unitCount = 10;
+    const nodesPerUnit = 12;
+    final units = <PathUnit>[];
+
+    for (var unitIndex = 0; unitIndex < unitCount; unitIndex += 1) {
+      final unitOrder = unitIndex + 1;
+      final unitId = 'unit.${unitOrder.toString().padLeft(2, '0')}';
+      final nodes = <PathNode>[];
+
+      for (var nodeIndex = 0; nodeIndex < nodesPerUnit; nodeIndex += 1) {
+        final order = unitIndex * nodesPerUnit + nodeIndex + 1;
+        final id = _nodeId(order);
+        final lessonNumber = ((order - 1) % 24) + 1;
+        nodes.add(
+          PathNode(
+            id: id,
+            unitId: unitId,
+            order: order,
+            titleKey: _titleKeyFor(order),
+            lessonId: 'lesson.${lessonNumber.toString().padLeft(3, '0')}',
+            type: _nodeTypeFor(nodeIndex),
+            requiredCompletedNodeIds:
+                order == 1 ? const [] : [_nodeId(order - 1)],
+            rewardXp: 22 + (order % 9) * 3 + unitIndex,
+            primarySkillTag: _skillFor(order),
+          ),
+        );
+      }
+
+      units.add(
+        PathUnit(
+          id: unitId,
+          titleKey: 'mapNodePath',
+          descriptionKey: 'mapLessonSubtitle',
+          order: unitOrder,
+          nodes: nodes,
+          primarySkillTags: [
+            _skillFor(unitIndex * nodesPerUnit + 1),
+            _skillFor(unitIndex * nodesPerUnit + 2),
+            _skillFor(unitIndex * nodesPerUnit + 3),
+          ],
+        ),
+      );
+    }
+
+    return units;
+  }
+
+  static String _nodeId(int order) {
+    return 'path.node.${order.toString().padLeft(3, '0')}';
+  }
+
+  static SkillTag _skillFor(int order) {
+    const skillCycle = [
+      SkillTag.pattern,
+      SkillTag.memory,
+      SkillTag.arithmetic,
+      SkillTag.attention,
+      SkillTag.reasoning,
+      SkillTag.spatial,
+      SkillTag.classification,
+      SkillTag.memory,
+      SkillTag.arithmetic,
+      SkillTag.pattern,
+    ];
+    return skillCycle[(order - 1) % skillCycle.length];
+  }
+
+  static PathNodeType _nodeTypeFor(int nodeIndex) {
+    final position = nodeIndex + 1;
+    if (position == 12) {
+      return PathNodeType.boss;
+    }
+    if (position == 6) {
+      return PathNodeType.review;
+    }
+    if (position == 9) {
+      return PathNodeType.practice;
+    }
+    if (position == 4) {
+      return PathNodeType.reward;
+    }
+    return PathNodeType.lesson;
+  }
+
+  static String _titleKeyFor(int order) {
+    if (order == 1) {
+      return 'mapNodeStart';
+    }
+    return switch (_nodeTypeFor((order - 1) % 12)) {
+      PathNodeType.review => 'mapNodeRhythm',
+      PathNodeType.reward => 'mapNodeFinal',
+      PathNodeType.boss => 'mapNodeFinal',
+      PathNodeType.practice => 'mapNodeCompare',
+      PathNodeType.lesson => 'skill',
     };
   }
 }

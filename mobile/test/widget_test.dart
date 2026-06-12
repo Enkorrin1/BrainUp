@@ -41,8 +41,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Start'), findsOneWidget);
-    expect(find.text('Shapes'), findsOneWidget);
-    expect(find.text('Pairs'), findsOneWidget);
+    expect(find.text('Shapes'), findsAtLeastNWidgets(1));
+    expect(find.text('Working memory'), findsAtLeastNWidgets(1));
+    expect(find.text('Math thinking'), findsAtLeastNWidgets(1));
+    expect(find.text('Focus'), findsAtLeastNWidgets(1));
     expect(find.text('locked'), findsAtLeastNWidgets(1));
     expect(find.text('Courses and puzzles'), findsNothing);
   });

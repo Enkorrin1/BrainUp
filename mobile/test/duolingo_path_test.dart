@@ -1,4 +1,4 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/domain/duolingo_path.dart';
 import 'package:brain_up/src/domain/learning_foundation.dart';
 
@@ -49,6 +49,42 @@ void main() {
       final path = _samplePath();
 
       expect(path.nextNode(<String>{'node.001', 'node.002'}), isNull);
+    });
+
+    test('prototype path feels long and alternates skill areas', () {
+      final path = PrototypeLearningPathCatalog.mainPath;
+      final nodes = path.nodes;
+
+      expect(nodes.length, greaterThanOrEqualTo(120));
+      expect(path.units.length, greaterThanOrEqualTo(10));
+      expect(
+        nodes.take(12).map((node) => node.primarySkillTag).toSet(),
+        containsAll(<SkillTag>{
+          SkillTag.pattern,
+          SkillTag.memory,
+          SkillTag.arithmetic,
+          SkillTag.attention,
+          SkillTag.reasoning,
+          SkillTag.spatial,
+        }),
+      );
+      expect(nodes.take(12).any((node) => node.type == PathNodeType.review),
+          isTrue);
+      expect(nodes.take(12).any((node) => node.type == PathNodeType.practice),
+          isTrue);
+      expect(
+          nodes.take(12).any((node) => node.type == PathNodeType.boss), isTrue);
+    });
+
+    test('completed lesson attempts advance through repeated templates', () {
+      final completed =
+          PrototypeLearningPathCatalog.completedNodeIdsFromLessons(
+        List<String>.filled(25, 'lesson.001'),
+      );
+
+      expect(completed.length, 25);
+      expect(completed, contains('path.node.001'));
+      expect(completed, contains('path.node.025'));
     });
   });
 

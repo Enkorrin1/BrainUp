@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/duolingo_path.dart';
 import '../../domain/family_profile.dart';
+import '../../domain/learning_foundation.dart';
 import '../../l10n/l10n.dart';
 
 class PathScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class PathScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = profile.activeChild;
-    const path = PrototypeLearningPathCatalog.mainPath;
+    final path = PrototypeLearningPathCatalog.mainPath;
     final completedNodeIds =
         PrototypeLearningPathCatalog.completedNodeIdsFromLessons(
             child.completedLessonIds);
@@ -520,10 +521,12 @@ class _PlanetNode extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                   decoration: BoxDecoration(
-                    color: locked
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : Colors.white.withValues(alpha: current ? 0.95 : 0.16),
-                    borderRadius: BorderRadius.circular(18),
+                    color: current
+                        ? _PathPalette.star.withValues(alpha: 0.20)
+                        : locked
+                            ? Colors.white.withValues(alpha: 0.07)
+                            : Colors.white.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: current
                           ? _PathPalette.star
@@ -541,7 +544,7 @@ class _PlanetNode extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: current
-                                  ? _PathPalette.ink
+                                  ? Colors.white
                                   : locked
                                       ? _PathPalette.lavender
                                       : Colors.white,
@@ -556,7 +559,7 @@ class _PlanetNode extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: current
-                                  ? const Color(0xFF3B4665)
+                                  ? _PathPalette.star
                                   : _PathPalette.lavender,
                               fontWeight: FontWeight.w900,
                             ),
@@ -574,6 +577,9 @@ class _PlanetNode extends StatelessWidget {
 
   String _titleForNode(BuildContext context, PathNode node) {
     final l10n = context.l10n;
+    if (node.titleKey == 'skill') {
+      return _skillTitle(context, node.primarySkillTag);
+    }
     return switch (node.titleKey) {
       'mapNodeStart' => l10n.mapNodeStart,
       'mapNodeShapes' => l10n.mapNodeShapes,
@@ -584,6 +590,19 @@ class _PlanetNode extends StatelessWidget {
       'mapNodeCompare' => l10n.mapNodeCompare,
       'mapNodeFinal' => l10n.mapNodeFinal,
       _ => l10n.mapPreviewTitle(node.order),
+    };
+  }
+
+  String _skillTitle(BuildContext context, SkillTag skillTag) {
+    final l10n = context.l10n;
+    return switch (skillTag) {
+      SkillTag.attention => l10n.goalAttentionLabel,
+      SkillTag.memory => l10n.skillWorkingMemory,
+      SkillTag.pattern => l10n.skillPatterns,
+      SkillTag.classification => l10n.skillComparison,
+      SkillTag.arithmetic => l10n.skillMathThinking,
+      SkillTag.spatial => l10n.courseSpatialTitle,
+      SkillTag.reasoning => l10n.skillLogicDeduction,
     };
   }
 }

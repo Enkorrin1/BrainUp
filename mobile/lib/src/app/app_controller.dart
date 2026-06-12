@@ -159,11 +159,10 @@ class AppController extends ChangeNotifier {
     ];
     final completedLessonIds = [
       ...activeChild.completedLessonIds,
-      if (!activeChild.completedLessonIds.contains(lessonId)) lessonId,
+      lessonId,
     ];
     final nextChild = activeChild.copyWith(
-      completedChallenges:
-          activeChild.completedChallenges + (wasCompleted ? 0 : 1),
+      completedChallenges: activeChild.completedChallenges + 1,
       currentStreak: currentStreak,
       bestStreak: math.max(activeChild.bestStreak, currentStreak),
       totalPracticeMinutes:
@@ -177,7 +176,7 @@ class AppController extends ChangeNotifier {
       ],
       completedMapNodeIds: completedMapNodeIds,
       completedLessonIds: completedLessonIds,
-      mapStars: activeChild.mapStars + (wasCompleted ? 0 : 1),
+      mapStars: activeChild.mapStars + 1,
       mapXp: activeChild.mapXp + (wasCompleted ? 8 : lesson.xpReward),
       hearts: math.min(5, activeChild.hearts + 1),
     );

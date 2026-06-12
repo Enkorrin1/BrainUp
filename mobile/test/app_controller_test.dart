@@ -137,8 +137,7 @@ void main() {
       expect(savedProfile?.lastSession?.challengeTitle, _challenge.title);
     });
 
-    test('records concrete lesson progress without duplicating repeats',
-        () async {
+    test('records concrete lesson attempts for long path progress', () async {
       final profile = FamilyProfile(
         childName: 'Leo',
         childAge: ChildAge.five,
@@ -162,8 +161,11 @@ void main() {
       );
 
       final savedProfile = controller.familyProfile;
-      expect(savedProfile?.completedChallenges, 1);
-      expect(savedProfile?.activeChild.completedLessonIds, ['lesson.001']);
+      expect(savedProfile?.completedChallenges, 2);
+      expect(savedProfile?.activeChild.completedLessonIds, [
+        'lesson.001',
+        'lesson.001',
+      ]);
       expect(savedProfile?.activeChild.completedMapNodeIds, ['node.001']);
       expect(savedProfile?.practiceSessions, hasLength(2));
       expect(savedProfile?.lastChallengeId, 'lesson.001');
