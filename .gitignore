@@ -1,0 +1,31 @@
+# Local temp/cache
+.tmp/
+*.log
+
+# Flutter/Dart generated output
+**/.dart_tool/
+**/.flutter-plugins-dependencies
+**/build/
+**/coverage/
+
+# IDE/local machine
+**/.idea/
+**/*.iml
+**/local.properties
+
+# Android/iOS generated artifacts
+**/.gradle/
+**/.cxx/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/Runner.xcworkspace/
+**/ios/Runner.xcodeproj/xcuserdata/
+
+# Local screenshots captured during emulator QA
+mobile/*.png
+
+# Local emulator/window state
+mobile/current.xml
+mobile/window.xml
