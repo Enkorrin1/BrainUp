@@ -43,6 +43,44 @@ extension LocalizedModels on AppLocalizations {
     return _isRu ? 'Ошибки разобраны' : 'Mistakes reviewed';
   }
 
+  String get reviewMasteryTitle {
+    return _isRu ? 'Прогресс повторения' : 'Review progress';
+  }
+
+  String get reviewResolvedMetric {
+    return _isRu ? 'Разобрано' : 'Resolved';
+  }
+
+  String get reviewOpenMetric {
+    return _isRu ? 'Ждут повторения' : 'Needs review';
+  }
+
+  String get reviewSessionsMetric {
+    return _isRu ? 'Повторений' : 'Review sessions';
+  }
+
+  String reviewMasteryRecommendation({
+    required int resolved,
+    required int open,
+  }) {
+    if (_isRu) {
+      if (open > 0) {
+        return 'Есть $open сигналов для повторения. Короткий recap поможет закрепить материал.';
+      }
+      if (resolved > 0) {
+        return 'Отлично: ошибки разобраны. Продолжайте обычный маршрут.';
+      }
+      return 'Пока нет ошибок для разбора. Продолжайте набирать практику.';
+    }
+    if (open > 0) {
+      return '$open review signals are still open. A short recap can lock them in.';
+    }
+    if (resolved > 0) {
+      return 'Nice: mistakes are resolved. Keep going on the main path.';
+    }
+    return 'No review signals yet. Keep building practice history.';
+  }
+
   String labelForAge(ChildAge age) {
     return ageYears(age.years);
   }

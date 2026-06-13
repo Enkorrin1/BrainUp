@@ -23,6 +23,8 @@ Current implementation notes:
   (`docs/content-stage-7-status.md`).
 - Stage 8: adaptive review signal clearing
   (`docs/content-stage-8-status.md`).
+- Stage 9: parent-facing review mastery feedback
+  (`docs/content-stage-9-status.md`).
 
 ## Content Architecture
 

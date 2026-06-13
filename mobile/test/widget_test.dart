@@ -399,6 +399,65 @@ void main() {
     );
   });
 
+  testWidgets('shows parent review mastery insights', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildAppTheme(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: ParentScreen(
+          profile: _testProfileWithPracticeSessions([
+            PracticeSession(
+              completedAt: DateTime(2026, 6, 12, 18),
+              challengeId: 'lesson.memory',
+              challengeTitle: 'Memory lesson',
+              skill: 'Working memory',
+              minutes: 5,
+              correctAnswers: 2,
+              totalQuestions: 5,
+              wrongAttempts: 2,
+              mistakePuzzleIds: ['memory.order.normal.003'],
+            ),
+            PracticeSession(
+              completedAt: DateTime(2026, 6, 13, 18),
+              challengeId: 'lesson.review.adaptive',
+              challengeTitle: 'Review complete',
+              skill: 'Working memory',
+              minutes: 3,
+              correctAnswers: 5,
+              totalQuestions: 5,
+              reviewedPuzzleIds: ['memory.order.normal.003'],
+            ),
+          ]),
+          currentLocale: const Locale('en'),
+          onChildSelected: (_) async {},
+          onChildAdded: ({
+            required childAge,
+            required childName,
+            required learningGoal,
+          }) async {},
+          onLocaleChanged: (_) async {},
+          onSubscriptionPlanChanged: (_) async {},
+          onResetProfile: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.dragFrom(const Offset(400, 520), const Offset(0, -1400));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Review progress'), findsOneWidget);
+    expect(find.text('Resolved'), findsOneWidget);
+    expect(find.text('Needs review'), findsOneWidget);
+    expect(find.text('Review sessions'), findsOneWidget);
+    expect(
+      find.textContaining('mistakes are resolved'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('shows recent practice history for parents', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

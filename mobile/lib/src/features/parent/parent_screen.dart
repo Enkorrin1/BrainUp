@@ -78,6 +78,10 @@ class ParentScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 _SkillInsightsPanel(sessions: weeklySessions),
                 const SizedBox(height: 14),
+                _ReviewMasteryPanel(
+                  sessions: profile.activeChild.practiceSessions,
+                ),
+                const SizedBox(height: 14),
                 _RecentSessionsPanel(
                   sessions: profile.activeChild.practiceSessions,
                 ),
@@ -1179,6 +1183,140 @@ class _SkillQualitySummary {
     totalQuestions += session.totalQuestions;
     usedHints += session.usedHints;
     wrongAttempts += session.wrongAttempts;
+  }
+}
+
+class _ReviewMasteryPanel extends StatelessWidget {
+  const _ReviewMasteryPanel({required this.sessions});
+
+  final List<PracticeSession> sessions;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final insights = _ReviewMasteryInsights.fromSessions(sessions);
+
+    return DecoratedBox(
+      decoration: _softPanelDecoration(color: const Color(0xFFEFF4FF)),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionHeader(
+              icon: Icons.replay_circle_filled_rounded,
+              title: l10n.reviewMasteryTitle,
+              color: const Color(0xFF5C8EF7),
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: _InsightCard(
+                    icon: Icons.check_circle_rounded,
+                    label: l10n.reviewResolvedMetric,
+                    value: '${insights.resolvedMistakes}',
+                    color: const Color(0xFF18B7AE),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _InsightCard(
+                    icon: Icons.flag_rounded,
+                    label: l10n.reviewOpenMetric,
+                    value: '${insights.openMistakes}',
+                    color: const Color(0xFFFF6F7D),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _InsightCard(
+                    icon: Icons.psychology_alt_rounded,
+                    label: l10n.reviewSessionsMetric,
+                    value: '${insights.reviewSessions}',
+                    color: const Color(0xFF8B63E8),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _IconBubble(
+                    icon: Icons.insights_rounded,
+                    color: Color(0xFF5C8EF7),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.reviewMasteryRecommendation(
+                        resolved: insights.resolvedMistakes,
+                        open: insights.openMistakes,
+                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReviewMasteryInsights {
+  const _ReviewMasteryInsights({
+    required this.resolvedMistakes,
+    required this.openMistakes,
+    required this.reviewSessions,
+  });
+
+  final int resolvedMistakes;
+  final int openMistakes;
+  final int reviewSessions;
+
+  static _ReviewMasteryInsights fromSessions(List<PracticeSession> sessions) {
+    final recentSessions = [
+      ...sessions
+    ]..sort((first, second) => second.completedAt.compareTo(first.completedAt));
+    final resolvedIds = <String>{};
+    final openIds = <String>{};
+    var reviewSessions = 0;
+
+    for (final session in recentSessions) {
+      if (session.reviewedPuzzleIds.isNotEmpty) {
+        reviewSessions += 1;
+        final accuracy = session.totalQuestions == 0
+            ? 1.0
+            : session.correctAnswers / session.totalQuestions;
+        if (accuracy >= 0.8 && session.wrongAttempts == 0) {
+          resolvedIds.addAll(session.reviewedPuzzleIds);
+          openIds.removeAll(session.reviewedPuzzleIds);
+        }
+      }
+
+      for (final mistakeId in session.mistakePuzzleIds) {
+        if (!resolvedIds.contains(mistakeId)) {
+          openIds.add(mistakeId);
+        }
+      }
+    }
+
+    return _ReviewMasteryInsights(
+      resolvedMistakes: resolvedIds.length,
+      openMistakes: openIds.length,
+      reviewSessions: reviewSessions,
+    );
   }
 }
 
