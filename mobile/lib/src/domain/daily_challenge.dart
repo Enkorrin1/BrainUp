@@ -15,6 +15,7 @@ class DailyChallenge {
     required this.correctChoiceId,
     required this.hint,
     required this.explanation,
+    this.interaction,
   });
 
   final String id;
@@ -28,6 +29,7 @@ class DailyChallenge {
   final String correctChoiceId;
   final String hint;
   final String explanation;
+  final ChallengeInteractionSpec? interaction;
 
   bool isCorrectChoice(String choiceId) {
     return choiceId == correctChoiceId;
@@ -36,6 +38,66 @@ class DailyChallenge {
   ChallengeChoice get correctChoice {
     return choices.firstWhere((choice) => choice.id == correctChoiceId);
   }
+}
+
+class ChallengeInteractionSpec {
+  const ChallengeInteractionSpec({
+    required this.type,
+    required this.instruction,
+    this.items = const [],
+    this.targets = const [],
+    this.correctOrder = const [],
+    this.correctMatches = const {},
+  });
+
+  final PuzzleInteractionType type;
+  final String instruction;
+  final List<ChallengeInteractionItem> items;
+  final List<ChallengeInteractionTarget> targets;
+  final List<String> correctOrder;
+  final Map<String, String> correctMatches;
+
+  bool isCorrectOrder(List<String> order) {
+    return _sameOrderedStrings(order, correctOrder);
+  }
+
+  bool isCorrectMatches(Map<String, String> matches) {
+    if (matches.length != correctMatches.length) {
+      return false;
+    }
+
+    for (final entry in correctMatches.entries) {
+      if (matches[entry.key] != entry.value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
+
+class ChallengeInteractionItem {
+  const ChallengeInteractionItem({
+    required this.id,
+    required this.label,
+    this.assetId,
+  });
+
+  final String id;
+  final String label;
+  final String? assetId;
+}
+
+class ChallengeInteractionTarget {
+  const ChallengeInteractionTarget({
+    required this.id,
+    required this.label,
+    this.assetId,
+  });
+
+  final String id;
+  final String label;
+  final String? assetId;
 }
 
 class ChallengeChoice {
@@ -129,6 +191,7 @@ DailyChallenge dailyChallengeForPuzzle(
     hint: generated.hint,
     explanation: generated.explanation,
     choices: generated.choices,
+    interaction: _interactionForPuzzle(puzzle, generated),
   );
 }
 
@@ -220,6 +283,150 @@ _GeneratedPuzzleData _generatedPuzzleData(PuzzleDefinition puzzle) {
     PuzzleType.mixedBoss => _mixedBossData(variant),
     _ => _fallbackPuzzleData(puzzle),
   };
+}
+
+ChallengeInteractionSpec? _interactionForPuzzle(
+  PuzzleDefinition puzzle,
+  _GeneratedPuzzleData generated,
+) {
+  final metadata = puzzle.visualMetadata;
+  if (metadata == null ||
+      metadata.interactionType == PuzzleInteractionType.tapChoice) {
+    return null;
+  }
+
+  final items = _interactionItemsFor(generated, metadata);
+  return switch (metadata.interactionType) {
+    PuzzleInteractionType.dragToTarget => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.dragToTarget,
+        instruction: 'Drag the best answer into the active spot.',
+        items: items,
+        targets: const [
+          ChallengeInteractionTarget(
+            id: 'target.answer',
+            label: 'Answer spot',
+          ),
+        ],
+        correctMatches: {
+          generated.correctChoiceId: 'target.answer',
+        },
+      ),
+    PuzzleInteractionType.reorderCards => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.reorderCards,
+        instruction: 'Place the cards in the correct order.',
+        items: items,
+        correctOrder: items.map((item) => item.id).toList(growable: false),
+      ),
+    PuzzleInteractionType.matchPairs => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.matchPairs,
+        instruction: 'Connect the clue with its matching answer.',
+        items: [
+          ChallengeInteractionItem(
+            id: 'clue.${puzzle.payloadRef}',
+            label: _clueLabelForQuestion(generated.question),
+            assetId: metadata.sceneAsset,
+          ),
+          ...items,
+        ],
+        correctMatches: {
+          'clue.${puzzle.payloadRef}': generated.correctChoiceId,
+        },
+      ),
+    PuzzleInteractionType.memoryReveal => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.memoryReveal,
+        instruction: 'Reveal the cards, remember the order, then answer.',
+        items: items,
+        correctOrder: items.map((item) => item.id).toList(growable: false),
+        correctMatches: {
+          'memory.answer': generated.correctChoiceId,
+        },
+      ),
+    PuzzleInteractionType.tracePath => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.tracePath,
+        instruction: 'Trace the route and land on the correct endpoint.',
+        items: items,
+        targets: const [
+          ChallengeInteractionTarget(
+            id: 'target.endpoint',
+            label: 'Endpoint',
+          ),
+        ],
+        correctMatches: {
+          generated.correctChoiceId: 'target.endpoint',
+        },
+      ),
+    PuzzleInteractionType.rotateObject => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.rotateObject,
+        instruction: 'Rotate the object in your head before choosing.',
+        items: items,
+        correctMatches: {
+          'rotation.answer': generated.correctChoiceId,
+        },
+      ),
+    PuzzleInteractionType.sortObjects => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.sortObjects,
+        instruction: 'Move the item into the matching basket.',
+        items: items,
+        targets: const [
+          ChallengeInteractionTarget(
+            id: 'target.match',
+            label: 'Fits',
+          ),
+          ChallengeInteractionTarget(
+            id: 'target.other',
+            label: 'Does not fit',
+          ),
+        ],
+        correctMatches: {
+          generated.correctChoiceId: 'target.match',
+        },
+      ),
+    PuzzleInteractionType.multiStepBoss => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.multiStepBoss,
+        instruction: 'Solve each clue, then submit the boss answer.',
+        items: items,
+        correctMatches: {
+          'boss.answer': generated.correctChoiceId,
+        },
+      ),
+    PuzzleInteractionType.tapChoice => null,
+  };
+}
+
+List<ChallengeInteractionItem> _interactionItemsFor(
+  _GeneratedPuzzleData generated,
+  VisualPuzzleMetadata metadata,
+) {
+  return [
+    for (var index = 0; index < generated.choices.length; index += 1)
+      ChallengeInteractionItem(
+        id: generated.choices[index].id,
+        label: generated.choices[index].label,
+        assetId: _choiceAssetAt(metadata.choiceAssets, index),
+      ),
+  ];
+}
+
+String? _choiceAssetAt(List<String> assets, int index) {
+  if (assets.isEmpty) {
+    return null;
+  }
+
+  return assets[index % assets.length];
+}
+
+String _clueLabelForQuestion(String question) {
+  final pairCue = question.indexOf(' goes with');
+  if (pairCue > 0) {
+    return question.substring(0, pairCue);
+  }
+
+  final ellipsisCue = question.indexOf('...');
+  if (ellipsisCue > 0) {
+    return question.substring(0, ellipsisCue).trim();
+  }
+
+  return 'Clue';
 }
 
 int _payloadVariant(String payloadRef) {
@@ -574,6 +781,20 @@ String _choiceText(String id) {
       .map((part) =>
           part.isEmpty ? part : '${part[0].toUpperCase()}${part.substring(1)}')
       .join(' ');
+}
+
+bool _sameOrderedStrings(List<String> left, List<String> right) {
+  if (left.length != right.length) {
+    return false;
+  }
+
+  for (var index = 0; index < left.length; index += 1) {
+    if (left[index] != right[index]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 class _GeneratedPuzzleData {

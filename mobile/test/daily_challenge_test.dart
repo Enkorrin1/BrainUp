@@ -122,5 +122,67 @@ void main() {
       expect(
           challenge.choices.map((choice) => choice.id), contains('sunflower'));
     });
+
+    test('curated pair puzzles expose match pair interaction specs', () {
+      final puzzle = CuratedRichPuzzlePack.puzzles.firstWhere(
+        (puzzle) =>
+            puzzle.visualMetadata?.interactionType ==
+            PuzzleInteractionType.matchPairs,
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+      final interaction = challenge.interaction;
+
+      expect(interaction, isNotNull);
+      expect(interaction!.type, PuzzleInteractionType.matchPairs);
+      expect(interaction.items.length, greaterThan(challenge.choices.length));
+      expect(interaction.correctMatches, isNotEmpty);
+      expect(interaction.isCorrectMatches(interaction.correctMatches), isTrue);
+
+      final wrongMatches = Map<String, String>.from(interaction.correctMatches);
+      wrongMatches[wrongMatches.keys.first] = 'wrong';
+
+      expect(interaction.isCorrectMatches(wrongMatches), isFalse);
+    });
+
+    test('curated drag puzzles expose drop targets and answer mapping', () {
+      final puzzle = CuratedRichPuzzlePack.puzzles.firstWhere(
+        (puzzle) =>
+            puzzle.visualMetadata?.interactionType ==
+            PuzzleInteractionType.dragToTarget,
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+      final interaction = challenge.interaction;
+
+      expect(interaction, isNotNull);
+      expect(interaction!.type, PuzzleInteractionType.dragToTarget);
+      expect(interaction.targets.map((target) => target.id), [
+        'target.answer',
+      ]);
+      expect(
+        interaction.correctMatches[challenge.correctChoiceId],
+        'target.answer',
+      );
+    });
+
+    test('curated memory puzzles expose reveal order checks', () {
+      final puzzle = CuratedRichPuzzlePack.puzzles.firstWhere(
+        (puzzle) =>
+            puzzle.visualMetadata?.interactionType ==
+            PuzzleInteractionType.memoryReveal,
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+      final interaction = challenge.interaction;
+
+      expect(interaction, isNotNull);
+      expect(interaction!.type, PuzzleInteractionType.memoryReveal);
+      expect(interaction.correctOrder, isNotEmpty);
+      expect(interaction.isCorrectOrder(interaction.correctOrder), isTrue);
+      expect(
+        interaction.isCorrectOrder(interaction.correctOrder.reversed.toList()),
+        isFalse,
+      );
+      expect(interaction.correctMatches['memory.answer'],
+          challenge.correctChoiceId);
+    });
   });
 }

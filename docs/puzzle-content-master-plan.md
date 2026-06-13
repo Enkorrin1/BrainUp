@@ -197,6 +197,12 @@ Suggested distribution:
 
 Add interaction types beyond tapping a choice.
 
+Status: implemented as the first domain-level interaction spec layer in
+`DailyChallenge`. Curated and generated visual puzzle metadata can now produce
+playable specs for drag targets, pair matching, memory reveal, route tracing,
+rotation, sorting, reorder cards, and boss interactions while keeping the
+single-choice lesson fallback intact.
+
 Initial mechanics:
 
 - tap choice;
@@ -214,6 +220,13 @@ First implementation priority:
 
 - drag reorder;
 - match pairs.
+
+Stage 20 delivered:
+
+- `ChallengeInteractionSpec` model for non-tap mechanics;
+- interaction items and drop targets with optional visual asset ids;
+- correct-order and correct-match validation helpers;
+- curated content tests for match pairs, drag-to-target, and memory reveal.
 
 ## Stage 21. Animations And Feedback
 
