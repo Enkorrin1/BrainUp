@@ -1,0 +1,2527 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "FoundationCatalog.contentManifest",
+  "qualityGate": {
+    "minimumPerAgeBandSkill": 4,
+    "passes": true
+  },
+  "coverage": {
+    "totalPuzzleCount": 151,
+    "countByAgeBand": {
+      "age4to5": 91,
+      "age6": 136,
+      "age7to8": 106
+    },
+    "countBySkill": {
+      "attention": 19,
+      "memory": 20,
+      "pattern": 13,
+      "classification": 19,
+      "arithmetic": 22,
+      "spatial": 21,
+      "reasoning": 37
+    },
+    "countByDifficulty": {
+      "easy": 46,
+      "normal": 45,
+      "hard": 45,
+      "boss": 15
+    },
+    "countByType": {
+      "oddOneOut": 10,
+      "sequenceComplete": 14,
+      "pairMatch": 2,
+      "categorySort": 9,
+      "pathPuzzle": 9,
+      "countBridge": 12,
+      "visualCompare": 14,
+      "analogy": 9,
+      "memoryGrid": 18,
+      "codeBreaker": 9,
+      "spatialRotation": 9,
+      "attentionScan": 18,
+      "rebus": 9,
+      "mixedBoss": 9
+    },
+    "countByAgeBandAndSkill": {
+      "age4to5": {
+        "attention": 11,
+        "memory": 12,
+        "pattern": 9,
+        "classification": 11,
+        "arithmetic": 14,
+        "spatial": 13,
+        "reasoning": 21
+      },
+      "age6": {
+        "attention": 17,
+        "memory": 18,
+        "pattern": 12,
+        "classification": 17,
+        "arithmetic": 20,
+        "spatial": 19,
+        "reasoning": 33
+      },
+      "age7to8": {
+        "attention": 13,
+        "memory": 14,
+        "pattern": 10,
+        "classification": 13,
+        "arithmetic": 16,
+        "spatial": 15,
+        "reasoning": 25
+      }
+    },
+    "minimumPerAgeBandSkill": 4,
+    "skillGaps": []
+  },
+  "puzzles": [
+    {
+      "id": "puzzle.shape_path",
+      "lessonId": "lesson.shared",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "shape-path",
+      "correctAnswerKey": "circle",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.fruit_pattern",
+      "lessonId": "lesson.shared",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "fruit-pattern",
+      "correctAnswerKey": "apple",
+      "hintKeys": [
+        "challengeFruitPatternHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.toy_count",
+      "lessonId": "lesson.shared",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "toy-count",
+      "correctAnswerKey": "3",
+      "hintKeys": [
+        "challengeToyCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.odd_card",
+      "lessonId": "lesson.shared",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "odd-card",
+      "correctAnswerKey": "ball",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.memory_pairs",
+      "lessonId": "lesson.shared",
+      "type": "pairMatch",
+      "skillTag": "memory",
+      "payloadRef": "memory-pairs",
+      "correctAnswerKey": "lock",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.lock_key",
+      "lessonId": "lesson.shared",
+      "type": "pairMatch",
+      "skillTag": "memory",
+      "payloadRef": "lock-key",
+      "correctAnswerKey": "lock",
+      "hintKeys": [
+        "challengeLockKeyHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.shadow_match",
+      "lessonId": "lesson.shared",
+      "type": "visualCompare",
+      "skillTag": "spatial",
+      "payloadRef": "shadow-match",
+      "correctAnswerKey": "rocket",
+      "hintKeys": [
+        "challengeShadowMatchHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.logic_train",
+      "lessonId": "lesson.shared",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "logic-train",
+      "correctAnswerKey": "red",
+      "hintKeys": [
+        "challengeLogicTrainHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.sticker_sum",
+      "lessonId": "lesson.shared",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "sticker-sum",
+      "correctAnswerKey": "5",
+      "hintKeys": [
+        "challengeStickerSumHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.balance_scale",
+      "lessonId": "lesson.shared",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "balance-scale",
+      "correctAnswerKey": "apple",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.code_grid",
+      "lessonId": "lesson.shared",
+      "type": "visualCompare",
+      "skillTag": "reasoning",
+      "payloadRef": "code-grid",
+      "correctAnswerKey": "7",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.number_bridge",
+      "lessonId": "lesson.shared",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "number-bridge",
+      "correctAnswerKey": "4+2+1",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.detail_count",
+      "lessonId": "lesson.shared",
+      "type": "visualCompare",
+      "skillTag": "attention",
+      "payloadRef": "detail-count",
+      "correctAnswerKey": "red-circles",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.shape_rotation",
+      "lessonId": "lesson.shared",
+      "type": "visualCompare",
+      "skillTag": "spatial",
+      "payloadRef": "shape-rotation",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.space_sequence",
+      "lessonId": "lesson.shared",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "space-sequence",
+      "correctAnswerKey": "rocket",
+      "hintKeys": [
+        "challengeSpaceSequenceHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.shape_stack",
+      "lessonId": "lesson.shared",
+      "type": "sequenceComplete",
+      "skillTag": "spatial",
+      "payloadRef": "shape-stack",
+      "correctAnswerKey": "square",
+      "hintKeys": [
+        "challengeShapeStackHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.pattern.trail.001",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.easy.001",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.pattern.trail.002",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.easy.002",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.pattern.trail.003",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.normal.003",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.pattern.trail.004",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.normal.004",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.pattern.trail.005",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.normal.005",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.pattern.trail.006",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.hard.006",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.pattern.trail.007",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.hard.007",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.pattern.trail.008",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.hard.008",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.pattern.trail.009",
+      "lessonId": "lesson.generated",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "pattern.trail.boss.009",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.memory.pairs.001",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.easy.001",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.memory.pairs.002",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.easy.002",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.memory.pairs.003",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.normal.003",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.memory.pairs.004",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.normal.004",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.memory.pairs.005",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.normal.005",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.memory.pairs.006",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.hard.006",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.memory.pairs.007",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.hard.007",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.memory.pairs.008",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.hard.008",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.memory.pairs.009",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.pairs.boss.009",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.math.bridge.001",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.easy.001",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.math.bridge.002",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.easy.002",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.math.bridge.003",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.normal.003",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.math.bridge.004",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.normal.004",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.math.bridge.005",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.normal.005",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.math.bridge.006",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.hard.006",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.math.bridge.007",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.hard.007",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.math.bridge.008",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.hard.008",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.math.bridge.009",
+      "lessonId": "lesson.generated",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "math.bridge.boss.009",
+      "correctAnswerKey": "sum",
+      "hintKeys": [
+        "challengeNumberBridgeHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.focus.details.001",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.easy.001",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.focus.details.002",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.easy.002",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.focus.details.003",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.normal.003",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.focus.details.004",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.normal.004",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.focus.details.005",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.normal.005",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.focus.details.006",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.hard.006",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.focus.details.007",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.hard.007",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.focus.details.008",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.hard.008",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.focus.details.009",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.details.boss.009",
+      "correctAnswerKey": "detail",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.focus.tracker.001",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.easy.001",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.focus.tracker.002",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.easy.002",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.focus.tracker.003",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.normal.003",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.focus.tracker.004",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.normal.004",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.focus.tracker.005",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.normal.005",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.focus.tracker.006",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.hard.006",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.focus.tracker.007",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.hard.007",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.focus.tracker.008",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.hard.008",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.focus.tracker.009",
+      "lessonId": "lesson.generated",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "focus.tracker.boss.009",
+      "correctAnswerKey": "target",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.logic.code.001",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.easy.001",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.logic.code.002",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.easy.002",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.logic.code.003",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.normal.003",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.logic.code.004",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.normal.004",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.logic.code.005",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.normal.005",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.logic.code.006",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.hard.006",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.logic.code.007",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.hard.007",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.logic.code.008",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.hard.008",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.logic.code.009",
+      "lessonId": "lesson.generated",
+      "type": "codeBreaker",
+      "skillTag": "reasoning",
+      "payloadRef": "logic.code.boss.009",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.space.turn.001",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.easy.001",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.space.turn.002",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.easy.002",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.space.turn.003",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.normal.003",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.space.turn.004",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.normal.004",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.space.turn.005",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.normal.005",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.space.turn.006",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.hard.006",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.space.turn.007",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.hard.007",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.space.turn.008",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.hard.008",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.space.turn.009",
+      "lessonId": "lesson.generated",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "space.turn.boss.009",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.sort.odd.001",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.easy.001",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.sort.odd.002",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.easy.002",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.sort.odd.003",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.normal.003",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.sort.odd.004",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.normal.004",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.sort.odd.005",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.normal.005",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.sort.odd.006",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.hard.006",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.sort.odd.007",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.hard.007",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.sort.odd.008",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.hard.008",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.sort.odd.009",
+      "lessonId": "lesson.generated",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "sort.odd.boss.009",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.category.groups.001",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.easy.001",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.category.groups.002",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.easy.002",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.category.groups.003",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.normal.003",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.category.groups.004",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.normal.004",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.category.groups.005",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.normal.005",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.category.groups.006",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.hard.006",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.category.groups.007",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.hard.007",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.category.groups.008",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.hard.008",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.category.groups.009",
+      "lessonId": "lesson.generated",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "category.groups.boss.009",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.route.path.001",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.easy.001",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.route.path.002",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.easy.002",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.route.path.003",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.normal.003",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.route.path.004",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.normal.004",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.route.path.005",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.normal.005",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.route.path.006",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.hard.006",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.route.path.007",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.hard.007",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.route.path.008",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.hard.008",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.route.path.009",
+      "lessonId": "lesson.generated",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "route.path.boss.009",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.analogy.link.001",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.easy.001",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.analogy.link.002",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.easy.002",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.analogy.link.003",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.normal.003",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.analogy.link.004",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.normal.004",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.analogy.link.005",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.normal.005",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.analogy.link.006",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.hard.006",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.analogy.link.007",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.hard.007",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.analogy.link.008",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.hard.008",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.analogy.link.009",
+      "lessonId": "lesson.generated",
+      "type": "analogy",
+      "skillTag": "reasoning",
+      "payloadRef": "analogy.link.boss.009",
+      "correctAnswerKey": "match",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.rebus.picture.001",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.easy.001",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.rebus.picture.002",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.easy.002",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.rebus.picture.003",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.normal.003",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.rebus.picture.004",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.normal.004",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.rebus.picture.005",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.normal.005",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.rebus.picture.006",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.hard.006",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.rebus.picture.007",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.hard.007",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.rebus.picture.008",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.hard.008",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.rebus.picture.009",
+      "lessonId": "lesson.generated",
+      "type": "rebus",
+      "skillTag": "reasoning",
+      "payloadRef": "rebus.picture.boss.009",
+      "correctAnswerKey": "word",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.compare.weight.001",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.easy.001",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.compare.weight.002",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.easy.002",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.compare.weight.003",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.normal.003",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.compare.weight.004",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.normal.004",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.compare.weight.005",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.normal.005",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.compare.weight.006",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.hard.006",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.compare.weight.007",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.hard.007",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.compare.weight.008",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.hard.008",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.compare.weight.009",
+      "lessonId": "lesson.generated",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "compare.weight.boss.009",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.memory.order.001",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.easy.001",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.memory.order.002",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.easy.002",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.memory.order.003",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.normal.003",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.memory.order.004",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.normal.004",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.memory.order.005",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.normal.005",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.memory.order.006",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.hard.006",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.memory.order.007",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.hard.007",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.memory.order.008",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.hard.008",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.memory.order.009",
+      "lessonId": "lesson.generated",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "memory.order.boss.009",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    },
+    {
+      "id": "puzzle.mixed.boss.001",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.easy.001",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.mixed.boss.002",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.easy.002",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "puzzle.mixed.boss.003",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.normal.003",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.mixed.boss.004",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.normal.004",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.mixed.boss.005",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.normal.005",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal"
+    },
+    {
+      "id": "puzzle.mixed.boss.006",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.hard.006",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.mixed.boss.007",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.hard.007",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.mixed.boss.008",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.hard.008",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "puzzle.mixed.boss.009",
+      "lessonId": "lesson.generated",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "mixed.boss.boss.009",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age7to8"
+      ],
+      "difficulty": "boss"
+    }
+  ]
+}

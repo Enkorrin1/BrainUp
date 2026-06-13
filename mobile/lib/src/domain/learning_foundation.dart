@@ -206,6 +206,22 @@ class PuzzleDefinition {
   final List<String> hintKeys;
   final List<AgeBandId> ageBandIds;
   final PuzzleDifficulty difficulty;
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'lessonId': lessonId,
+      'type': type.name,
+      'skillTag': skillTag.name,
+      'payloadRef': payloadRef,
+      'correctAnswerKey': correctAnswerKey,
+      'hintKeys': hintKeys,
+      'ageBandIds': [
+        for (final ageBandId in ageBandIds) ageBandId.name,
+      ],
+      'difficulty': difficulty.name,
+    };
+  }
 }
 
 class ContentCoverageGap {
@@ -223,6 +239,16 @@ class ContentCoverageGap {
 
   String get key {
     return '${ageBandId.name}.${skillTag.name}';
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'key': key,
+      'ageBandId': ageBandId.name,
+      'skillTag': skillTag.name,
+      'count': count,
+      'minimum': minimum,
+    };
   }
 }
 
@@ -265,6 +291,40 @@ class ContentCoverageReport {
               minimum: minimumPerAgeBand,
             ),
     ];
+  }
+
+  Map<String, Object?> toJson({
+    int minimumPerAgeBandSkill = 4,
+  }) {
+    final gaps = skillGaps(minimumPerAgeBand: minimumPerAgeBandSkill);
+
+    return {
+      'totalPuzzleCount': totalPuzzleCount,
+      'countByAgeBand': {
+        for (final entry in countByAgeBand.entries) entry.key.name: entry.value,
+      },
+      'countBySkill': {
+        for (final entry in countBySkill.entries) entry.key.name: entry.value,
+      },
+      'countByDifficulty': {
+        for (final entry in countByDifficulty.entries)
+          entry.key.name: entry.value,
+      },
+      'countByType': {
+        for (final entry in countByType.entries) entry.key.name: entry.value,
+      },
+      'countByAgeBandAndSkill': {
+        for (final ageEntry in countByAgeBandAndSkill.entries)
+          ageEntry.key.name: {
+            for (final skillEntry in ageEntry.value.entries)
+              skillEntry.key.name: skillEntry.value,
+          },
+      },
+      'minimumPerAgeBandSkill': minimumPerAgeBandSkill,
+      'skillGaps': [
+        for (final gap in gaps) gap.toJson(),
+      ],
+    };
   }
 }
 
@@ -1632,6 +1692,31 @@ class FoundationCatalog {
           },
       },
     );
+  }
+
+  static Map<String, Object?> contentManifest({
+    int minimumPerAgeBandSkill = 4,
+  }) {
+    final report = contentCoverageReport();
+
+    return {
+      'schemaVersion': 1,
+      'generatedBy': 'FoundationCatalog.contentManifest',
+      'qualityGate': {
+        'minimumPerAgeBandSkill': minimumPerAgeBandSkill,
+        'passes': report
+            .skillGaps(
+              minimumPerAgeBand: minimumPerAgeBandSkill,
+            )
+            .isEmpty,
+      },
+      'coverage': report.toJson(
+        minimumPerAgeBandSkill: minimumPerAgeBandSkill,
+      ),
+      'puzzles': [
+        for (final puzzle in allPuzzles) puzzle.toJson(),
+      ],
+    };
   }
 
   static List<PuzzleDefinition> puzzlesForLesson({

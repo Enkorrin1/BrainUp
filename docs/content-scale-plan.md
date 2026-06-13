@@ -29,6 +29,8 @@ Current implementation notes:
   (`docs/content-stage-10-status.md`).
 - Stage 11: content coverage report and quality gate
   (`docs/content-stage-11-status.md`).
+- Stage 12: exportable content manifest for future tooling
+  (`docs/content-stage-12-status.md`).
 
 ## Content Architecture
 

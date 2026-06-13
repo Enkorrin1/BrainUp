@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/domain/family_profile.dart';
 import 'package:brain_up/src/domain/learning_foundation.dart';
@@ -106,6 +108,26 @@ void main() {
         greaterThanOrEqualTo(10),
       );
       expect(report.skillGaps(minimumPerAgeBand: 4), isEmpty);
+    });
+
+    test('content manifest exports JSON-ready coverage and puzzle metadata',
+        () {
+      final manifest = FoundationCatalog.contentManifest();
+      final json = jsonDecode(jsonEncode(manifest)) as Map<String, Object?>;
+      final qualityGate = json['qualityGate'] as Map<String, Object?>;
+      final coverage = json['coverage'] as Map<String, Object?>;
+      final puzzles = json['puzzles'] as List<Object?>;
+      final focusTracker = puzzles.cast<Map<String, Object?>>().firstWhere(
+            (puzzle) => puzzle['payloadRef'] == 'focus.tracker.easy.001',
+          );
+
+      expect(json['schemaVersion'], 1);
+      expect(qualityGate['passes'], isTrue);
+      expect(coverage['totalPuzzleCount'], FoundationCatalog.allPuzzles.length);
+      expect(puzzles.length, FoundationCatalog.allPuzzles.length);
+      expect(focusTracker['skillTag'], SkillTag.attention.name);
+      expect(focusTracker['difficulty'], PuzzleDifficulty.easy.name);
+      expect(focusTracker['ageBandIds'], contains(AgeBandId.age4to5.name));
     });
 
     test('lesson generator mixes fixed and generated content bank puzzles', () {
