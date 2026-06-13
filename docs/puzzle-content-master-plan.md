@@ -297,6 +297,10 @@ Stage 22 delivered:
 
 Use the Stage 12 manifest to make content quality visible.
 
+Status: implemented as a generated dashboard report and export command. The
+project now produces both machine-readable JSON and a readable Markdown
+dashboard from the catalog quality signals.
+
 Dashboard should show:
 
 - total puzzle count;
@@ -307,6 +311,15 @@ Dashboard should show:
 - puzzles without assets;
 - puzzles without explanations;
 - repeated or too-similar puzzle families.
+
+Stage 23 delivered:
+
+- `ContentDashboardReport` for structured content health signals;
+- `tool/export_content_dashboard.dart` command;
+- generated `docs/content-dashboard.json`;
+- generated `docs/content-dashboard.md`;
+- dashboard tests for quality gate, coverage, visual coverage, missing hints,
+  and repeated family saturation.
 
 ## Stage 24. Content QA
 

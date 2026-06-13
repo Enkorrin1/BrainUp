@@ -461,6 +461,89 @@ class ContentCoverageReport {
   }
 }
 
+class ContentFamilySummary {
+  const ContentFamilySummary({
+    required this.familyId,
+    required this.count,
+    required this.examplePayloadRefs,
+  });
+
+  final String familyId;
+  final int count;
+  final List<String> examplePayloadRefs;
+
+  Map<String, Object?> toJson() {
+    return {
+      'familyId': familyId,
+      'count': count,
+      'examplePayloadRefs': examplePayloadRefs,
+    };
+  }
+}
+
+class ContentDashboardReport {
+  const ContentDashboardReport({
+    required this.totalPuzzleCount,
+    required this.visualPuzzleCount,
+    required this.visualCoveragePercent,
+    required this.qualityGatePasses,
+    required this.coverage,
+    required this.placementRules,
+    required this.puzzleIdsWithoutAssets,
+    required this.puzzleIdsWithoutHints,
+    required this.skillGaps,
+    required this.lowTypeCoverage,
+    required this.repeatedFamilies,
+  });
+
+  final int totalPuzzleCount;
+  final int visualPuzzleCount;
+  final int visualCoveragePercent;
+  final bool qualityGatePasses;
+  final ContentCoverageReport coverage;
+  final List<ContentPlacementRule> placementRules;
+  final List<String> puzzleIdsWithoutAssets;
+  final List<String> puzzleIdsWithoutHints;
+  final List<ContentCoverageGap> skillGaps;
+  final Map<PuzzleType, int> lowTypeCoverage;
+  final List<ContentFamilySummary> repeatedFamilies;
+
+  bool get hasBlockingIssues {
+    return !qualityGatePasses ||
+        skillGaps.isNotEmpty ||
+        lowTypeCoverage.isNotEmpty ||
+        puzzleIdsWithoutHints.isNotEmpty;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'totalPuzzleCount': totalPuzzleCount,
+      'visualPuzzleCount': visualPuzzleCount,
+      'visualCoveragePercent': visualCoveragePercent,
+      'qualityGatePasses': qualityGatePasses,
+      'hasBlockingIssues': hasBlockingIssues,
+      'coverage': coverage.toJson(),
+      'placementRules': [
+        for (final rule in placementRules) rule.toJson(),
+      ],
+      'issues': {
+        'skillGaps': [
+          for (final gap in skillGaps) gap.toJson(),
+        ],
+        'lowTypeCoverage': {
+          for (final entry in lowTypeCoverage.entries)
+            entry.key.name: entry.value,
+        },
+        'puzzleIdsWithoutAssets': puzzleIdsWithoutAssets,
+        'puzzleIdsWithoutHints': puzzleIdsWithoutHints,
+      },
+      'repeatedFamilies': [
+        for (final family in repeatedFamilies) family.toJson(),
+      ],
+    };
+  }
+}
+
 class PuzzleAttempt {
   const PuzzleAttempt({
     required this.puzzleId,
@@ -1994,6 +2077,47 @@ class FoundationCatalog {
     };
   }
 
+  static ContentDashboardReport contentDashboardReport({
+    int minimumPerAgeBandSkill = 4,
+    int minimumPerType = 2,
+    int repeatedFamilyThreshold = 5,
+  }) {
+    final report = contentCoverageReport();
+    final visualPuzzleCount =
+        allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length;
+    final visualCoveragePercent =
+        (visualPuzzleCount * 100 / report.totalPuzzleCount).round();
+    final skillGaps = report.skillGaps(
+      minimumPerAgeBand: minimumPerAgeBandSkill,
+    );
+    final lowTypeCoverage = {
+      for (final entry in report.countByType.entries)
+        if (entry.value < minimumPerType) entry.key: entry.value,
+    };
+
+    return ContentDashboardReport(
+      totalPuzzleCount: report.totalPuzzleCount,
+      visualPuzzleCount: visualPuzzleCount,
+      visualCoveragePercent: visualCoveragePercent,
+      qualityGatePasses: skillGaps.isEmpty,
+      coverage: report,
+      placementRules: placementRules,
+      puzzleIdsWithoutAssets: [
+        for (final puzzle in allPuzzles)
+          if (puzzle.visualMetadata == null) puzzle.id,
+      ],
+      puzzleIdsWithoutHints: [
+        for (final puzzle in allPuzzles)
+          if (puzzle.hintKeys.isEmpty) puzzle.id,
+      ],
+      skillGaps: skillGaps,
+      lowTypeCoverage: lowTypeCoverage,
+      repeatedFamilies: _repeatedFamilySummaries(
+        threshold: repeatedFamilyThreshold,
+      ),
+    );
+  }
+
   static List<PuzzleDefinition> puzzlesForLesson({
     required Lesson lesson,
     required AgeBandId ageBandId,
@@ -2157,6 +2281,44 @@ class FoundationCatalog {
 
   static ContentPlacementRule placementRuleFor(ContentPlacement placement) {
     return placementRules.firstWhere((rule) => rule.placement == placement);
+  }
+
+  static List<ContentFamilySummary> _repeatedFamilySummaries({
+    required int threshold,
+  }) {
+    final families = <String, List<PuzzleDefinition>>{};
+    for (final puzzle in allPuzzles) {
+      final familyId = _payloadFamilyId(puzzle.payloadRef);
+      families.putIfAbsent(familyId, () => []).add(puzzle);
+    }
+
+    final summaries = [
+      for (final entry in families.entries)
+        if (entry.value.length >= threshold)
+          ContentFamilySummary(
+            familyId: entry.key,
+            count: entry.value.length,
+            examplePayloadRefs: [
+              for (final puzzle in entry.value.take(4)) puzzle.payloadRef,
+            ],
+          ),
+    ];
+    return summaries
+      ..sort((first, second) {
+        final byCount = second.count.compareTo(first.count);
+        if (byCount != 0) {
+          return byCount;
+        }
+        return first.familyId.compareTo(second.familyId);
+      });
+  }
+
+  static String _payloadFamilyId(String payloadRef) {
+    final parts = payloadRef.split('.');
+    if (parts.length < 2) {
+      return payloadRef;
+    }
+    return '${parts[0]}.${parts[1]}';
   }
 
   static Lesson lessonForNode(MapNode node) {

@@ -1,0 +1,487 @@
+{
+  "totalPuzzleCount": 216,
+  "visualPuzzleCount": 200,
+  "visualCoveragePercent": 93,
+  "qualityGatePasses": true,
+  "hasBlockingIssues": false,
+  "coverage": {
+    "totalPuzzleCount": 216,
+    "countByAgeBand": {
+      "age4to5": 130,
+      "age6": 201,
+      "age7to8": 158
+    },
+    "countBySkill": {
+      "attention": 24,
+      "memory": 30,
+      "pattern": 23,
+      "classification": 29,
+      "arithmetic": 37,
+      "spatial": 31,
+      "reasoning": 42
+    },
+    "countByDifficulty": {
+      "easy": 72,
+      "normal": 71,
+      "hard": 58,
+      "boss": 15
+    },
+    "countByType": {
+      "oddOneOut": 15,
+      "sequenceComplete": 24,
+      "pairMatch": 2,
+      "categorySort": 14,
+      "pathPuzzle": 14,
+      "countBridge": 17,
+      "visualCompare": 24,
+      "analogy": 9,
+      "memoryGrid": 28,
+      "codeBreaker": 9,
+      "spatialRotation": 14,
+      "attentionScan": 23,
+      "rebus": 9,
+      "mixedBoss": 14
+    },
+    "countByAgeBandAndSkill": {
+      "age4to5": {
+        "attention": 14,
+        "memory": 18,
+        "pattern": 15,
+        "classification": 17,
+        "arithmetic": 23,
+        "spatial": 19,
+        "reasoning": 24
+      },
+      "age6": {
+        "attention": 22,
+        "memory": 28,
+        "pattern": 22,
+        "classification": 27,
+        "arithmetic": 35,
+        "spatial": 29,
+        "reasoning": 38
+      },
+      "age7to8": {
+        "attention": 17,
+        "memory": 22,
+        "pattern": 18,
+        "classification": 21,
+        "arithmetic": 28,
+        "spatial": 23,
+        "reasoning": 29
+      }
+    },
+    "minimumPerAgeBandSkill": 4,
+    "skillGaps": []
+  },
+  "placementRules": [
+    {
+      "placement": "mainRoute",
+      "minPuzzleCount": 5,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 5,
+      "description": "Standard learning path lesson with mixed practice.",
+      "preferredDifficulties": [
+        "easy",
+        "normal",
+        "hard"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "dailyChallenge",
+      "minPuzzleCount": 1,
+      "maxPuzzleCount": 1,
+      "defaultPuzzleCount": 1,
+      "description": "Short daily puzzle selected for fast streak practice.",
+      "preferredDifficulties": [
+        "easy",
+        "normal"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "adaptiveReview",
+      "minPuzzleCount": 3,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 5,
+      "description": "Review set built from recent mistakes and weak skills.",
+      "preferredDifficulties": [
+        "easy",
+        "normal",
+        "hard"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "bossNode",
+      "minPuzzleCount": 6,
+      "maxPuzzleCount": 8,
+      "defaultPuzzleCount": 7,
+      "description": "Mixed checkpoint lesson with harder multi-skill puzzles.",
+      "preferredDifficulties": [
+        "hard",
+        "boss"
+      ],
+      "preferredTypes": [
+        "mixedBoss",
+        "codeBreaker",
+        "analogy",
+        "pathPuzzle"
+      ]
+    },
+    {
+      "placement": "mistakeRepeat",
+      "minPuzzleCount": 1,
+      "maxPuzzleCount": 3,
+      "defaultPuzzleCount": 2,
+      "description": "Small repeat queue for missed puzzle families.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    },
+    {
+      "placement": "parentAnalytics",
+      "minPuzzleCount": 0,
+      "maxPuzzleCount": 0,
+      "defaultPuzzleCount": 0,
+      "description": "Reporting placement; puzzles contribute signals only.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    },
+    {
+      "placement": "rewardCollection",
+      "minPuzzleCount": 1,
+      "maxPuzzleCount": 1,
+      "defaultPuzzleCount": 1,
+      "description": "Special milestone puzzle that unlocks a reward moment.",
+      "preferredDifficulties": [
+        "normal",
+        "hard"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "ageTrack",
+      "minPuzzleCount": 5,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 5,
+      "description": "Age-band scoped content route.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    },
+    {
+      "placement": "weakSkillRecommendation",
+      "minPuzzleCount": 3,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 4,
+      "description": "Recommended practice for the weakest recent skill.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    }
+  ],
+  "issues": {
+    "skillGaps": [],
+    "lowTypeCoverage": {},
+    "puzzleIdsWithoutAssets": [
+      "puzzle.shape_path",
+      "puzzle.fruit_pattern",
+      "puzzle.toy_count",
+      "puzzle.odd_card",
+      "puzzle.memory_pairs",
+      "puzzle.lock_key",
+      "puzzle.shadow_match",
+      "puzzle.logic_train",
+      "puzzle.sticker_sum",
+      "puzzle.balance_scale",
+      "puzzle.code_grid",
+      "puzzle.number_bridge",
+      "puzzle.detail_count",
+      "puzzle.shape_rotation",
+      "puzzle.space_sequence",
+      "puzzle.shape_stack"
+    ],
+    "puzzleIdsWithoutHints": []
+  },
+  "repeatedFamilies": [
+    {
+      "familyId": "analogy.link",
+      "count": 9,
+      "examplePayloadRefs": [
+        "analogy.link.easy.001",
+        "analogy.link.easy.002",
+        "analogy.link.normal.003",
+        "analogy.link.normal.004"
+      ]
+    },
+    {
+      "familyId": "category.groups",
+      "count": 9,
+      "examplePayloadRefs": [
+        "category.groups.easy.001",
+        "category.groups.easy.002",
+        "category.groups.normal.003",
+        "category.groups.normal.004"
+      ]
+    },
+    {
+      "familyId": "compare.weight",
+      "count": 9,
+      "examplePayloadRefs": [
+        "compare.weight.easy.001",
+        "compare.weight.easy.002",
+        "compare.weight.normal.003",
+        "compare.weight.normal.004"
+      ]
+    },
+    {
+      "familyId": "focus.details",
+      "count": 9,
+      "examplePayloadRefs": [
+        "focus.details.easy.001",
+        "focus.details.easy.002",
+        "focus.details.normal.003",
+        "focus.details.normal.004"
+      ]
+    },
+    {
+      "familyId": "focus.tracker",
+      "count": 9,
+      "examplePayloadRefs": [
+        "focus.tracker.easy.001",
+        "focus.tracker.easy.002",
+        "focus.tracker.normal.003",
+        "focus.tracker.normal.004"
+      ]
+    },
+    {
+      "familyId": "logic.code",
+      "count": 9,
+      "examplePayloadRefs": [
+        "logic.code.easy.001",
+        "logic.code.easy.002",
+        "logic.code.normal.003",
+        "logic.code.normal.004"
+      ]
+    },
+    {
+      "familyId": "math.bridge",
+      "count": 9,
+      "examplePayloadRefs": [
+        "math.bridge.easy.001",
+        "math.bridge.easy.002",
+        "math.bridge.normal.003",
+        "math.bridge.normal.004"
+      ]
+    },
+    {
+      "familyId": "memory.order",
+      "count": 9,
+      "examplePayloadRefs": [
+        "memory.order.easy.001",
+        "memory.order.easy.002",
+        "memory.order.normal.003",
+        "memory.order.normal.004"
+      ]
+    },
+    {
+      "familyId": "memory.pairs",
+      "count": 9,
+      "examplePayloadRefs": [
+        "memory.pairs.easy.001",
+        "memory.pairs.easy.002",
+        "memory.pairs.normal.003",
+        "memory.pairs.normal.004"
+      ]
+    },
+    {
+      "familyId": "mixed.boss",
+      "count": 9,
+      "examplePayloadRefs": [
+        "mixed.boss.easy.001",
+        "mixed.boss.easy.002",
+        "mixed.boss.normal.003",
+        "mixed.boss.normal.004"
+      ]
+    },
+    {
+      "familyId": "pattern.trail",
+      "count": 9,
+      "examplePayloadRefs": [
+        "pattern.trail.easy.001",
+        "pattern.trail.easy.002",
+        "pattern.trail.normal.003",
+        "pattern.trail.normal.004"
+      ]
+    },
+    {
+      "familyId": "rebus.picture",
+      "count": 9,
+      "examplePayloadRefs": [
+        "rebus.picture.easy.001",
+        "rebus.picture.easy.002",
+        "rebus.picture.normal.003",
+        "rebus.picture.normal.004"
+      ]
+    },
+    {
+      "familyId": "route.path",
+      "count": 9,
+      "examplePayloadRefs": [
+        "route.path.easy.001",
+        "route.path.easy.002",
+        "route.path.normal.003",
+        "route.path.normal.004"
+      ]
+    },
+    {
+      "familyId": "sort.odd",
+      "count": 9,
+      "examplePayloadRefs": [
+        "sort.odd.easy.001",
+        "sort.odd.easy.002",
+        "sort.odd.normal.003",
+        "sort.odd.normal.004"
+      ]
+    },
+    {
+      "familyId": "space.turn",
+      "count": 9,
+      "examplePayloadRefs": [
+        "space.turn.easy.001",
+        "space.turn.easy.002",
+        "space.turn.normal.003",
+        "space.turn.normal.004"
+      ]
+    },
+    {
+      "familyId": "curated.group-compare",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.group-compare.001",
+        "curated.group-compare.002",
+        "curated.group-compare.003",
+        "curated.group-compare.004"
+      ]
+    },
+    {
+      "familyId": "curated.logic-scales",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.logic-scales.001",
+        "curated.logic-scales.002",
+        "curated.logic-scales.003",
+        "curated.logic-scales.004"
+      ]
+    },
+    {
+      "familyId": "curated.memory-order",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.memory-order.001",
+        "curated.memory-order.002",
+        "curated.memory-order.003",
+        "curated.memory-order.004"
+      ]
+    },
+    {
+      "familyId": "curated.mixed-boss",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.mixed-boss.001",
+        "curated.mixed-boss.002",
+        "curated.mixed-boss.003",
+        "curated.mixed-boss.004"
+      ]
+    },
+    {
+      "familyId": "curated.object-count",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.object-count.001",
+        "curated.object-count.002",
+        "curated.object-count.003",
+        "curated.object-count.004"
+      ]
+    },
+    {
+      "familyId": "curated.object-sort",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.object-sort.001",
+        "curated.object-sort.002",
+        "curated.object-sort.003",
+        "curated.object-sort.004"
+      ]
+    },
+    {
+      "familyId": "curated.odd-one-out",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.odd-one-out.001",
+        "curated.odd-one-out.002",
+        "curated.odd-one-out.003",
+        "curated.odd-one-out.004"
+      ]
+    },
+    {
+      "familyId": "curated.pair-match",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.pair-match.001",
+        "curated.pair-match.002",
+        "curated.pair-match.003",
+        "curated.pair-match.004"
+      ]
+    },
+    {
+      "familyId": "curated.route-build",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.route-build.001",
+        "curated.route-build.002",
+        "curated.route-build.003",
+        "curated.route-build.004"
+      ]
+    },
+    {
+      "familyId": "curated.rule-detect",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.rule-detect.001",
+        "curated.rule-detect.002",
+        "curated.rule-detect.003",
+        "curated.rule-detect.004"
+      ]
+    },
+    {
+      "familyId": "curated.sequence-complete",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.sequence-complete.001",
+        "curated.sequence-complete.002",
+        "curated.sequence-complete.003",
+        "curated.sequence-complete.004"
+      ]
+    },
+    {
+      "familyId": "curated.shadow-match",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.shadow-match.001",
+        "curated.shadow-match.002",
+        "curated.shadow-match.003",
+        "curated.shadow-match.004"
+      ]
+    },
+    {
+      "familyId": "curated.shape-rotation",
+      "count": 5,
+      "examplePayloadRefs": [
+        "curated.shape-rotation.001",
+        "curated.shape-rotation.002",
+        "curated.shape-rotation.003",
+        "curated.shape-rotation.004"
+      ]
+    }
+  ]
+}

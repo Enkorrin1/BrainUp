@@ -140,6 +140,27 @@ void main() {
       expect(focusTrackerVisual['interactionType'], 'tapChoice');
     });
 
+    test('content dashboard report exposes quality and saturation signals', () {
+      final dashboard = FoundationCatalog.contentDashboardReport();
+      final json = jsonDecode(jsonEncode(dashboard.toJson()))
+          as Map<String, Object?>;
+      final issues = json['issues'] as Map<String, Object?>;
+      final repeatedFamilies = json['repeatedFamilies'] as List<Object?>;
+
+      expect(dashboard.totalPuzzleCount, FoundationCatalog.allPuzzles.length);
+      expect(dashboard.visualPuzzleCount, greaterThanOrEqualTo(200));
+      expect(dashboard.visualCoveragePercent, greaterThanOrEqualTo(90));
+      expect(dashboard.qualityGatePasses, isTrue);
+      expect(dashboard.skillGaps, isEmpty);
+      expect(dashboard.lowTypeCoverage, isEmpty);
+      expect(issues['puzzleIdsWithoutHints'], isEmpty);
+      expect(repeatedFamilies, isNotEmpty);
+      expect(
+        repeatedFamilies.cast<Map<String, Object?>>().first,
+        containsPair('familyId', isA<String>()),
+      );
+    });
+
     test('curated rich puzzle pack covers first-pack P0 families', () {
       final curatedPuzzles = CuratedRichPuzzlePack.puzzles;
       final countsByFamily = <String, int>{};

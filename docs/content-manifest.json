@@ -98,6 +98,238 @@
     ],
     "visualPuzzleCount": 200
   },
+  "placementRules": [
+    {
+      "placement": "mainRoute",
+      "minPuzzleCount": 5,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 5,
+      "description": "Standard learning path lesson with mixed practice.",
+      "preferredDifficulties": [
+        "easy",
+        "normal",
+        "hard"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "dailyChallenge",
+      "minPuzzleCount": 1,
+      "maxPuzzleCount": 1,
+      "defaultPuzzleCount": 1,
+      "description": "Short daily puzzle selected for fast streak practice.",
+      "preferredDifficulties": [
+        "easy",
+        "normal"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "adaptiveReview",
+      "minPuzzleCount": 3,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 5,
+      "description": "Review set built from recent mistakes and weak skills.",
+      "preferredDifficulties": [
+        "easy",
+        "normal",
+        "hard"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "bossNode",
+      "minPuzzleCount": 6,
+      "maxPuzzleCount": 8,
+      "defaultPuzzleCount": 7,
+      "description": "Mixed checkpoint lesson with harder multi-skill puzzles.",
+      "preferredDifficulties": [
+        "hard",
+        "boss"
+      ],
+      "preferredTypes": [
+        "mixedBoss",
+        "codeBreaker",
+        "analogy",
+        "pathPuzzle"
+      ]
+    },
+    {
+      "placement": "mistakeRepeat",
+      "minPuzzleCount": 1,
+      "maxPuzzleCount": 3,
+      "defaultPuzzleCount": 2,
+      "description": "Small repeat queue for missed puzzle families.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    },
+    {
+      "placement": "parentAnalytics",
+      "minPuzzleCount": 0,
+      "maxPuzzleCount": 0,
+      "defaultPuzzleCount": 0,
+      "description": "Reporting placement; puzzles contribute signals only.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    },
+    {
+      "placement": "rewardCollection",
+      "minPuzzleCount": 1,
+      "maxPuzzleCount": 1,
+      "defaultPuzzleCount": 1,
+      "description": "Special milestone puzzle that unlocks a reward moment.",
+      "preferredDifficulties": [
+        "normal",
+        "hard"
+      ],
+      "preferredTypes": []
+    },
+    {
+      "placement": "ageTrack",
+      "minPuzzleCount": 5,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 5,
+      "description": "Age-band scoped content route.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    },
+    {
+      "placement": "weakSkillRecommendation",
+      "minPuzzleCount": 3,
+      "maxPuzzleCount": 5,
+      "defaultPuzzleCount": 4,
+      "description": "Recommended practice for the weakest recent skill.",
+      "preferredDifficulties": [],
+      "preferredTypes": []
+    }
+  ],
+  "lessonPlacements": [
+    {
+      "lessonId": "lesson.001",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.002",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.003",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.004",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.005",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.006",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.007",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.008",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.009",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.010",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.011",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.012",
+      "placement": "bossNode",
+      "defaultPuzzleCount": 7
+    },
+    {
+      "lessonId": "lesson.013",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.014",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.015",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.016",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.017",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.018",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.019",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.020",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.021",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.022",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.023",
+      "placement": "mainRoute",
+      "defaultPuzzleCount": 5
+    },
+    {
+      "lessonId": "lesson.024",
+      "placement": "bossNode",
+      "defaultPuzzleCount": 7
+    },
+    {
+      "lessonId": "lesson.review.adaptive",
+      "placement": "adaptiveReview",
+      "defaultPuzzleCount": 5
+    }
+  ],
   "puzzles": [
     {
       "id": "puzzle.shape_path",
