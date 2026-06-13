@@ -1,4 +1,5 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:brain_up/src/domain/family_profile.dart';
 import 'package:brain_up/src/domain/learning_foundation.dart';
 
 void main() {
@@ -111,6 +112,37 @@ void main() {
       expect(
         puzzles.map((puzzle) => puzzle.type).toSet().length,
         greaterThanOrEqualTo(4),
+      );
+    });
+    test('lesson generator uses review signals from recent practice', () {
+      final lesson = FoundationCatalog.lessonForId('lesson.010');
+      final reviewProfile = PracticeReviewProfile.fromSessions([
+        PracticeSession(
+          completedAt: DateTime(2026, 6, 12, 18),
+          challengeId: 'lesson.009',
+          challengeTitle: 'Hard memory lesson',
+          skill: 'Working memory',
+          minutes: 5,
+          correctAnswers: 2,
+          totalQuestions: 5,
+          wrongAttempts: 2,
+          mistakePuzzleIds: ['memory.order.normal.003'],
+        ),
+      ]);
+      final puzzles = FoundationCatalog.puzzlesForLesson(
+        lesson: lesson,
+        ageBandId: AgeBandId.age6,
+        reviewProfile: reviewProfile,
+      );
+
+      expect(puzzles.length, 5);
+      expect(
+        puzzles.map((puzzle) => puzzle.payloadRef),
+        contains('memory.order.normal.003'),
+      );
+      expect(
+        puzzles.any((puzzle) => puzzle.skillTag == SkillTag.memory),
+        isTrue,
       );
     });
   });

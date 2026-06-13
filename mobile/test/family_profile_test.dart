@@ -29,6 +29,7 @@ void main() {
             totalQuestions: 4,
             usedHints: 1,
             wrongAttempts: 2,
+            mistakePuzzleIds: ['shape-path'],
           ),
         ],
       );
@@ -42,6 +43,7 @@ void main() {
       expect(restored.lastSession?.totalQuestions, 4);
       expect(restored.lastSession?.usedHints, 1);
       expect(restored.lastSession?.wrongAttempts, 2);
+      expect(restored.lastSession?.mistakePuzzleIds, ['shape-path']);
     });
 
     test('restores old saved profile with default progress fields', () {
@@ -76,6 +78,7 @@ void main() {
       expect(session.totalQuestions, 1);
       expect(session.usedHints, 0);
       expect(session.wrongAttempts, 0);
+      expect(session.mistakePuzzleIds, isEmpty);
     });
 
     test('migrates legacy map nodes into completed lesson ids', () {

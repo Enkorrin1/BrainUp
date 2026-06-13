@@ -15,6 +15,8 @@ Current implementation notes:
   (`docs/content-stage-3-status.md`).
 - Stage 4: content bank expansion and balanced lesson delivery
   (`docs/content-stage-4-status.md`).
+- Stage 5: review-aware delivery from practice history
+  (`docs/content-stage-5-status.md`).
 
 ## Content Architecture
 

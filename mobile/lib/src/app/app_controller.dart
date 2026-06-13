@@ -124,6 +124,7 @@ class AppController extends ChangeNotifier {
     int totalQuestions = 1,
     int usedHints = 0,
     int wrongAttempts = 0,
+    List<String> mistakePuzzleIds = const [],
   }) async {
     final currentProfile = _familyProfile;
     if (currentProfile == null) {
@@ -150,6 +151,7 @@ class AppController extends ChangeNotifier {
       totalQuestions: totalQuestions,
       usedHints: usedHints,
       wrongAttempts: wrongAttempts,
+      mistakePuzzleIds: mistakePuzzleIds,
     );
     final completedMapNodeIds = [
       ...activeChild.completedMapNodeIds,

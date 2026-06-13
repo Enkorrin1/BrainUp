@@ -1,3 +1,5 @@
+import 'family_profile.dart';
+
 enum AgeBandId {
   age4to5,
   age6,
@@ -270,6 +272,60 @@ class ChildProgress {
   final String? lastPlayedAtIso8601;
 
   int get starsForLevelMap => stars;
+}
+
+class PracticeReviewProfile {
+  const PracticeReviewProfile({
+    this.mistakePuzzleIds = const [],
+    this.weakSkillTags = const [],
+  });
+
+  final List<String> mistakePuzzleIds;
+  final List<SkillTag> weakSkillTags;
+
+  bool get hasSignals {
+    return mistakePuzzleIds.isNotEmpty || weakSkillTags.isNotEmpty;
+  }
+
+  static PracticeReviewProfile fromSessions(
+    List<PracticeSession> sessions, {
+    int maxSessions = 12,
+  }) {
+    if (sessions.isEmpty) {
+      return const PracticeReviewProfile();
+    }
+
+    final recentSessions = [
+      ...sessions
+    ]..sort((first, second) => second.completedAt.compareTo(first.completedAt));
+    final mistakes = <String>[];
+    final weakSkills = <SkillTag>{};
+
+    for (final session in recentSessions.take(maxSessions)) {
+      for (final puzzleId in session.mistakePuzzleIds) {
+        if (!mistakes.contains(puzzleId)) {
+          mistakes.add(puzzleId);
+        }
+      }
+
+      final accuracy = session.totalQuestions == 0
+          ? 1.0
+          : session.correctAnswers / session.totalQuestions;
+      if (accuracy < 0.8 ||
+          session.wrongAttempts > 0 ||
+          session.usedHints > 1) {
+        final skillTag = _skillTagForSessionSkill(session.skill);
+        if (skillTag != null) {
+          weakSkills.add(skillTag);
+        }
+      }
+    }
+
+    return PracticeReviewProfile(
+      mistakePuzzleIds: mistakes.take(6).toList(growable: false),
+      weakSkillTags: weakSkills.toList(growable: false),
+    );
+  }
 }
 
 class FoundationCatalog {
@@ -1469,6 +1525,7 @@ class FoundationCatalog {
     required Lesson lesson,
     required AgeBandId ageBandId,
     int targetCount = 5,
+    PracticeReviewProfile reviewProfile = const PracticeReviewProfile(),
   }) {
     final fixedPuzzles = [
       for (final step in stepsForLesson(lesson)) puzzleForStep(step),
@@ -1521,19 +1578,37 @@ class FoundationCatalog {
       puzzlesFor(ageBandId: ageBandId, difficulty: targetDifficulty),
       lessonNumber * 3,
     );
+    final reviewMistakes = _rotated(
+      _reviewMistakePuzzles(
+        ageBandId: ageBandId,
+        reviewProfile: reviewProfile,
+      ),
+      lessonNumber * 4,
+    );
+    final weakSkillReview = _rotated(
+      _weakSkillPuzzles(
+        ageBandId: ageBandId,
+        reviewProfile: reviewProfile,
+      ),
+      lessonNumber * 5,
+    );
     final adjacent = _rotated(
       puzzlesFor(ageBandId: ageBandId)
           .where((puzzle) => puzzle.skillTag != primarySkill)
           .toList(growable: false),
-      lessonNumber * 4,
+      lessonNumber * 6,
     );
     final ageBandPool = _rotated(
       puzzlesFor(ageBandId: ageBandId),
-      lessonNumber * 5,
+      lessonNumber * 7,
     );
 
     final pools = [
-      fixedPuzzles.take(2).toList(growable: false),
+      fixedPuzzles
+          .take(reviewProfile.hasSignals ? 1 : 2)
+          .toList(growable: false),
+      reviewMistakes,
+      weakSkillReview,
       primaryDifficulty,
       primarySkillPool,
       difficultyMatch,
@@ -1634,6 +1709,74 @@ class FoundationCatalog {
 
     return true;
   }
+
+  static List<PuzzleDefinition> _reviewMistakePuzzles({
+    required AgeBandId ageBandId,
+    required PracticeReviewProfile reviewProfile,
+  }) {
+    if (reviewProfile.mistakePuzzleIds.isEmpty) {
+      return const [];
+    }
+
+    return [
+      for (final puzzleId in reviewProfile.mistakePuzzleIds)
+        ...allPuzzles.where(
+          (puzzle) =>
+              puzzle.ageBandIds.contains(ageBandId) &&
+              (puzzle.id == puzzleId || puzzle.payloadRef == puzzleId),
+        ),
+    ];
+  }
+
+  static List<PuzzleDefinition> _weakSkillPuzzles({
+    required AgeBandId ageBandId,
+    required PracticeReviewProfile reviewProfile,
+  }) {
+    if (reviewProfile.weakSkillTags.isEmpty) {
+      return const [];
+    }
+
+    return [
+      for (final puzzle in puzzlesFor(ageBandId: ageBandId))
+        if (reviewProfile.weakSkillTags.contains(puzzle.skillTag)) puzzle,
+    ];
+  }
+}
+
+SkillTag? _skillTagForSessionSkill(String skill) {
+  final normalized = skill.toLowerCase();
+  if (normalized.contains('focus') ||
+      normalized.contains('attention') ||
+      normalized.contains('detail')) {
+    return SkillTag.attention;
+  }
+  if (normalized.contains('memory')) {
+    return SkillTag.memory;
+  }
+  if (normalized.contains('pattern') || normalized.contains('sequence')) {
+    return SkillTag.pattern;
+  }
+  if (normalized.contains('classification') ||
+      normalized.contains('sort') ||
+      normalized.contains('comparison')) {
+    return SkillTag.classification;
+  }
+  if (normalized.contains('math') ||
+      normalized.contains('count') ||
+      normalized.contains('addition')) {
+    return SkillTag.arithmetic;
+  }
+  if (normalized.contains('spatial') ||
+      normalized.contains('space') ||
+      normalized.contains('rotation')) {
+    return SkillTag.spatial;
+  }
+  if (normalized.contains('logic') ||
+      normalized.contains('deduction') ||
+      normalized.contains('reason')) {
+    return SkillTag.reasoning;
+  }
+  return null;
 }
 
 class ContentBank {

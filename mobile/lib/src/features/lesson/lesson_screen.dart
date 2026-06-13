@@ -35,6 +35,7 @@ class LessonScreen extends StatefulWidget {
     int totalQuestions,
     int usedHints,
     int wrongAttempts,
+    List<String> mistakePuzzleIds,
   }) onLessonComplete;
   final VoidCallback onBackToMap;
   final ValueChanged<String> onNextLessonSelected;
@@ -53,6 +54,7 @@ class _LessonScreenState extends State<LessonScreen> {
   bool _isSaving = false;
   bool _showHint = false;
   final Set<int> _hintedStepIndexes = <int>{};
+  final Set<String> _mistakePuzzleIds = <String>{};
   int _wrongAttempts = 0;
 
   @override
@@ -144,6 +146,9 @@ class _LessonScreenState extends State<LessonScreen> {
     final puzzles = FoundationCatalog.puzzlesForLesson(
       lesson: lesson,
       ageBandId: _ageBandIdForChild(child),
+      reviewProfile: PracticeReviewProfile.fromSessions(
+        child.practiceSessions,
+      ),
     );
     return [
       for (final puzzle in puzzles) dailyChallengeForPuzzle(puzzle, child.age),
@@ -244,6 +249,7 @@ class _LessonScreenState extends State<LessonScreen> {
           totalQuestions: challenges.length,
           usedHints: _hintedStepIndexes.length,
           wrongAttempts: _wrongAttempts,
+          mistakePuzzleIds: _mistakePuzzleIds.toList(growable: false),
         );
         if (!mounted) {
           return;
@@ -276,6 +282,7 @@ class _LessonScreenState extends State<LessonScreen> {
       _isCorrect = isCorrect;
       if (!isCorrect) {
         _wrongAttempts += 1;
+        _mistakePuzzleIds.add(challenge.id);
         _showHint = true;
         _hintedStepIndexes.add(_stepIndex);
       }

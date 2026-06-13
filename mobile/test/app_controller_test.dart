@@ -154,6 +154,7 @@ void main() {
         totalQuestions: 3,
         usedHints: 1,
         wrongAttempts: 2,
+        mistakePuzzleIds: ['shape-path', 'toy-count'],
       );
       await controller.completeLesson(
         lessonId: 'lesson.001',
@@ -174,6 +175,10 @@ void main() {
       expect(savedProfile?.practiceSessions.first.totalQuestions, 3);
       expect(savedProfile?.practiceSessions.first.usedHints, 1);
       expect(savedProfile?.practiceSessions.first.wrongAttempts, 2);
+      expect(savedProfile?.practiceSessions.first.mistakePuzzleIds, [
+        'shape-path',
+        'toy-count',
+      ]);
     });
 
     test('starts a new streak when yesterday was missed', () async {

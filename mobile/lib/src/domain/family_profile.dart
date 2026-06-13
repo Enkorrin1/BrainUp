@@ -1,4 +1,4 @@
-﻿enum ChildAge {
+enum ChildAge {
   four(4, '4 года'),
   five(5, '5 лет'),
   six(6, '6 лет'),
@@ -116,6 +116,7 @@ class PracticeSession {
     this.totalQuestions = 1,
     this.usedHints = 0,
     this.wrongAttempts = 0,
+    this.mistakePuzzleIds = const [],
   });
 
   final DateTime completedAt;
@@ -127,6 +128,7 @@ class PracticeSession {
   final int totalQuestions;
   final int usedHints;
   final int wrongAttempts;
+  final List<String> mistakePuzzleIds;
 
   bool completedOn(DateTime date) {
     return _dateOnly(completedAt) == _dateOnly(date);
@@ -143,6 +145,7 @@ class PracticeSession {
       'totalQuestions': totalQuestions,
       'usedHints': usedHints,
       'wrongAttempts': wrongAttempts,
+      'mistakePuzzleIds': mistakePuzzleIds,
     };
   }
 
@@ -157,6 +160,9 @@ class PracticeSession {
       totalQuestions: _intFromJson(json['totalQuestions'], fallback: 1),
       usedHints: _intFromJson(json['usedHints']),
       wrongAttempts: _intFromJson(json['wrongAttempts']),
+      mistakePuzzleIds: (json['mistakePuzzleIds'] as List<Object?>? ?? const [])
+          .whereType<String>()
+          .toList(growable: false),
     );
   }
 
@@ -173,7 +179,8 @@ class PracticeSession {
             correctAnswers == other.correctAnswers &&
             totalQuestions == other.totalQuestions &&
             usedHints == other.usedHints &&
-            wrongAttempts == other.wrongAttempts;
+            wrongAttempts == other.wrongAttempts &&
+            _listEquals(mistakePuzzleIds, other.mistakePuzzleIds);
   }
 
   @override
@@ -188,6 +195,7 @@ class PracticeSession {
       totalQuestions,
       usedHints,
       wrongAttempts,
+      Object.hashAll(mistakePuzzleIds),
     );
   }
 }
