@@ -1,6 +1,7 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/domain/daily_challenge.dart';
 import 'package:brain_up/src/domain/family_profile.dart';
+import 'package:brain_up/src/domain/learning_foundation.dart';
 
 void main() {
   group('DailyChallenge', () {
@@ -80,6 +81,34 @@ void main() {
         dailyChallengeById('shape-rotation', age: ChildAge.five).id,
         'shape-rotation',
       );
+    });
+
+    test('turns generated puzzle definitions into concrete challenges', () {
+      final puzzle = FoundationCatalog.puzzlesFor(
+        skillTag: SkillTag.reasoning,
+        difficulty: PuzzleDifficulty.boss,
+      ).first;
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+
+      expect(challenge.id, puzzle.payloadRef);
+      expect(
+        challenge.choices.map((choice) => choice.id),
+        contains(challenge.correctChoiceId),
+      );
+      expect(challenge.question, isNot(contains('Which option fits')));
+      expect(challenge.choices.map((choice) => choice.label).toSet().length, 3);
+    });
+
+    test('generated variants produce different questions in one family', () {
+      final variants = FoundationCatalog.puzzlesFor(
+        skillTag: SkillTag.pattern,
+      )
+          .where((puzzle) => puzzle.payloadRef.startsWith('pattern.trail.'))
+          .take(3)
+          .map((puzzle) => dailyChallengeForPuzzle(puzzle, ChildAge.six))
+          .toList();
+
+      expect(variants.map((challenge) => challenge.question).toSet().length, 3);
     });
   });
 }

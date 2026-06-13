@@ -115,24 +115,20 @@ DailyChallenge dailyChallengeForPuzzle(
   final skill = _skillTitleForPuzzle(puzzle.skillTag);
   final typeTitle = _titleForPuzzleType(puzzle.type);
   final difficulty = _difficultyTitle(puzzle.difficulty);
-  final correctId = puzzle.correctAnswerKey;
+  final generated = _generatedPuzzleData(puzzle);
 
   return DailyChallenge(
     id: puzzle.payloadRef,
     title: '$typeTitle: $difficulty',
-    prompt: _promptForPuzzle(puzzle),
-    question: _questionForPuzzle(puzzle, skill),
+    prompt: generated.prompt,
+    question: generated.question,
     skill: skill,
     goal: _goalForSkill(puzzle.skillTag),
     minutes: _minutesForDifficulty(puzzle.difficulty),
-    correctChoiceId: correctId,
-    hint: _hintForPuzzle(puzzle, skill),
-    explanation: _explanationForPuzzle(puzzle, skill),
-    choices: [
-      ChallengeChoice(id: correctId, label: _choiceLabel(correctId)),
-      const ChallengeChoice(id: 'almost', label: 'Почти'),
-      const ChallengeChoice(id: 'different', label: 'Другое'),
-    ],
+    correctChoiceId: generated.correctChoiceId,
+    hint: generated.hint,
+    explanation: generated.explanation,
+    choices: generated.choices,
   );
 }
 
@@ -147,41 +143,41 @@ List<DailyChallenge> dailyChallengesByIds(
 
 String _skillTitleForPuzzle(SkillTag skillTag) {
   return switch (skillTag) {
-    SkillTag.attention => 'Внимание',
-    SkillTag.memory => 'Рабочая память',
-    SkillTag.pattern => 'Закономерности',
-    SkillTag.classification => 'Сравнение',
-    SkillTag.arithmetic => 'Математическое мышление',
-    SkillTag.spatial => 'Пространственное мышление',
-    SkillTag.reasoning => 'Логика и дедукция',
+    SkillTag.attention => 'Focus',
+    SkillTag.memory => 'Working memory',
+    SkillTag.pattern => 'Patterns',
+    SkillTag.classification => 'Classification',
+    SkillTag.arithmetic => 'Math thinking',
+    SkillTag.spatial => 'Spatial thinking',
+    SkillTag.reasoning => 'Logic and deduction',
   };
 }
 
 String _titleForPuzzleType(PuzzleType type) {
   return switch (type) {
-    PuzzleType.oddOneOut => 'Лишний элемент',
-    PuzzleType.sequenceComplete => 'Продолжи ряд',
-    PuzzleType.pairMatch => 'Найди пару',
-    PuzzleType.categorySort => 'Сортировка',
-    PuzzleType.pathPuzzle => 'Маршрут',
-    PuzzleType.countBridge => 'Числовой мост',
-    PuzzleType.visualCompare => 'Сравнение',
-    PuzzleType.analogy => 'Аналогия',
-    PuzzleType.memoryGrid => 'Память',
-    PuzzleType.codeBreaker => 'Код',
-    PuzzleType.spatialRotation => 'Поворот',
-    PuzzleType.attentionScan => 'Детали',
-    PuzzleType.rebus => 'Ребус',
-    PuzzleType.mixedBoss => 'Босс-задача',
+    PuzzleType.oddOneOut => 'Odd one out',
+    PuzzleType.sequenceComplete => 'Pattern trail',
+    PuzzleType.pairMatch => 'Pair match',
+    PuzzleType.categorySort => 'Sorting',
+    PuzzleType.pathPuzzle => 'Route puzzle',
+    PuzzleType.countBridge => 'Number bridge',
+    PuzzleType.visualCompare => 'Visual compare',
+    PuzzleType.analogy => 'Analogy',
+    PuzzleType.memoryGrid => 'Memory grid',
+    PuzzleType.codeBreaker => 'Code breaker',
+    PuzzleType.spatialRotation => 'Shape turn',
+    PuzzleType.attentionScan => 'Detail scan',
+    PuzzleType.rebus => 'Rebus',
+    PuzzleType.mixedBoss => 'Boss puzzle',
   };
 }
 
 String _difficultyTitle(PuzzleDifficulty difficulty) {
   return switch (difficulty) {
-    PuzzleDifficulty.easy => 'разминка',
-    PuzzleDifficulty.normal => 'уровень',
-    PuzzleDifficulty.hard => 'вызов',
-    PuzzleDifficulty.boss => 'финал',
+    PuzzleDifficulty.easy => 'warm-up',
+    PuzzleDifficulty.normal => 'level',
+    PuzzleDifficulty.hard => 'challenge',
+    PuzzleDifficulty.boss => 'final',
   };
 }
 
@@ -202,56 +198,237 @@ int _minutesForDifficulty(PuzzleDifficulty difficulty) {
   };
 }
 
-String _promptForPuzzle(PuzzleDefinition puzzle) {
+_GeneratedPuzzleData _generatedPuzzleData(PuzzleDefinition puzzle) {
+  final variant = _payloadVariant(puzzle.payloadRef);
   return switch (puzzle.type) {
-    PuzzleType.sequenceComplete =>
-      'Найди правило и продолжи последовательность.',
-    PuzzleType.memoryGrid => 'Удержи связь в памяти и выбери правильную пару.',
-    PuzzleType.countBridge => 'Собери число из маленьких частей.',
-    PuzzleType.attentionScan => 'Посмотри внимательно и сравни детали.',
-    PuzzleType.codeBreaker => 'Раскрой правило кода.',
-    PuzzleType.spatialRotation => 'Представь, как фигура повернулась.',
-    PuzzleType.oddOneOut => 'Найди элемент, который отличается от остальных.',
-    PuzzleType.mixedBoss => 'Соедини несколько правил в одном решении.',
-    _ => 'Реши короткую головоломку BrainUp.',
+    PuzzleType.sequenceComplete => _patternTrailData(variant),
+    PuzzleType.memoryGrid => _memoryGridData(variant),
+    PuzzleType.countBridge => _mathBridgeData(variant),
+    PuzzleType.attentionScan => _focusDetailsData(variant),
+    PuzzleType.codeBreaker => _logicCodeData(variant),
+    PuzzleType.spatialRotation => _spaceTurnData(variant),
+    PuzzleType.oddOneOut => _sortOddData(variant),
+    PuzzleType.mixedBoss => _mixedBossData(variant),
+    _ => _fallbackPuzzleData(puzzle),
   };
 }
 
-String _questionForPuzzle(PuzzleDefinition puzzle, String skill) {
-  return switch (puzzle.type) {
-    PuzzleType.mixedBoss =>
-      'Босс-уровень: какой вариант лучше всего завершает задачу на $skill?',
-    PuzzleType.memoryGrid => 'Какая карточка образует правильную пару?',
-    PuzzleType.codeBreaker => 'Какой ответ подходит к скрытому правилу?',
-    PuzzleType.countBridge => 'Какой вариант собирает нужное число?',
-    PuzzleType.spatialRotation =>
-      'Какой вариант сохраняет форму после поворота?',
-    _ => 'Какой вариант подходит для навыка "$skill"?',
-  };
+int _payloadVariant(String payloadRef) {
+  final parts = payloadRef.split('.');
+  return int.tryParse(parts.last) ?? 1;
 }
 
-String _hintForPuzzle(PuzzleDefinition puzzle, String skill) {
-  return 'Сначала найди главное правило: это задача на $skill. '
-      'Отбрось вариант, который нарушает порядок.';
+_GeneratedPuzzleData _patternTrailData(int variant) {
+  final options = [
+    ('moon, star, moon, star, ?', 'moon', ['moon', 'star', 'rocket']),
+    ('red, blue, red, blue, ?', 'red', ['green', 'red', 'blue']),
+    ('2, 4, 2, 4, ?', '2', ['2', '4', '6']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Find the repeating rule.',
+    question: '${data.$1} What comes next?',
+    correctChoiceId: data.$2,
+    hint: 'Look for the smallest group that repeats.',
+    explanation: 'The answer keeps the same repeating pattern.',
+    choices: _choices(data.$3),
+  );
 }
 
-String _explanationForPuzzle(PuzzleDefinition puzzle, String skill) {
-  return 'Правильный ответ сохраняет правило задачи на $skill. '
-      'Такой формат помогает тренировать навык постепенно.';
+_GeneratedPuzzleData _memoryGridData(int variant) {
+  final options = [
+    ('Key goes with...', 'lock', ['lock', 'cloud', 'shoe']),
+    ('Rain goes with...', 'cloud', ['shoe', 'cloud', 'key']),
+    ('Foot goes with...', 'shoe', ['lock', 'shoe', 'star']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Remember the matching pair.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Think about which two objects are used together.',
+    explanation: 'The correct pair has a real connection.',
+    choices: _choices(data.$3),
+  );
 }
 
-String _choiceLabel(String choiceId) {
-  return switch (choiceId) {
-    'next' => 'Следующий',
-    'pair' => 'Пара',
-    'sum' => 'Сумма',
-    'detail' => 'Деталь',
-    'rule' => 'Правило',
-    'same' => 'Та же форма',
-    'odd' => 'Лишний',
-    'boss' => 'Решение',
-    _ => choiceId,
-  };
+_GeneratedPuzzleData _mathBridgeData(int variant) {
+  final options = [
+    ('Make 8 using two parts.', '5+3', ['5+3', '4+1', '6+1']),
+    ('Make 9 using two parts.', '4+5', ['3+4', '4+5', '2+6']),
+    ('Make 10 using two parts.', '7+3', ['7+3', '5+2', '6+2']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Build the target number.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Add both parts and compare with the target.',
+    explanation: 'Only the correct pair reaches the target number.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _focusDetailsData(int variant) {
+  final options = [
+    (
+      '3 red circles, 2 blue squares, 1 green star. Most?',
+      'red circles',
+      ['blue squares', 'red circles', 'green star']
+    ),
+    (
+      '2 rockets, 4 planets, 3 stars. Most?',
+      'planets',
+      ['rockets', 'stars', 'planets']
+    ),
+    (
+      '5 small dots, 3 big dots, 4 lines. Most?',
+      'small dots',
+      ['big dots', 'small dots', 'lines']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Scan the details carefully.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Compare the counts one group at a time.',
+    explanation: 'The correct group has the largest count.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _logicCodeData(int variant) {
+  final options = [
+    ('2 -> 4, 3 -> 6, 5 -> ?', '10', ['8', '10', '12']),
+    ('1 -> 3, 2 -> 4, 6 -> ?', '8', ['7', '8', '9']),
+    ('9 -> 6, 7 -> 4, 5 -> ?', '2', ['2', '3', '4']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Break the number code.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Find what changes from left to right.',
+    explanation: 'The same rule is applied to every number.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _spaceTurnData(int variant) {
+  final options = [
+    (
+      'A triangle turns right. What stays true?',
+      'same shape',
+      ['same shape', 'circle', 'square']
+    ),
+    (
+      'A rocket turns upside down. What is it still?',
+      'rocket',
+      ['planet', 'rocket', 'star']
+    ),
+    (
+      'A square spins once. What changes?',
+      'direction only',
+      ['size', 'direction only', 'shape type']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Imagine the object turning.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'A turn changes direction, not the object identity.',
+    explanation: 'The object keeps its shape after rotation.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _sortOddData(int variant) {
+  final options = [
+    ('apple, pear, banana, rocket', 'rocket', ['apple', 'rocket', 'pear']),
+    ('circle, square, triangle, shoe', 'shoe', ['shoe', 'circle', 'square']),
+    ('lock, key, door, banana', 'banana', ['key', 'banana', 'lock']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Find what does not belong.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Three items share one idea. One does not.',
+    explanation: 'The odd item breaks the group rule.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _mixedBossData(int variant) {
+  final options = [
+    ('Pattern + math: 2, 4, 6, ? and target is even.', '8', ['7', '8', '9']),
+    (
+      'Memory + logic: key pairs with lock, shoe pairs with ?',
+      'foot',
+      ['cloud', 'foot', 'planet']
+    ),
+    (
+      'Focus + sorting: 4 stars, 2 stars, 3 circles. Choose most stars.',
+      '4 stars',
+      ['2 stars', '3 circles', '4 stars']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Boss puzzle: combine two rules.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Solve the first rule, then check the second clue.',
+    explanation: 'Boss puzzles ask you to combine skills, not guess.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _fallbackPuzzleData(PuzzleDefinition puzzle) {
+  return _GeneratedPuzzleData(
+    prompt: 'Solve a short BrainUp puzzle.',
+    question:
+        'Choose the best answer for ${_skillTitleForPuzzle(puzzle.skillTag)}.',
+    correctChoiceId: puzzle.correctAnswerKey,
+    hint: 'Find the rule before choosing.',
+    explanation: 'The correct answer follows the puzzle rule.',
+    choices: _choices([puzzle.correctAnswerKey, 'almost', 'different']),
+  );
+}
+
+List<ChallengeChoice> _choices(List<String> orderedIds) {
+  return [
+    for (final id in orderedIds)
+      ChallengeChoice(id: id, label: _choiceText(id)),
+  ];
+}
+
+String _choiceText(String id) {
+  return id
+      .split(RegExp(r'[-_]'))
+      .map((part) =>
+          part.isEmpty ? part : '${part[0].toUpperCase()}${part.substring(1)}')
+      .join(' ');
+}
+
+class _GeneratedPuzzleData {
+  const _GeneratedPuzzleData({
+    required this.prompt,
+    required this.question,
+    required this.correctChoiceId,
+    required this.hint,
+    required this.explanation,
+    required this.choices,
+  });
+
+  final String prompt;
+  final String question;
+  final String correctChoiceId;
+  final String hint;
+  final String explanation;
+  final List<ChallengeChoice> choices;
 }
 
 List<DailyChallenge> _allChallengesForAge(ChildAge age) {

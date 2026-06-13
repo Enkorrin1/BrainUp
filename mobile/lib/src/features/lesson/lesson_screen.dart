@@ -931,6 +931,7 @@ class _PuzzleVisual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final generatedVisual = _generatedVisualFor(challenge.id);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -939,26 +940,55 @@ class _PuzzleVisual extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         border: Border.all(color: const Color(0xFFFFFFFF), width: 2),
       ),
-      child: switch (challenge.id) {
-        'shape-path' => const _ShapePatternVisual(),
-        'fruit-pattern' => const _FruitPatternVisual(),
-        'toy-count' => const _ToyCountVisual(),
-        'odd-card' => const _OddCardVisual(),
-        'logic-train' => const _LogicTrainVisual(),
-        'sticker-sum' => const _StickerSumVisual(),
-        'memory-pairs' => const _MemoryPairsVisual(),
-        'lock-key' => const _LockKeyVisual(),
-        'shadow-match' => const _ShadowMatchVisual(),
-        'balance-scale' => const _BalanceScaleVisual(),
-        'shape-rotation' => const _ShapeRotationVisual(),
-        'code-grid' => const _CodeGridVisual(),
-        'number-bridge' => const _NumberBridgeVisual(),
-        'detail-count' => const _DetailCountVisual(),
-        'space-sequence' => const _SpaceSequenceVisual(),
-        'shape-stack' => const _ShapeStackVisual(),
-        _ => const _DefaultPuzzleVisual(),
-      },
+      child: generatedVisual ??
+          switch (challenge.id) {
+            'shape-path' => const _ShapePatternVisual(),
+            'fruit-pattern' => const _FruitPatternVisual(),
+            'toy-count' => const _ToyCountVisual(),
+            'odd-card' => const _OddCardVisual(),
+            'logic-train' => const _LogicTrainVisual(),
+            'sticker-sum' => const _StickerSumVisual(),
+            'memory-pairs' => const _MemoryPairsVisual(),
+            'lock-key' => const _LockKeyVisual(),
+            'shadow-match' => const _ShadowMatchVisual(),
+            'balance-scale' => const _BalanceScaleVisual(),
+            'shape-rotation' => const _ShapeRotationVisual(),
+            'code-grid' => const _CodeGridVisual(),
+            'number-bridge' => const _NumberBridgeVisual(),
+            'detail-count' => const _DetailCountVisual(),
+            'space-sequence' => const _SpaceSequenceVisual(),
+            'shape-stack' => const _ShapeStackVisual(),
+            _ => const _DefaultPuzzleVisual(),
+          },
     );
+  }
+
+  Widget? _generatedVisualFor(String id) {
+    if (id.startsWith('pattern.trail.')) {
+      return const _GeneratedPatternTrailVisual();
+    }
+    if (id.startsWith('memory.pairs.')) {
+      return const _GeneratedMemoryGridVisual();
+    }
+    if (id.startsWith('math.bridge.')) {
+      return const _GeneratedMathBridgeVisual();
+    }
+    if (id.startsWith('focus.details.')) {
+      return const _GeneratedFocusDetailsVisual();
+    }
+    if (id.startsWith('logic.code.')) {
+      return const _GeneratedLogicCodeVisual();
+    }
+    if (id.startsWith('space.turn.')) {
+      return const _GeneratedSpaceTurnVisual();
+    }
+    if (id.startsWith('sort.odd.')) {
+      return const _GeneratedSortOddVisual();
+    }
+    if (id.startsWith('mixed.boss.')) {
+      return const _GeneratedBossVisual();
+    }
+    return null;
   }
 }
 
@@ -1239,6 +1269,157 @@ class _ShapeStackVisual extends StatelessWidget {
         _ShapeToken.square(color: Color(0xFF5C8EF7)),
         _ShapeToken.circle(color: Color(0xFF18B7AE)),
         _QuestionToken(),
+      ],
+    );
+  }
+}
+
+class _GeneratedPatternTrailVisual extends StatelessWidget {
+  const _GeneratedPatternTrailVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _VisualRow(
+      children: [
+        _ObjectCard(asset: _PuzzleAssets.planet, color: Color(0xFF8B63E8)),
+        _ObjectCard(asset: _PuzzleAssets.star, color: Color(0xFFFFC739)),
+        _ObjectCard(asset: _PuzzleAssets.planet, color: Color(0xFF8B63E8)),
+        _ObjectCard(asset: _PuzzleAssets.star, color: Color(0xFFFFC739)),
+        _QuestionToken(),
+      ],
+    );
+  }
+}
+
+class _GeneratedMemoryGridVisual extends StatelessWidget {
+  const _GeneratedMemoryGridVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _VisualRow(
+      children: [
+        _ObjectCard(asset: _PuzzleAssets.key, color: Color(0xFFFFB84D)),
+        _MathSign('+'),
+        _QuestionToken(),
+        _ObjectCard(asset: _PuzzleAssets.lock, color: Color(0xFF18B7AE)),
+      ],
+    );
+  }
+}
+
+class _GeneratedMathBridgeVisual extends StatelessWidget {
+  const _GeneratedMathBridgeVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _VisualRow(
+      children: [
+        _NumberBubble('5', color: Color(0xFF5C8EF7)),
+        _MathSign('+'),
+        _NumberBubble('3', color: Color(0xFF18B7AE)),
+        _MathSign('='),
+        _QuestionToken(),
+      ],
+    );
+  }
+}
+
+class _GeneratedFocusDetailsVisual extends StatelessWidget {
+  const _GeneratedFocusDetailsVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _VisualRow(
+          children: [
+            _ShapeToken.circle(color: Color(0xFFFF6F6B)),
+            _ShapeToken.circle(color: Color(0xFFFF6F6B)),
+            _ShapeToken.circle(color: Color(0xFFFF6F6B)),
+          ],
+        ),
+        SizedBox(height: 8),
+        _VisualRow(
+          children: [
+            _ShapeToken.square(color: Color(0xFF5C8EF7)),
+            _ShapeToken.square(color: Color(0xFF5C8EF7)),
+            _ShapeToken.star(color: Color(0xFF35B37E)),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _GeneratedLogicCodeVisual extends StatelessWidget {
+  const _GeneratedLogicCodeVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _NumberGridRow(values: ['2', '3', '5'], color: Color(0xFF5C8EF7)),
+        SizedBox(height: 8),
+        _NumberGridRow(values: ['4', '6', '?'], color: Color(0xFF18B7AE)),
+      ],
+    );
+  }
+}
+
+class _GeneratedSpaceTurnVisual extends StatelessWidget {
+  const _GeneratedSpaceTurnVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _VisualRow(
+      children: [
+        _ShapeToken.triangle(color: Color(0xFF9C6AF2)),
+        _MathSign('turn'),
+        _RotatedTriangleToken(),
+      ],
+    );
+  }
+}
+
+class _GeneratedSortOddVisual extends StatelessWidget {
+  const _GeneratedSortOddVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _VisualRow(
+      children: [
+        _ObjectCard(asset: _PuzzleAssets.apple, color: Color(0xFFFF6F6B)),
+        _ObjectCard(asset: _PuzzleAssets.pear, color: Color(0xFF35B37E)),
+        _ObjectCard(asset: _PuzzleAssets.banana, color: Color(0xFFFFC739)),
+        _ObjectCard(asset: _PuzzleAssets.rocket, color: Color(0xFF18B7AE)),
+      ],
+    );
+  }
+}
+
+class _GeneratedBossVisual extends StatelessWidget {
+  const _GeneratedBossVisual();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _VisualRow(
+          children: [
+            _NumberBubble('2', color: Color(0xFF5C8EF7)),
+            _NumberBubble('4', color: Color(0xFF18B7AE)),
+            _NumberBubble('6', color: Color(0xFFFFB84D)),
+            _QuestionToken(),
+          ],
+        ),
+        SizedBox(height: 8),
+        _VisualRow(
+          children: [
+            _PuzzleSvg(asset: _PuzzleAssets.puzzleCard, size: 42),
+            _MathSign('+'),
+            _ObjectCard(asset: _PuzzleAssets.star, color: Color(0xFFFFC739)),
+          ],
+        ),
       ],
     );
   }
