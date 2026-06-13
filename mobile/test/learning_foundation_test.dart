@@ -28,7 +28,7 @@ void main() {
     });
 
     test('content bank exposes a large multi-skill puzzle pool', () {
-      expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(140));
+      expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(500));
 
       final counts = FoundationCatalog.puzzleCountBySkill();
       for (final skill in SkillTag.values) {
@@ -151,6 +151,13 @@ void main() {
       expect(dashboard.visualPuzzleCount, greaterThanOrEqualTo(200));
       expect(dashboard.visualCoveragePercent, greaterThanOrEqualTo(90));
       expect(dashboard.qualityGatePasses, isTrue);
+      expect(
+        dashboard.milestoneReport.metrics
+            .firstWhere((metric) => metric.id == 'puzzles')
+            .passes,
+        isTrue,
+      );
+      expect(dashboard.milestoneReport.gaps, isNotEmpty);
       expect(dashboard.skillGaps, isEmpty);
       expect(dashboard.lowTypeCoverage, isEmpty);
       expect(dashboard.qaReport.passes, isTrue);
@@ -184,6 +191,28 @@ void main() {
       expect(json['blockerCount'], 0);
       expect(json['warningCount'], report.warnings.length);
       expect(issues, isNotEmpty);
+    });
+
+    test('large content milestone tracks achieved goals and remaining gaps',
+        () {
+      final report = FoundationCatalog.largeContentMilestoneReport();
+      final json =
+          jsonDecode(jsonEncode(report.toJson())) as Map<String, Object?>;
+      final metrics = json['metrics'] as List<Object?>;
+
+      expect(report.passes, isFalse);
+      expect(report.passedCount, greaterThanOrEqualTo(4));
+      expect(
+        report.metrics.firstWhere((metric) => metric.id == 'puzzles').current,
+        greaterThanOrEqualTo(500),
+      );
+      expect(
+        report.metrics
+            .firstWhere((metric) => metric.id == 'puzzleTypes')
+            .passes,
+        isFalse,
+      );
+      expect(metrics.length, report.metrics.length);
     });
 
     test('curated rich puzzle pack covers first-pack P0 families', () {

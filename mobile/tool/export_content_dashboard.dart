@@ -103,6 +103,20 @@ String _renderMarkdown(ContentDashboardReport report) {
 
   buffer
     ..writeln()
+    ..writeln('## Large Content Milestone')
+    ..writeln()
+    ..writeln('| Goal | Current | Target | Status |')
+    ..writeln('| --- | ---: | ---: | --- |');
+
+  for (final metric in report.milestoneReport.metrics) {
+    buffer.writeln(
+      '| ${metric.label} | ${metric.current} ${metric.unit} | '
+      '${metric.target} ${metric.unit} | ${metric.passes ? 'pass' : 'gap'} |',
+    );
+  }
+
+  buffer
+    ..writeln()
     ..writeln('## Repeated Families')
     ..writeln()
     ..writeln('| Family | Count | Examples |')

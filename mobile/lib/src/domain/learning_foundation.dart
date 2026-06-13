@@ -563,6 +563,80 @@ class ContentQaReport {
   }
 }
 
+class ContentMilestoneMetric {
+  const ContentMilestoneMetric({
+    required this.id,
+    required this.label,
+    required this.current,
+    required this.target,
+    required this.unit,
+  });
+
+  final String id;
+  final String label;
+  final int current;
+  final int target;
+  final String unit;
+
+  bool get passes {
+    return current >= target;
+  }
+
+  int get remaining {
+    final gap = target - current;
+    return gap < 0 ? 0 : gap;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'label': label,
+      'current': current,
+      'target': target,
+      'unit': unit,
+      'passes': passes,
+      'remaining': remaining,
+    };
+  }
+}
+
+class ContentMilestoneReport {
+  const ContentMilestoneReport({
+    required this.metrics,
+  });
+
+  final List<ContentMilestoneMetric> metrics;
+
+  bool get passes {
+    return metrics.every((metric) => metric.passes);
+  }
+
+  List<ContentMilestoneMetric> get gaps {
+    return [
+      for (final metric in metrics)
+        if (!metric.passes) metric,
+    ];
+  }
+
+  int get passedCount {
+    return metrics.where((metric) => metric.passes).length;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'passes': passes,
+      'passedCount': passedCount,
+      'totalCount': metrics.length,
+      'metrics': [
+        for (final metric in metrics) metric.toJson(),
+      ],
+      'gaps': [
+        for (final metric in gaps) metric.toJson(),
+      ],
+    };
+  }
+}
+
 class ContentDashboardReport {
   const ContentDashboardReport({
     required this.totalPuzzleCount,
@@ -577,6 +651,7 @@ class ContentDashboardReport {
     required this.lowTypeCoverage,
     required this.repeatedFamilies,
     required this.qaReport,
+    required this.milestoneReport,
   });
 
   final int totalPuzzleCount;
@@ -591,6 +666,7 @@ class ContentDashboardReport {
   final Map<PuzzleType, int> lowTypeCoverage;
   final List<ContentFamilySummary> repeatedFamilies;
   final ContentQaReport qaReport;
+  final ContentMilestoneReport milestoneReport;
 
   bool get hasBlockingIssues {
     return !qualityGatePasses ||
@@ -626,6 +702,7 @@ class ContentDashboardReport {
         for (final family in repeatedFamilies) family.toJson(),
       ],
       'qa': qaReport.toJson(),
+      'largeContentMilestone': milestoneReport.toJson(),
     };
   }
 }
@@ -2142,6 +2219,7 @@ class FoundationCatalog {
         for (final rule in placementRules) rule.toJson(),
       ],
       'qa': contentQaReport().toJson(),
+      'largeContentMilestone': largeContentMilestoneReport().toJson(),
       'lessonPlacements': [
         for (final lesson in starterLessons)
           {
@@ -2184,6 +2262,7 @@ class FoundationCatalog {
     final qaReport = contentQaReport(
       repeatedFamilyWarningThreshold: repeatedFamilyThreshold,
     );
+    final milestoneReport = largeContentMilestoneReport();
 
     return ContentDashboardReport(
       totalPuzzleCount: report.totalPuzzleCount,
@@ -2206,6 +2285,85 @@ class FoundationCatalog {
         threshold: repeatedFamilyThreshold,
       ),
       qaReport: qaReport,
+      milestoneReport: milestoneReport,
+    );
+  }
+
+  static ContentMilestoneReport largeContentMilestoneReport() {
+    final coverage = contentCoverageReport();
+    final activePuzzleTypes =
+        coverage.countByType.values.where((count) => count > 0).length;
+    final starterBossLessons = starterLessons
+        .where(
+            (lesson) => placementForLesson(lesson) == ContentPlacement.bossNode)
+        .length;
+
+    return ContentMilestoneReport(
+      metrics: [
+        ContentMilestoneMetric(
+          id: 'puzzles',
+          label: 'Puzzle bank',
+          current: allPuzzles.length,
+          target: 500,
+          unit: 'puzzles',
+        ),
+        ContentMilestoneMetric(
+          id: 'puzzleTypes',
+          label: 'Puzzle type variety',
+          current: activePuzzleTypes,
+          target: 25,
+          unit: 'types',
+        ),
+        ContentMilestoneMetric(
+          id: 'visualWorlds',
+          label: 'Visual worlds',
+          current: knownWorldIds.length,
+          target: 8,
+          unit: 'worlds',
+        ),
+        ContentMilestoneMetric(
+          id: 'helperCharacters',
+          label: 'Helper characters',
+          current: knownCharacterIds.length,
+          target: 5,
+          unit: 'characters',
+        ),
+        ContentMilestoneMetric(
+          id: 'reusableAssets',
+          label: 'Reusable asset references',
+          current: _catalogAssetReferences().length,
+          target: 100,
+          unit: 'assets',
+        ),
+        ContentMilestoneMetric(
+          id: 'routeLessons',
+          label: 'Route lessons',
+          current: starterLessons.length,
+          target: 30,
+          unit: 'lessons',
+        ),
+        ContentMilestoneMetric(
+          id: 'bossLevels',
+          label: 'Boss levels',
+          current: starterBossLessons,
+          target: 10,
+          unit: 'levels',
+        ),
+        const ContentMilestoneMetric(
+          id: 'adaptiveReview',
+          label: 'Review works on real mistakes',
+          current: 1,
+          target: 1,
+          unit: 'feature',
+        ),
+        const ContentMilestoneMetric(
+          id: 'dailyChallengeRotation',
+          label: 'Daily challenge avoids quick repeats',
+          current: 1,
+          target: 1,
+          unit: 'feature',
+        ),
+      ],
     );
   }
 
@@ -2352,6 +2510,19 @@ class FoundationCatalog {
     }
 
     return ContentQaReport(issues: issues);
+  }
+
+  static Set<String> _catalogAssetReferences() {
+    final assetRefs = <String>{};
+    for (final puzzle in allPuzzles) {
+      final metadata = puzzle.visualMetadata;
+      if (metadata == null) {
+        continue;
+      }
+      assetRefs.add(metadata.sceneAsset);
+      assetRefs.addAll(metadata.choiceAssets);
+    }
+    return assetRefs;
   }
 
   static List<PuzzleDefinition> puzzlesForLesson({
@@ -2865,7 +3036,7 @@ class ContentBank {
 
     final puzzles = <PuzzleDefinition>[];
     for (final family in families) {
-      for (var index = 1; index <= 9; index += 1) {
+      for (var index = 1; index <= 28; index += 1) {
         final difficulty = _difficultyFor(index);
         puzzles.add(
           PuzzleDefinition(

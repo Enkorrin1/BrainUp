@@ -363,6 +363,10 @@ Stage 24 delivered:
 
 Target for the first strong content version:
 
+Status: milestone tracking implemented and the puzzle bank has crossed the
+first 500+ puzzle target. Remaining gaps are visible in the generated content
+dashboard and should drive the next content expansion pass.
+
 - 500+ puzzles;
 - 25+ puzzle types;
 - 8-10 visual worlds;
@@ -372,6 +376,15 @@ Target for the first strong content version:
 - 10 boss levels;
 - review works on real mistakes;
 - daily challenge avoids quick repeats.
+
+Stage 25 delivered:
+
+- generated puzzle families expanded to 28 variants each;
+- total puzzle bank increased to 501 puzzles;
+- `ContentMilestoneReport` for large-content progress tracking;
+- manifest and dashboard exports for milestone status;
+- dashboard section showing pass/gap for each milestone goal;
+- tests for the 500+ puzzle milestone and remaining strategic gaps.
 
 ## Recommended Start
 

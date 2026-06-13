@@ -4,9 +4,9 @@
 
 | Metric | Value |
 | --- | ---: |
-| Total puzzles | 216 |
-| Visual puzzles | 200 |
-| Visual coverage | 93% |
+| Total puzzles | 501 |
+| Visual puzzles | 485 |
+| Visual coverage | 97% |
 | Quality gate passes | true |
 | Blocking issues | false |
 
@@ -14,40 +14,40 @@
 
 | Name | Count |
 | --- | ---: |
-| age4to5 | 130 |
-| age6 | 201 |
-| age7to8 | 158 |
+| age4to5 | 325 |
+| age6 | 486 |
+| age7to8 | 338 |
 
 ## Coverage By Skill
 
 | Name | Count |
 | --- | ---: |
-| attention | 24 |
-| memory | 30 |
-| pattern | 23 |
-| classification | 29 |
-| arithmetic | 37 |
-| spatial | 31 |
-| reasoning | 42 |
+| attention | 62 |
+| memory | 68 |
+| pattern | 42 |
+| classification | 67 |
+| arithmetic | 75 |
+| spatial | 69 |
+| reasoning | 118 |
 
 ## Coverage By Type
 
 | Name | Count |
 | --- | ---: |
-| oddOneOut | 15 |
-| sequenceComplete | 24 |
+| oddOneOut | 34 |
+| sequenceComplete | 43 |
 | pairMatch | 2 |
-| categorySort | 14 |
-| pathPuzzle | 14 |
-| countBridge | 17 |
-| visualCompare | 24 |
-| analogy | 9 |
-| memoryGrid | 28 |
-| codeBreaker | 9 |
-| spatialRotation | 14 |
-| attentionScan | 23 |
-| rebus | 9 |
-| mixedBoss | 14 |
+| categorySort | 33 |
+| pathPuzzle | 33 |
+| countBridge | 36 |
+| visualCompare | 43 |
+| analogy | 28 |
+| memoryGrid | 66 |
+| codeBreaker | 28 |
+| spatialRotation | 33 |
+| attentionScan | 61 |
+| rebus | 28 |
+| mixedBoss | 33 |
 
 ## Coverage By Difficulty
 
@@ -55,7 +55,7 @@
 | --- | ---: |
 | easy | 72 |
 | normal | 71 |
-| hard | 58 |
+| hard | 343 |
 | boss | 15 |
 
 ## Placement Rules
@@ -94,25 +94,39 @@
 | missingVisualMetadata | 16 |
 | excessiveFamilyRepetition | 28 |
 
+## Large Content Milestone
+
+| Goal | Current | Target | Status |
+| --- | ---: | ---: | --- |
+| Puzzle bank | 501 puzzles | 500 puzzles | pass |
+| Puzzle type variety | 14 types | 25 types | gap |
+| Visual worlds | 10 worlds | 8 worlds | pass |
+| Helper characters | 6 characters | 5 characters | pass |
+| Reusable asset references | 46 assets | 100 assets | gap |
+| Route lessons | 24 lessons | 30 lessons | gap |
+| Boss levels | 2 levels | 10 levels | gap |
+| Review works on real mistakes | 1 feature | 1 feature | pass |
+| Daily challenge avoids quick repeats | 1 feature | 1 feature | pass |
+
 ## Repeated Families
 
 | Family | Count | Examples |
 | --- | ---: | --- |
-| analogy.link | 9 | analogy.link.easy.001, analogy.link.easy.002, analogy.link.normal.003, analogy.link.normal.004 |
-| category.groups | 9 | category.groups.easy.001, category.groups.easy.002, category.groups.normal.003, category.groups.normal.004 |
-| compare.weight | 9 | compare.weight.easy.001, compare.weight.easy.002, compare.weight.normal.003, compare.weight.normal.004 |
-| focus.details | 9 | focus.details.easy.001, focus.details.easy.002, focus.details.normal.003, focus.details.normal.004 |
-| focus.tracker | 9 | focus.tracker.easy.001, focus.tracker.easy.002, focus.tracker.normal.003, focus.tracker.normal.004 |
-| logic.code | 9 | logic.code.easy.001, logic.code.easy.002, logic.code.normal.003, logic.code.normal.004 |
-| math.bridge | 9 | math.bridge.easy.001, math.bridge.easy.002, math.bridge.normal.003, math.bridge.normal.004 |
-| memory.order | 9 | memory.order.easy.001, memory.order.easy.002, memory.order.normal.003, memory.order.normal.004 |
-| memory.pairs | 9 | memory.pairs.easy.001, memory.pairs.easy.002, memory.pairs.normal.003, memory.pairs.normal.004 |
-| mixed.boss | 9 | mixed.boss.easy.001, mixed.boss.easy.002, mixed.boss.normal.003, mixed.boss.normal.004 |
-| pattern.trail | 9 | pattern.trail.easy.001, pattern.trail.easy.002, pattern.trail.normal.003, pattern.trail.normal.004 |
-| rebus.picture | 9 | rebus.picture.easy.001, rebus.picture.easy.002, rebus.picture.normal.003, rebus.picture.normal.004 |
-| route.path | 9 | route.path.easy.001, route.path.easy.002, route.path.normal.003, route.path.normal.004 |
-| sort.odd | 9 | sort.odd.easy.001, sort.odd.easy.002, sort.odd.normal.003, sort.odd.normal.004 |
-| space.turn | 9 | space.turn.easy.001, space.turn.easy.002, space.turn.normal.003, space.turn.normal.004 |
+| analogy.link | 28 | analogy.link.easy.001, analogy.link.easy.002, analogy.link.normal.003, analogy.link.normal.004 |
+| category.groups | 28 | category.groups.easy.001, category.groups.easy.002, category.groups.normal.003, category.groups.normal.004 |
+| compare.weight | 28 | compare.weight.easy.001, compare.weight.easy.002, compare.weight.normal.003, compare.weight.normal.004 |
+| focus.details | 28 | focus.details.easy.001, focus.details.easy.002, focus.details.normal.003, focus.details.normal.004 |
+| focus.tracker | 28 | focus.tracker.easy.001, focus.tracker.easy.002, focus.tracker.normal.003, focus.tracker.normal.004 |
+| logic.code | 28 | logic.code.easy.001, logic.code.easy.002, logic.code.normal.003, logic.code.normal.004 |
+| math.bridge | 28 | math.bridge.easy.001, math.bridge.easy.002, math.bridge.normal.003, math.bridge.normal.004 |
+| memory.order | 28 | memory.order.easy.001, memory.order.easy.002, memory.order.normal.003, memory.order.normal.004 |
+| memory.pairs | 28 | memory.pairs.easy.001, memory.pairs.easy.002, memory.pairs.normal.003, memory.pairs.normal.004 |
+| mixed.boss | 28 | mixed.boss.easy.001, mixed.boss.easy.002, mixed.boss.normal.003, mixed.boss.normal.004 |
+| pattern.trail | 28 | pattern.trail.easy.001, pattern.trail.easy.002, pattern.trail.normal.003, pattern.trail.normal.004 |
+| rebus.picture | 28 | rebus.picture.easy.001, rebus.picture.easy.002, rebus.picture.normal.003, rebus.picture.normal.004 |
+| route.path | 28 | route.path.easy.001, route.path.easy.002, route.path.normal.003, route.path.normal.004 |
+| sort.odd | 28 | sort.odd.easy.001, sort.odd.easy.002, sort.odd.normal.003, sort.odd.normal.004 |
+| space.turn | 28 | space.turn.easy.001, space.turn.easy.002, space.turn.normal.003, space.turn.normal.004 |
 | curated.group-compare | 5 | curated.group-compare.001, curated.group-compare.002, curated.group-compare.003, curated.group-compare.004 |
 | curated.logic-scales | 5 | curated.logic-scales.001, curated.logic-scales.002, curated.logic-scales.003, curated.logic-scales.004 |
 | curated.memory-order | 5 | curated.memory-order.001, curated.memory-order.002, curated.memory-order.003, curated.memory-order.004 |

@@ -1,74 +1,74 @@
 {
-  "totalPuzzleCount": 216,
-  "visualPuzzleCount": 200,
-  "visualCoveragePercent": 93,
+  "totalPuzzleCount": 501,
+  "visualPuzzleCount": 485,
+  "visualCoveragePercent": 97,
   "qualityGatePasses": true,
   "hasBlockingIssues": false,
   "coverage": {
-    "totalPuzzleCount": 216,
+    "totalPuzzleCount": 501,
     "countByAgeBand": {
-      "age4to5": 130,
-      "age6": 201,
-      "age7to8": 158
+      "age4to5": 325,
+      "age6": 486,
+      "age7to8": 338
     },
     "countBySkill": {
-      "attention": 24,
-      "memory": 30,
-      "pattern": 23,
-      "classification": 29,
-      "arithmetic": 37,
-      "spatial": 31,
-      "reasoning": 42
+      "attention": 62,
+      "memory": 68,
+      "pattern": 42,
+      "classification": 67,
+      "arithmetic": 75,
+      "spatial": 69,
+      "reasoning": 118
     },
     "countByDifficulty": {
       "easy": 72,
       "normal": 71,
-      "hard": 58,
+      "hard": 343,
       "boss": 15
     },
     "countByType": {
-      "oddOneOut": 15,
-      "sequenceComplete": 24,
+      "oddOneOut": 34,
+      "sequenceComplete": 43,
       "pairMatch": 2,
-      "categorySort": 14,
-      "pathPuzzle": 14,
-      "countBridge": 17,
-      "visualCompare": 24,
-      "analogy": 9,
-      "memoryGrid": 28,
-      "codeBreaker": 9,
-      "spatialRotation": 14,
-      "attentionScan": 23,
-      "rebus": 9,
-      "mixedBoss": 14
+      "categorySort": 33,
+      "pathPuzzle": 33,
+      "countBridge": 36,
+      "visualCompare": 43,
+      "analogy": 28,
+      "memoryGrid": 66,
+      "codeBreaker": 28,
+      "spatialRotation": 33,
+      "attentionScan": 61,
+      "rebus": 28,
+      "mixedBoss": 33
     },
     "countByAgeBandAndSkill": {
       "age4to5": {
-        "attention": 14,
-        "memory": 18,
-        "pattern": 15,
-        "classification": 17,
-        "arithmetic": 23,
-        "spatial": 19,
-        "reasoning": 24
+        "attention": 40,
+        "memory": 44,
+        "pattern": 28,
+        "classification": 43,
+        "arithmetic": 49,
+        "spatial": 45,
+        "reasoning": 76
       },
       "age6": {
-        "attention": 22,
-        "memory": 28,
-        "pattern": 22,
-        "classification": 27,
-        "arithmetic": 35,
-        "spatial": 29,
-        "reasoning": 38
+        "attention": 60,
+        "memory": 66,
+        "pattern": 41,
+        "classification": 65,
+        "arithmetic": 73,
+        "spatial": 67,
+        "reasoning": 114
       },
       "age7to8": {
-        "attention": 17,
-        "memory": 22,
-        "pattern": 18,
-        "classification": 21,
-        "arithmetic": 28,
-        "spatial": 23,
-        "reasoning": 29
+        "attention": 41,
+        "memory": 46,
+        "pattern": 30,
+        "classification": 45,
+        "arithmetic": 52,
+        "spatial": 47,
+        "reasoning": 77
       }
     },
     "minimumPerAgeBandSkill": 4,
@@ -205,7 +205,7 @@
   "repeatedFamilies": [
     {
       "familyId": "analogy.link",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "analogy.link.easy.001",
         "analogy.link.easy.002",
@@ -215,7 +215,7 @@
     },
     {
       "familyId": "category.groups",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "category.groups.easy.001",
         "category.groups.easy.002",
@@ -225,7 +225,7 @@
     },
     {
       "familyId": "compare.weight",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "compare.weight.easy.001",
         "compare.weight.easy.002",
@@ -235,7 +235,7 @@
     },
     {
       "familyId": "focus.details",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "focus.details.easy.001",
         "focus.details.easy.002",
@@ -245,7 +245,7 @@
     },
     {
       "familyId": "focus.tracker",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "focus.tracker.easy.001",
         "focus.tracker.easy.002",
@@ -255,7 +255,7 @@
     },
     {
       "familyId": "logic.code",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "logic.code.easy.001",
         "logic.code.easy.002",
@@ -265,7 +265,7 @@
     },
     {
       "familyId": "math.bridge",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "math.bridge.easy.001",
         "math.bridge.easy.002",
@@ -275,7 +275,7 @@
     },
     {
       "familyId": "memory.order",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "memory.order.easy.001",
         "memory.order.easy.002",
@@ -285,7 +285,7 @@
     },
     {
       "familyId": "memory.pairs",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "memory.pairs.easy.001",
         "memory.pairs.easy.002",
@@ -295,7 +295,7 @@
     },
     {
       "familyId": "mixed.boss",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "mixed.boss.easy.001",
         "mixed.boss.easy.002",
@@ -305,7 +305,7 @@
     },
     {
       "familyId": "pattern.trail",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "pattern.trail.easy.001",
         "pattern.trail.easy.002",
@@ -315,7 +315,7 @@
     },
     {
       "familyId": "rebus.picture",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "rebus.picture.easy.001",
         "rebus.picture.easy.002",
@@ -325,7 +325,7 @@
     },
     {
       "familyId": "route.path",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "route.path.easy.001",
         "route.path.easy.002",
@@ -335,7 +335,7 @@
     },
     {
       "familyId": "sort.odd",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "sort.odd.easy.001",
         "sort.odd.easy.002",
@@ -345,7 +345,7 @@
     },
     {
       "familyId": "space.turn",
-      "count": 9,
+      "count": 28,
       "examplePayloadRefs": [
         "space.turn.easy.001",
         "space.turn.easy.002",
@@ -588,91 +588,91 @@
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "analogy.link"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "category.groups"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "compare.weight"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "focus.details"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "focus.tracker"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "logic.code"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "math.bridge"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "memory.order"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "memory.pairs"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "mixed.boss"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "pattern.trail"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "rebus.picture"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "route.path"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "sort.odd"
       },
       {
         "type": "excessiveFamilyRepetition",
         "severity": "warning",
-        "message": "Family has 9 variants; review saturation.",
+        "message": "Family has 28 variants; review saturation.",
         "familyId": "space.turn"
       },
       {
@@ -752,6 +752,132 @@
         "severity": "warning",
         "message": "Family has 5 variants; review saturation.",
         "familyId": "curated.shape-rotation"
+      }
+    ]
+  },
+  "largeContentMilestone": {
+    "passes": false,
+    "passedCount": 5,
+    "totalCount": 9,
+    "metrics": [
+      {
+        "id": "puzzles",
+        "label": "Puzzle bank",
+        "current": 501,
+        "target": 500,
+        "unit": "puzzles",
+        "passes": true,
+        "remaining": 0
+      },
+      {
+        "id": "puzzleTypes",
+        "label": "Puzzle type variety",
+        "current": 14,
+        "target": 25,
+        "unit": "types",
+        "passes": false,
+        "remaining": 11
+      },
+      {
+        "id": "visualWorlds",
+        "label": "Visual worlds",
+        "current": 10,
+        "target": 8,
+        "unit": "worlds",
+        "passes": true,
+        "remaining": 0
+      },
+      {
+        "id": "helperCharacters",
+        "label": "Helper characters",
+        "current": 6,
+        "target": 5,
+        "unit": "characters",
+        "passes": true,
+        "remaining": 0
+      },
+      {
+        "id": "reusableAssets",
+        "label": "Reusable asset references",
+        "current": 46,
+        "target": 100,
+        "unit": "assets",
+        "passes": false,
+        "remaining": 54
+      },
+      {
+        "id": "routeLessons",
+        "label": "Route lessons",
+        "current": 24,
+        "target": 30,
+        "unit": "lessons",
+        "passes": false,
+        "remaining": 6
+      },
+      {
+        "id": "bossLevels",
+        "label": "Boss levels",
+        "current": 2,
+        "target": 10,
+        "unit": "levels",
+        "passes": false,
+        "remaining": 8
+      },
+      {
+        "id": "adaptiveReview",
+        "label": "Review works on real mistakes",
+        "current": 1,
+        "target": 1,
+        "unit": "feature",
+        "passes": true,
+        "remaining": 0
+      },
+      {
+        "id": "dailyChallengeRotation",
+        "label": "Daily challenge avoids quick repeats",
+        "current": 1,
+        "target": 1,
+        "unit": "feature",
+        "passes": true,
+        "remaining": 0
+      }
+    ],
+    "gaps": [
+      {
+        "id": "puzzleTypes",
+        "label": "Puzzle type variety",
+        "current": 14,
+        "target": 25,
+        "unit": "types",
+        "passes": false,
+        "remaining": 11
+      },
+      {
+        "id": "reusableAssets",
+        "label": "Reusable asset references",
+        "current": 46,
+        "target": 100,
+        "unit": "assets",
+        "passes": false,
+        "remaining": 54
+      },
+      {
+        "id": "routeLessons",
+        "label": "Route lessons",
+        "current": 24,
+        "target": 30,
+        "unit": "lessons",
+        "passes": false,
+        "remaining": 6
+      },
+      {
+        "id": "bossLevels",
+        "label": "Boss levels",
+        "current": 2,
+        "target": 10,
+        "unit": "levels",
+        "passes": false,
+        "remaining": 8
       }
     ]
   }
