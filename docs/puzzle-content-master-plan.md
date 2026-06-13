@@ -153,6 +153,8 @@ Asset categories:
 
 Extend puzzle data so every puzzle can describe its scene.
 
+Status: done in `docs/content-stage-18-status.md`.
+
 Target fields:
 
 - `worldId`;

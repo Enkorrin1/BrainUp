@@ -40,6 +40,44 @@ enum SkillTag {
   reasoning,
 }
 
+enum PuzzleInteractionType {
+  tapChoice,
+  dragToTarget,
+  reorderCards,
+  matchPairs,
+  memoryReveal,
+  tracePath,
+  rotateObject,
+  sortObjects,
+  multiStepBoss,
+}
+
+enum PuzzleAnimationType {
+  none,
+  cardBounce,
+  hintPulse,
+  objectSnap,
+  pathTrace,
+  revealFlip,
+  rotateTurn,
+  rewardBurst,
+}
+
+enum PuzzleFeedbackStyle {
+  standard,
+  characterCoach,
+  softRetry,
+  celebratory,
+  bossMilestone,
+}
+
+enum PuzzleCognitiveLoad {
+  light,
+  medium,
+  high,
+  boss,
+}
+
 enum RewardType {
   sticker,
   badge,
@@ -180,6 +218,50 @@ class LessonStep {
   final SkillTag internalSkillTag;
 }
 
+class VisualPuzzleMetadata {
+  const VisualPuzzleMetadata({
+    required this.familyId,
+    required this.worldId,
+    required this.characterId,
+    required this.sceneAsset,
+    required this.choiceAssets,
+    required this.interactionType,
+    required this.animationType,
+    required this.feedbackStyle,
+    required this.estimatedSeconds,
+    required this.cognitiveLoad,
+    this.bossMixTags = const [],
+  });
+
+  final String familyId;
+  final String worldId;
+  final String characterId;
+  final String sceneAsset;
+  final List<String> choiceAssets;
+  final PuzzleInteractionType interactionType;
+  final PuzzleAnimationType animationType;
+  final PuzzleFeedbackStyle feedbackStyle;
+  final int estimatedSeconds;
+  final PuzzleCognitiveLoad cognitiveLoad;
+  final List<String> bossMixTags;
+
+  Map<String, Object?> toJson() {
+    return {
+      'familyId': familyId,
+      'worldId': worldId,
+      'characterId': characterId,
+      'sceneAsset': sceneAsset,
+      'choiceAssets': choiceAssets,
+      'interactionType': interactionType.name,
+      'animationType': animationType.name,
+      'feedbackStyle': feedbackStyle.name,
+      'estimatedSeconds': estimatedSeconds,
+      'cognitiveLoad': cognitiveLoad.name,
+      'bossMixTags': bossMixTags,
+    };
+  }
+}
+
 class PuzzleDefinition {
   const PuzzleDefinition({
     required this.id,
@@ -195,6 +277,7 @@ class PuzzleDefinition {
       AgeBandId.age7to8,
     ],
     this.difficulty = PuzzleDifficulty.easy,
+    this.visualMetadata,
   });
 
   final String id;
@@ -206,6 +289,7 @@ class PuzzleDefinition {
   final List<String> hintKeys;
   final List<AgeBandId> ageBandIds;
   final PuzzleDifficulty difficulty;
+  final VisualPuzzleMetadata? visualMetadata;
 
   Map<String, Object?> toJson() {
     return {
@@ -220,6 +304,7 @@ class PuzzleDefinition {
         for (final ageBandId in ageBandIds) ageBandId.name,
       ],
       'difficulty': difficulty.name,
+      if (visualMetadata != null) 'visualMetadata': visualMetadata!.toJson(),
     };
   }
 }
@@ -465,6 +550,28 @@ class PracticeReviewProfile {
 }
 
 class FoundationCatalog {
+  static const Set<String> knownWorldIds = {
+    'space_station',
+    'forest_lab',
+    'underwater_city',
+    'robot_town',
+    'riddle_castle',
+    'dinosaur_island',
+    'toy_shop',
+    'shape_garden',
+    'train_expedition',
+    'detective_academy',
+  };
+
+  static const Set<String> knownCharacterIds = {
+    'brainy',
+    'lumi',
+    'quadra',
+    'numba',
+    'rulo',
+    'mira',
+  };
+
   static const List<AgeBand> ageBands = [
     AgeBand(
       id: AgeBandId.age4to5,
@@ -1713,6 +1820,12 @@ class FoundationCatalog {
       'coverage': report.toJson(
         minimumPerAgeBandSkill: minimumPerAgeBandSkill,
       ),
+      'visualMetadata': {
+        'knownWorldIds': knownWorldIds.toList(growable: false),
+        'knownCharacterIds': knownCharacterIds.toList(growable: false),
+        'generatedPuzzleVisualCount':
+            allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
+      },
       'puzzles': [
         for (final puzzle in allPuzzles) puzzle.toJson(),
       ],
@@ -2126,6 +2239,10 @@ class ContentBank {
             hintKeys: [family.hintKey],
             ageBandIds: _ageBandsFor(index, difficulty),
             difficulty: difficulty,
+            visualMetadata: _visualMetadataFor(
+              family: family,
+              difficulty: difficulty,
+            ),
           ),
         );
       }
@@ -2158,6 +2275,230 @@ class ContentBank {
       1 => const [AgeBandId.age4to5, AgeBandId.age6],
       2 => const [AgeBandId.age6, AgeBandId.age7to8],
       _ => const [AgeBandId.age4to5, AgeBandId.age6, AgeBandId.age7to8],
+    };
+  }
+
+  static VisualPuzzleMetadata _visualMetadataFor({
+    required _PuzzleFamilySeed family,
+    required PuzzleDifficulty difficulty,
+  }) {
+    final load = switch (difficulty) {
+      PuzzleDifficulty.easy => PuzzleCognitiveLoad.light,
+      PuzzleDifficulty.normal => PuzzleCognitiveLoad.medium,
+      PuzzleDifficulty.hard => PuzzleCognitiveLoad.high,
+      PuzzleDifficulty.boss => PuzzleCognitiveLoad.boss,
+    };
+    final seconds = switch (difficulty) {
+      PuzzleDifficulty.easy => 20,
+      PuzzleDifficulty.normal => 30,
+      PuzzleDifficulty.hard => 45,
+      PuzzleDifficulty.boss => 70,
+    };
+    final bossTags = difficulty == PuzzleDifficulty.boss
+        ? [family.skillTag.name, 'boss']
+        : const <String>[];
+
+    return switch (family.slug) {
+      'pattern.trail' => VisualPuzzleMetadata(
+          familyId: 'pattern.sequence_complete',
+          worldId: 'space_station',
+          characterId: 'brainy',
+          sceneAsset: 'world.space_station.background.star_collection_path',
+          choiceAssets: const [
+            'world.space_station.object.rocket',
+            'world.space_station.object.planet',
+            'world.space_station.object.star',
+          ],
+          interactionType: PuzzleInteractionType.tapChoice,
+          animationType: PuzzleAnimationType.cardBounce,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'memory.pairs' => VisualPuzzleMetadata(
+          familyId: 'memory.pair_match',
+          worldId: 'toy_shop',
+          characterId: 'lumi',
+          sceneAsset: 'world.toy_shop.background.shelf_counter',
+          choiceAssets: const [
+            'world.toy_shop.object.gift_box',
+            'world.toy_shop.object.train_car',
+            'world.toy_shop.object.block',
+          ],
+          interactionType: PuzzleInteractionType.matchPairs,
+          animationType: PuzzleAnimationType.objectSnap,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'math.bridge' => VisualPuzzleMetadata(
+          familyId: 'math.object_count',
+          worldId: 'toy_shop',
+          characterId: 'numba',
+          sceneAsset: 'world.toy_shop.background.checkout_counter',
+          choiceAssets: const [
+            'world.toy_shop.object.block',
+            'world.toy_shop.object.ball',
+            'world.toy_shop.object.price_tag',
+          ],
+          interactionType: PuzzleInteractionType.tapChoice,
+          animationType: PuzzleAnimationType.hintPulse,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'focus.details' || 'focus.tracker' => VisualPuzzleMetadata(
+          familyId: 'attention.spot_difference',
+          worldId: 'forest_lab',
+          characterId: 'mira',
+          sceneAsset: 'world.forest_lab.background.leaf_microscope',
+          choiceAssets: const [
+            'world.forest_lab.object.leaf',
+            'world.forest_lab.object.jar',
+            'world.forest_lab.object.magnifier',
+          ],
+          interactionType: PuzzleInteractionType.tapChoice,
+          animationType: PuzzleAnimationType.hintPulse,
+          feedbackStyle: PuzzleFeedbackStyle.softRetry,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'logic.code' || 'analogy.link' || 'rebus.picture' => VisualPuzzleMetadata(
+          familyId: 'reasoning.code_solver',
+          worldId: 'robot_town',
+          characterId: 'rulo',
+          sceneAsset: 'world.robot_town.background.code_console',
+          choiceAssets: const [
+            'world.robot_town.object.code_tile',
+            'world.robot_town.object.switch',
+            'world.robot_town.object.circuit_node',
+          ],
+          interactionType: PuzzleInteractionType.tapChoice,
+          animationType: PuzzleAnimationType.cardBounce,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'space.turn' => VisualPuzzleMetadata(
+          familyId: 'spatial.shape_rotation',
+          worldId: 'shape_garden',
+          characterId: 'quadra',
+          sceneAsset: 'world.shape_garden.background.shape_flower_bed',
+          choiceAssets: const [
+            'world.shape_garden.object.shape_flower',
+            'world.shape_garden.object.butterfly',
+            'world.shape_garden.object.garden_sign',
+          ],
+          interactionType: PuzzleInteractionType.rotateObject,
+          animationType: PuzzleAnimationType.rotateTurn,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'sort.odd' || 'category.groups' => VisualPuzzleMetadata(
+          familyId: 'classification.object_sort',
+          worldId: 'forest_lab',
+          characterId: 'mira',
+          sceneAsset: 'world.forest_lab.background.sorting_shelves',
+          choiceAssets: const [
+            'world.forest_lab.object.seed_packet',
+            'world.forest_lab.object.mushroom',
+            'world.forest_lab.object.berry',
+          ],
+          interactionType: PuzzleInteractionType.sortObjects,
+          animationType: PuzzleAnimationType.objectSnap,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'route.path' => VisualPuzzleMetadata(
+          familyId: 'spatial.route_build',
+          worldId: 'space_station',
+          characterId: 'quadra',
+          sceneAsset: 'world.space_station.background.planet_map',
+          choiceAssets: const [
+            'world.space_station.object.path_tile',
+            'world.space_station.object.fuel_cell',
+            'world.space_station.object.control_button',
+          ],
+          interactionType: PuzzleInteractionType.tracePath,
+          animationType: PuzzleAnimationType.pathTrace,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'compare.weight' => VisualPuzzleMetadata(
+          familyId: 'math.logic_scales',
+          worldId: 'robot_town',
+          characterId: 'numba',
+          sceneAsset: 'world.robot_town.background.gear_factory',
+          choiceAssets: const [
+            'world.robot_town.object.gear',
+            'world.robot_town.object.battery',
+            'world.robot_town.object.robot_part',
+          ],
+          interactionType: PuzzleInteractionType.dragToTarget,
+          animationType: PuzzleAnimationType.objectSnap,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'memory.order' => VisualPuzzleMetadata(
+          familyId: 'memory.order_recall',
+          worldId: 'space_station',
+          characterId: 'lumi',
+          sceneAsset: 'world.space_station.background.mission_control_desk',
+          choiceAssets: const [
+            'world.space_station.object.key_card',
+            'world.space_station.object.satellite',
+            'world.space_station.object.star',
+          ],
+          interactionType: PuzzleInteractionType.memoryReveal,
+          animationType: PuzzleAnimationType.revealFlip,
+          feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
+      'mixed.boss' => VisualPuzzleMetadata(
+          familyId: 'boss.mixed_challenge',
+          worldId: 'space_station',
+          characterId: 'brainy',
+          sceneAsset: 'world.space_station.background.repair_module',
+          choiceAssets: const [
+            'world.space_station.object.rocket',
+            'world.space_station.object.fuel_cell',
+            'world.space_station.object.control_button',
+          ],
+          interactionType: PuzzleInteractionType.multiStepBoss,
+          animationType: PuzzleAnimationType.rewardBurst,
+          feedbackStyle: PuzzleFeedbackStyle.bossMilestone,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags.isEmpty ? const ['mixed', 'boss'] : bossTags,
+        ),
+      _ => VisualPuzzleMetadata(
+          familyId: family.slug.replaceAll('.', '_'),
+          worldId: 'space_station',
+          characterId: 'brainy',
+          sceneAsset: 'world.space_station.background.mission_control_desk',
+          choiceAssets: const ['world.space_station.object.star'],
+          interactionType: PuzzleInteractionType.tapChoice,
+          animationType: PuzzleAnimationType.cardBounce,
+          feedbackStyle: PuzzleFeedbackStyle.standard,
+          estimatedSeconds: seconds,
+          cognitiveLoad: load,
+          bossMixTags: bossTags,
+        ),
     };
   }
 }

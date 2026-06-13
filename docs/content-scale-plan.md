@@ -43,6 +43,8 @@ Current implementation notes:
   (`docs/content-stage-16-status.md`).
 - Stage 17: asset system
   (`docs/content-stage-17-status.md`).
+- Stage 18: visual puzzle metadata
+  (`docs/content-stage-18-status.md`).
 
 ## Content Architecture
 

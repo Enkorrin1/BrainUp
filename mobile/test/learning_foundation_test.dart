@@ -116,18 +116,56 @@ void main() {
       final json = jsonDecode(jsonEncode(manifest)) as Map<String, Object?>;
       final qualityGate = json['qualityGate'] as Map<String, Object?>;
       final coverage = json['coverage'] as Map<String, Object?>;
+      final visualMetadata = json['visualMetadata'] as Map<String, Object?>;
       final puzzles = json['puzzles'] as List<Object?>;
       final focusTracker = puzzles.cast<Map<String, Object?>>().firstWhere(
             (puzzle) => puzzle['payloadRef'] == 'focus.tracker.easy.001',
           );
+      final focusTrackerVisual =
+          focusTracker['visualMetadata'] as Map<String, Object?>;
 
       expect(json['schemaVersion'], 1);
       expect(qualityGate['passes'], isTrue);
       expect(coverage['totalPuzzleCount'], FoundationCatalog.allPuzzles.length);
+      expect(
+        visualMetadata['generatedPuzzleVisualCount'],
+        greaterThanOrEqualTo(100),
+      );
       expect(puzzles.length, FoundationCatalog.allPuzzles.length);
       expect(focusTracker['skillTag'], SkillTag.attention.name);
       expect(focusTracker['difficulty'], PuzzleDifficulty.easy.name);
       expect(focusTracker['ageBandIds'], contains(AgeBandId.age4to5.name));
+      expect(focusTrackerVisual['worldId'], 'forest_lab');
+      expect(focusTrackerVisual['characterId'], 'mira');
+      expect(focusTrackerVisual['interactionType'], 'tapChoice');
+    });
+
+    test('generated visual metadata references known worlds and characters',
+        () {
+      final generatedPuzzles = FoundationCatalog.allPuzzles
+          .where((puzzle) => puzzle.lessonId == 'lesson.generated')
+          .toList();
+
+      expect(generatedPuzzles.length, greaterThanOrEqualTo(100));
+      for (final puzzle in generatedPuzzles) {
+        final metadata = puzzle.visualMetadata;
+
+        expect(metadata, isNotNull, reason: puzzle.id);
+        expect(
+          FoundationCatalog.knownWorldIds.contains(metadata!.worldId),
+          isTrue,
+          reason: puzzle.id,
+        );
+        expect(
+          FoundationCatalog.knownCharacterIds.contains(metadata.characterId),
+          isTrue,
+          reason: puzzle.id,
+        );
+        expect(metadata.familyId, isNotEmpty, reason: puzzle.id);
+        expect(metadata.sceneAsset, startsWith('world.'), reason: puzzle.id);
+        expect(metadata.choiceAssets, isNotEmpty, reason: puzzle.id);
+        expect(metadata.estimatedSeconds, greaterThan(0), reason: puzzle.id);
+      }
     });
 
     test('lesson generator mixes fixed and generated content bank puzzles', () {
