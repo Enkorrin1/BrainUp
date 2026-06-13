@@ -49,6 +49,8 @@ Design a broad set of puzzle families so the app feels varied.
 
 Deliverable: `docs/puzzle-type-matrix.md`
 
+Status: done in `docs/content-stage-14-status.md`.
+
 Target families:
 
 - odd one out;

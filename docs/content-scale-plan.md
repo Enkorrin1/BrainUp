@@ -35,6 +35,8 @@ Current implementation notes:
   (`docs/puzzle-content-master-plan.md`).
 - Stage 13: puzzle content quality system
   (`docs/content-stage-13-status.md`).
+- Stage 14: puzzle type matrix
+  (`docs/content-stage-14-status.md`).
 
 ## Content Architecture
 
