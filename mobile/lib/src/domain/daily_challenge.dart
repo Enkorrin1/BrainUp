@@ -1,4 +1,6 @@
-﻿import 'family_profile.dart';
+import 'family_profile.dart';
+
+import 'learning_foundation.dart';
 
 class DailyChallenge {
   const DailyChallenge({
@@ -75,6 +77,15 @@ List<DailyChallenge> dailyChallengesForAge(
 }
 
 DailyChallenge dailyChallengeById(String id, {required ChildAge age}) {
+  final match = dailyChallengeByIdOrNull(id, age: age);
+  if (match != null) {
+    return match;
+  }
+
+  return _allChallengesForAge(age).first;
+}
+
+DailyChallenge? dailyChallengeByIdOrNull(String id, {required ChildAge age}) {
   final ageChallenges = _allChallengesForAge(age);
   final ageMatch = ageChallenges.where((challenge) => challenge.id == id);
   if (ageMatch.isNotEmpty) {
@@ -89,7 +100,40 @@ DailyChallenge dailyChallengeById(String id, {required ChildAge age}) {
     }
   }
 
-  return ageChallenges.first;
+  return null;
+}
+
+DailyChallenge dailyChallengeForPuzzle(
+  PuzzleDefinition puzzle,
+  ChildAge age,
+) {
+  final manualChallenge = dailyChallengeByIdOrNull(puzzle.payloadRef, age: age);
+  if (manualChallenge != null) {
+    return manualChallenge;
+  }
+
+  final skill = _skillTitleForPuzzle(puzzle.skillTag);
+  final typeTitle = _titleForPuzzleType(puzzle.type);
+  final difficulty = _difficultyTitle(puzzle.difficulty);
+  final correctId = puzzle.correctAnswerKey;
+
+  return DailyChallenge(
+    id: puzzle.payloadRef,
+    title: '$typeTitle: $difficulty',
+    prompt: _promptForPuzzle(puzzle),
+    question: _questionForPuzzle(puzzle, skill),
+    skill: skill,
+    goal: _goalForSkill(puzzle.skillTag),
+    minutes: _minutesForDifficulty(puzzle.difficulty),
+    correctChoiceId: correctId,
+    hint: _hintForPuzzle(puzzle, skill),
+    explanation: _explanationForPuzzle(puzzle, skill),
+    choices: [
+      ChallengeChoice(id: correctId, label: _choiceLabel(correctId)),
+      const ChallengeChoice(id: 'almost', label: 'Почти'),
+      const ChallengeChoice(id: 'different', label: 'Другое'),
+    ],
+  );
 }
 
 List<DailyChallenge> dailyChallengesByIds(
@@ -99,6 +143,115 @@ List<DailyChallenge> dailyChallengesByIds(
   return [
     for (final id in ids) dailyChallengeById(id, age: age),
   ];
+}
+
+String _skillTitleForPuzzle(SkillTag skillTag) {
+  return switch (skillTag) {
+    SkillTag.attention => 'Внимание',
+    SkillTag.memory => 'Рабочая память',
+    SkillTag.pattern => 'Закономерности',
+    SkillTag.classification => 'Сравнение',
+    SkillTag.arithmetic => 'Математическое мышление',
+    SkillTag.spatial => 'Пространственное мышление',
+    SkillTag.reasoning => 'Логика и дедукция',
+  };
+}
+
+String _titleForPuzzleType(PuzzleType type) {
+  return switch (type) {
+    PuzzleType.oddOneOut => 'Лишний элемент',
+    PuzzleType.sequenceComplete => 'Продолжи ряд',
+    PuzzleType.pairMatch => 'Найди пару',
+    PuzzleType.categorySort => 'Сортировка',
+    PuzzleType.pathPuzzle => 'Маршрут',
+    PuzzleType.countBridge => 'Числовой мост',
+    PuzzleType.visualCompare => 'Сравнение',
+    PuzzleType.analogy => 'Аналогия',
+    PuzzleType.memoryGrid => 'Память',
+    PuzzleType.codeBreaker => 'Код',
+    PuzzleType.spatialRotation => 'Поворот',
+    PuzzleType.attentionScan => 'Детали',
+    PuzzleType.rebus => 'Ребус',
+    PuzzleType.mixedBoss => 'Босс-задача',
+  };
+}
+
+String _difficultyTitle(PuzzleDifficulty difficulty) {
+  return switch (difficulty) {
+    PuzzleDifficulty.easy => 'разминка',
+    PuzzleDifficulty.normal => 'уровень',
+    PuzzleDifficulty.hard => 'вызов',
+    PuzzleDifficulty.boss => 'финал',
+  };
+}
+
+LearningGoal _goalForSkill(SkillTag skillTag) {
+  return switch (skillTag) {
+    SkillTag.arithmetic => LearningGoal.math,
+    SkillTag.attention || SkillTag.memory => LearningGoal.attention,
+    _ => LearningGoal.logic,
+  };
+}
+
+int _minutesForDifficulty(PuzzleDifficulty difficulty) {
+  return switch (difficulty) {
+    PuzzleDifficulty.easy => 3,
+    PuzzleDifficulty.normal => 4,
+    PuzzleDifficulty.hard => 5,
+    PuzzleDifficulty.boss => 6,
+  };
+}
+
+String _promptForPuzzle(PuzzleDefinition puzzle) {
+  return switch (puzzle.type) {
+    PuzzleType.sequenceComplete =>
+      'Найди правило и продолжи последовательность.',
+    PuzzleType.memoryGrid => 'Удержи связь в памяти и выбери правильную пару.',
+    PuzzleType.countBridge => 'Собери число из маленьких частей.',
+    PuzzleType.attentionScan => 'Посмотри внимательно и сравни детали.',
+    PuzzleType.codeBreaker => 'Раскрой правило кода.',
+    PuzzleType.spatialRotation => 'Представь, как фигура повернулась.',
+    PuzzleType.oddOneOut => 'Найди элемент, который отличается от остальных.',
+    PuzzleType.mixedBoss => 'Соедини несколько правил в одном решении.',
+    _ => 'Реши короткую головоломку BrainUp.',
+  };
+}
+
+String _questionForPuzzle(PuzzleDefinition puzzle, String skill) {
+  return switch (puzzle.type) {
+    PuzzleType.mixedBoss =>
+      'Босс-уровень: какой вариант лучше всего завершает задачу на $skill?',
+    PuzzleType.memoryGrid => 'Какая карточка образует правильную пару?',
+    PuzzleType.codeBreaker => 'Какой ответ подходит к скрытому правилу?',
+    PuzzleType.countBridge => 'Какой вариант собирает нужное число?',
+    PuzzleType.spatialRotation =>
+      'Какой вариант сохраняет форму после поворота?',
+    _ => 'Какой вариант подходит для навыка "$skill"?',
+  };
+}
+
+String _hintForPuzzle(PuzzleDefinition puzzle, String skill) {
+  return 'Сначала найди главное правило: это задача на $skill. '
+      'Отбрось вариант, который нарушает порядок.';
+}
+
+String _explanationForPuzzle(PuzzleDefinition puzzle, String skill) {
+  return 'Правильный ответ сохраняет правило задачи на $skill. '
+      'Такой формат помогает тренировать навык постепенно.';
+}
+
+String _choiceLabel(String choiceId) {
+  return switch (choiceId) {
+    'next' => 'Следующий',
+    'pair' => 'Пара',
+    'sum' => 'Сумма',
+    'detail' => 'Деталь',
+    'rule' => 'Правило',
+    'same' => 'Та же форма',
+    'odd' => 'Лишний',
+    'boss' => 'Решение',
+    _ => choiceId,
+  };
 }
 
 List<DailyChallenge> _allChallengesForAge(ChildAge age) {

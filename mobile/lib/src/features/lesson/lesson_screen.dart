@@ -141,20 +141,21 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   List<DailyChallenge> _lessonChallenges(ChildProfile child, Lesson lesson) {
-    final lessonSteps = FoundationCatalog.stepsForLesson(lesson);
-    if (lessonSteps.isNotEmpty) {
-      final challengeIds = [
-        for (final step in lessonSteps)
-          FoundationCatalog.puzzleForStep(step).payloadRef,
-      ];
-      return dailyChallengesByIds(challengeIds, age: child.age);
-    }
-
-    final baseChallenges = dailyChallengesForAge(child.age);
+    final puzzles = FoundationCatalog.puzzlesForLesson(
+      lesson: lesson,
+      ageBandId: _ageBandIdForChild(child),
+    );
     return [
-      for (var index = 0; index < lesson.stepIds.length; index += 1)
-        baseChallenges[index % baseChallenges.length],
+      for (final puzzle in puzzles) dailyChallengeForPuzzle(puzzle, child.age),
     ];
+  }
+
+  AgeBandId _ageBandIdForChild(ChildProfile child) {
+    return switch (child.age) {
+      ChildAge.four || ChildAge.five => AgeBandId.age4to5,
+      ChildAge.six => AgeBandId.age6,
+      ChildAge.seven || ChildAge.eight => AgeBandId.age7to8,
+    };
   }
 
   String? _nextLessonIdAfter(String lessonId, ChildProfile child) {

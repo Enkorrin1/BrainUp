@@ -56,5 +56,23 @@ void main() {
         isTrue,
       );
     });
+
+    test('lesson generator mixes fixed and generated content bank puzzles', () {
+      final lesson = FoundationCatalog.lessonForId('lesson.012');
+      final puzzles = FoundationCatalog.puzzlesForLesson(
+        lesson: lesson,
+        ageBandId: AgeBandId.age7to8,
+      );
+
+      expect(puzzles.length, 5);
+      expect(
+        puzzles.any((puzzle) => puzzle.lessonId == 'lesson.generated'),
+        isTrue,
+      );
+      expect(
+        puzzles.map((puzzle) => puzzle.skillTag).toSet().length,
+        greaterThanOrEqualTo(2),
+      );
+    });
   });
 }

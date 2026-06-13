@@ -1,4 +1,4 @@
-﻿enum AgeBandId {
+enum AgeBandId {
   age4to5,
   age6,
   age7to8,
@@ -1465,6 +1465,55 @@ class FoundationCatalog {
     };
   }
 
+  static List<PuzzleDefinition> puzzlesForLesson({
+    required Lesson lesson,
+    required AgeBandId ageBandId,
+    int targetCount = 5,
+  }) {
+    final fixedPuzzles = [
+      for (final step in stepsForLesson(lesson)) puzzleForStep(step),
+    ];
+    final primarySkill =
+        fixedPuzzles.isEmpty ? SkillTag.pattern : fixedPuzzles.first.skillTag;
+    final lessonNumber = _lessonNumber(lesson.id);
+    final targetDifficulty = _difficultyForLessonNumber(lessonNumber);
+    final generated = _rotated(
+      puzzlesFor(ageBandId: ageBandId, skillTag: primarySkill),
+      lessonNumber,
+    );
+    final adjacent = _rotated(
+      puzzlesFor(ageBandId: ageBandId)
+          .where((puzzle) => puzzle.skillTag != primarySkill)
+          .toList(growable: false),
+      lessonNumber * 2,
+    );
+    final difficultyMatch = _rotated(
+      puzzlesFor(ageBandId: ageBandId, difficulty: targetDifficulty),
+      lessonNumber * 3,
+    );
+    final selected = <PuzzleDefinition>[];
+    final seenIds = <String>{};
+
+    void addCandidates(Iterable<PuzzleDefinition> candidates) {
+      for (final puzzle in candidates) {
+        if (selected.length >= targetCount) {
+          return;
+        }
+        if (seenIds.add(puzzle.id)) {
+          selected.add(puzzle);
+        }
+      }
+    }
+
+    addCandidates(fixedPuzzles.take(2));
+    addCandidates(generated);
+    addCandidates(adjacent);
+    addCandidates(difficultyMatch);
+    addCandidates(_rotated(allPuzzles, lessonNumber));
+
+    return selected;
+  }
+
   static Lesson lessonForNode(MapNode node) {
     return lessonForId(node.lessonId);
   }
@@ -1490,6 +1539,38 @@ class FoundationCatalog {
       (puzzle) => puzzle.id == step.puzzleId,
       orElse: () => allPuzzles.first,
     );
+  }
+
+  static int _lessonNumber(String lessonId) {
+    final numberText = lessonId.split('.').last;
+    return int.tryParse(numberText) ?? 1;
+  }
+
+  static PuzzleDifficulty _difficultyForLessonNumber(int lessonNumber) {
+    if (lessonNumber % 12 == 0) {
+      return PuzzleDifficulty.boss;
+    }
+    if (lessonNumber >= 17) {
+      return PuzzleDifficulty.hard;
+    }
+    if (lessonNumber >= 7) {
+      return PuzzleDifficulty.normal;
+    }
+    return PuzzleDifficulty.easy;
+  }
+
+  static List<PuzzleDefinition> _rotated(
+    List<PuzzleDefinition> puzzles,
+    int seed,
+  ) {
+    if (puzzles.isEmpty) {
+      return const [];
+    }
+    final offset = seed % puzzles.length;
+    return [
+      ...puzzles.skip(offset),
+      ...puzzles.take(offset),
+    ];
   }
 }
 

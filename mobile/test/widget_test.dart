@@ -65,7 +65,7 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Step 1 of 3'), findsOneWidget);
+    expect(find.text('Step 1 of 5'), findsOneWidget);
   });
 
   testWidgets('opens current lesson from path node', (tester) async {
@@ -84,7 +84,7 @@ void main() {
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Step 1 of 3'), findsOneWidget);
+    expect(find.text('Step 1 of 5'), findsOneWidget);
   });
 
   testWidgets('shows a lesson hint before checking an answer', (tester) async {
@@ -166,7 +166,7 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    for (final answer in ['Circle', '3', 'Ball']) {
+    for (final answer in ['Circle', '3', 'Apple', 'Red', 'Rocket']) {
       final answerFinder = find.text(answer).last;
       await tester.ensureVisible(answerFinder);
       await tester.pumpAndSettle();
@@ -176,7 +176,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Check'));
       await tester.pumpAndSettle();
-      final nextLabel = answer == 'Ball' ? 'Finish lesson' : 'Next';
+      final nextLabel = answer == 'Rocket' ? 'Finish lesson' : 'Next';
       await tester.ensureVisible(find.text(nextLabel));
       await tester.pumpAndSettle();
       await tester.tap(find.text(nextLabel));
