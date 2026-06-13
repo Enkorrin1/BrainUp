@@ -212,6 +212,10 @@ void main() {
         usedHints: 1,
         wrongAttempts: 1,
         mistakePuzzleIds: ['memory.order.normal.003'],
+        reviewedPuzzleIds: [
+          'memory.order.normal.003',
+          'memory-pairs',
+        ],
       );
 
       final child = controller.familyProfile?.activeChild;
@@ -222,6 +226,10 @@ void main() {
       expect(child?.lastChallengeId, FoundationCatalog.adaptiveReviewLesson.id);
       expect(child?.lastSession?.mistakePuzzleIds, [
         'memory.order.normal.003',
+      ]);
+      expect(child?.lastSession?.reviewedPuzzleIds, [
+        'memory.order.normal.003',
+        'memory-pairs',
       ]);
     });
 

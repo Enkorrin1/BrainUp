@@ -299,23 +299,39 @@ class PracticeReviewProfile {
       ...sessions
     ]..sort((first, second) => second.completedAt.compareTo(first.completedAt));
     final mistakes = <String>[];
+    final resolvedMistakes = <String>{};
     final weakSkills = <SkillTag>{};
+    final reinforcedSkills = <SkillTag>{};
 
     for (final session in recentSessions.take(maxSessions)) {
+      final accuracy = session.totalQuestions == 0
+          ? 1.0
+          : session.correctAnswers / session.totalQuestions;
+      final isSuccessfulReview = session.reviewedPuzzleIds.isNotEmpty &&
+          accuracy >= 0.8 &&
+          session.wrongAttempts == 0;
+      if (isSuccessfulReview) {
+        resolvedMistakes.addAll(session.reviewedPuzzleIds);
+        reinforcedSkills
+            .addAll(_skillTagsForPuzzleIds(session.reviewedPuzzleIds));
+        final sessionSkill = _skillTagForSessionSkill(session.skill);
+        if (sessionSkill != null) {
+          reinforcedSkills.add(sessionSkill);
+        }
+      }
+
       for (final puzzleId in session.mistakePuzzleIds) {
-        if (!mistakes.contains(puzzleId)) {
+        if (!resolvedMistakes.contains(puzzleId) &&
+            !mistakes.contains(puzzleId)) {
           mistakes.add(puzzleId);
         }
       }
 
-      final accuracy = session.totalQuestions == 0
-          ? 1.0
-          : session.correctAnswers / session.totalQuestions;
       if (accuracy < 0.8 ||
           session.wrongAttempts > 0 ||
           session.usedHints > 1) {
         final skillTag = _skillTagForSessionSkill(session.skill);
-        if (skillTag != null) {
+        if (skillTag != null && !reinforcedSkills.contains(skillTag)) {
           weakSkills.add(skillTag);
         }
       }
@@ -1792,6 +1808,18 @@ SkillTag? _skillTagForSessionSkill(String skill) {
     return SkillTag.reasoning;
   }
   return null;
+}
+
+Set<SkillTag> _skillTagsForPuzzleIds(Iterable<String> puzzleIds) {
+  final tags = <SkillTag>{};
+  for (final puzzleId in puzzleIds) {
+    for (final puzzle in FoundationCatalog.allPuzzles) {
+      if (puzzle.id == puzzleId || puzzle.payloadRef == puzzleId) {
+        tags.add(puzzle.skillTag);
+      }
+    }
+  }
+  return tags;
 }
 
 class ContentBank {

@@ -175,6 +175,13 @@ void main() {
     expect(find.text('Mistakes reviewed'), findsOneWidget);
     expect(find.text('New sticker!'), findsNothing);
     expect(find.text('Next lesson'), findsNothing);
+
+    await tester.ensureVisible(find.text('Back home'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Back home'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Practice tricky bits'), findsNothing);
   });
 
   testWidgets('shows a lesson hint before checking an answer', (tester) async {

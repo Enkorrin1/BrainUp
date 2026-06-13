@@ -21,6 +21,8 @@ Current implementation notes:
   (`docs/content-stage-6-status.md`).
 - Stage 7: dedicated adaptive review result state
   (`docs/content-stage-7-status.md`).
+- Stage 8: adaptive review signal clearing
+  (`docs/content-stage-8-status.md`).
 
 ## Content Architecture
 

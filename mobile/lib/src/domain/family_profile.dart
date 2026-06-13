@@ -117,6 +117,7 @@ class PracticeSession {
     this.usedHints = 0,
     this.wrongAttempts = 0,
     this.mistakePuzzleIds = const [],
+    this.reviewedPuzzleIds = const [],
   });
 
   final DateTime completedAt;
@@ -129,6 +130,7 @@ class PracticeSession {
   final int usedHints;
   final int wrongAttempts;
   final List<String> mistakePuzzleIds;
+  final List<String> reviewedPuzzleIds;
 
   bool completedOn(DateTime date) {
     return _dateOnly(completedAt) == _dateOnly(date);
@@ -146,6 +148,7 @@ class PracticeSession {
       'usedHints': usedHints,
       'wrongAttempts': wrongAttempts,
       'mistakePuzzleIds': mistakePuzzleIds,
+      'reviewedPuzzleIds': reviewedPuzzleIds,
     };
   }
 
@@ -163,6 +166,10 @@ class PracticeSession {
       mistakePuzzleIds: (json['mistakePuzzleIds'] as List<Object?>? ?? const [])
           .whereType<String>()
           .toList(growable: false),
+      reviewedPuzzleIds:
+          (json['reviewedPuzzleIds'] as List<Object?>? ?? const [])
+              .whereType<String>()
+              .toList(growable: false),
     );
   }
 
@@ -180,7 +187,8 @@ class PracticeSession {
             totalQuestions == other.totalQuestions &&
             usedHints == other.usedHints &&
             wrongAttempts == other.wrongAttempts &&
-            _listEquals(mistakePuzzleIds, other.mistakePuzzleIds);
+            _listEquals(mistakePuzzleIds, other.mistakePuzzleIds) &&
+            _listEquals(reviewedPuzzleIds, other.reviewedPuzzleIds);
   }
 
   @override
@@ -196,6 +204,7 @@ class PracticeSession {
       usedHints,
       wrongAttempts,
       Object.hashAll(mistakePuzzleIds),
+      Object.hashAll(reviewedPuzzleIds),
     );
   }
 }

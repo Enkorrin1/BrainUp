@@ -36,6 +36,7 @@ class LessonScreen extends StatefulWidget {
     int usedHints,
     int wrongAttempts,
     List<String> mistakePuzzleIds,
+    List<String> reviewedPuzzleIds,
   }) onLessonComplete;
   final VoidCallback onBackToMap;
   final ValueChanged<String> onNextLessonSelected;
@@ -253,6 +254,13 @@ class _LessonScreenState extends State<LessonScreen> {
           usedHints: _hintedStepIndexes.length,
           wrongAttempts: _wrongAttempts,
           mistakePuzzleIds: _mistakePuzzleIds.toList(growable: false),
+          reviewedPuzzleIds:
+              lesson.id == FoundationCatalog.adaptiveReviewLesson.id
+                  ? [
+                      for (final reviewedChallenge in challenges)
+                        reviewedChallenge.id,
+                    ]
+                  : const [],
         );
         if (!mounted) {
           return;

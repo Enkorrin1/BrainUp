@@ -145,5 +145,35 @@ void main() {
         isTrue,
       );
     });
+
+    test('successful adaptive review clears older mistake signals', () {
+      final reviewProfile = PracticeReviewProfile.fromSessions([
+        PracticeSession(
+          completedAt: DateTime(2026, 6, 12, 18),
+          challengeId: 'lesson.009',
+          challengeTitle: 'Hard memory lesson',
+          skill: 'Working memory',
+          minutes: 5,
+          correctAnswers: 2,
+          totalQuestions: 5,
+          wrongAttempts: 2,
+          mistakePuzzleIds: ['memory.order.normal.003'],
+        ),
+        PracticeSession(
+          completedAt: DateTime(2026, 6, 13, 18),
+          challengeId: FoundationCatalog.adaptiveReviewLesson.id,
+          challengeTitle: 'Review complete',
+          skill: 'Working memory',
+          minutes: 3,
+          correctAnswers: 5,
+          totalQuestions: 5,
+          reviewedPuzzleIds: ['memory.order.normal.003'],
+        ),
+      ]);
+
+      expect(reviewProfile.mistakePuzzleIds, isEmpty);
+      expect(reviewProfile.weakSkillTags, isNot(contains(SkillTag.memory)));
+      expect(reviewProfile.hasSignals, isFalse);
+    });
   });
 }
