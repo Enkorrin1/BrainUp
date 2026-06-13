@@ -71,6 +71,18 @@ enum PuzzleFeedbackStyle {
   bossMilestone,
 }
 
+enum ContentPlacement {
+  mainRoute,
+  dailyChallenge,
+  adaptiveReview,
+  bossNode,
+  mistakeRepeat,
+  parentAnalytics,
+  rewardCollection,
+  ageTrack,
+  weakSkillRecommendation,
+}
+
 enum PuzzleCognitiveLoad {
   light,
   medium,
@@ -200,6 +212,42 @@ class Lesson {
   final List<String> stepIds;
   final int xpReward;
   final int maxHearts;
+}
+
+class ContentPlacementRule {
+  const ContentPlacementRule({
+    required this.placement,
+    required this.minPuzzleCount,
+    required this.maxPuzzleCount,
+    required this.defaultPuzzleCount,
+    required this.description,
+    this.preferredDifficulties = const [],
+    this.preferredTypes = const [],
+  });
+
+  final ContentPlacement placement;
+  final int minPuzzleCount;
+  final int maxPuzzleCount;
+  final int defaultPuzzleCount;
+  final String description;
+  final List<PuzzleDifficulty> preferredDifficulties;
+  final List<PuzzleType> preferredTypes;
+
+  Map<String, Object?> toJson() {
+    return {
+      'placement': placement.name,
+      'minPuzzleCount': minPuzzleCount,
+      'maxPuzzleCount': maxPuzzleCount,
+      'defaultPuzzleCount': defaultPuzzleCount,
+      'description': description,
+      'preferredDifficulties': [
+        for (final difficulty in preferredDifficulties) difficulty.name,
+      ],
+      'preferredTypes': [
+        for (final type in preferredTypes) type.name,
+      ],
+    };
+  }
 }
 
 class LessonStep {
@@ -571,6 +619,100 @@ class FoundationCatalog {
     'rulo',
     'mira',
   };
+
+  static const List<ContentPlacementRule> placementRules = [
+    ContentPlacementRule(
+      placement: ContentPlacement.mainRoute,
+      minPuzzleCount: 5,
+      maxPuzzleCount: 5,
+      defaultPuzzleCount: 5,
+      description: 'Standard learning path lesson with mixed practice.',
+      preferredDifficulties: [
+        PuzzleDifficulty.easy,
+        PuzzleDifficulty.normal,
+        PuzzleDifficulty.hard,
+      ],
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.dailyChallenge,
+      minPuzzleCount: 1,
+      maxPuzzleCount: 1,
+      defaultPuzzleCount: 1,
+      description: 'Short daily puzzle selected for fast streak practice.',
+      preferredDifficulties: [
+        PuzzleDifficulty.easy,
+        PuzzleDifficulty.normal,
+      ],
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.adaptiveReview,
+      minPuzzleCount: 3,
+      maxPuzzleCount: 5,
+      defaultPuzzleCount: 5,
+      description: 'Review set built from recent mistakes and weak skills.',
+      preferredDifficulties: [
+        PuzzleDifficulty.easy,
+        PuzzleDifficulty.normal,
+        PuzzleDifficulty.hard,
+      ],
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.bossNode,
+      minPuzzleCount: 6,
+      maxPuzzleCount: 8,
+      defaultPuzzleCount: 7,
+      description: 'Mixed checkpoint lesson with harder multi-skill puzzles.',
+      preferredDifficulties: [
+        PuzzleDifficulty.hard,
+        PuzzleDifficulty.boss,
+      ],
+      preferredTypes: [
+        PuzzleType.mixedBoss,
+        PuzzleType.codeBreaker,
+        PuzzleType.analogy,
+        PuzzleType.pathPuzzle,
+      ],
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.mistakeRepeat,
+      minPuzzleCount: 1,
+      maxPuzzleCount: 3,
+      defaultPuzzleCount: 2,
+      description: 'Small repeat queue for missed puzzle families.',
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.parentAnalytics,
+      minPuzzleCount: 0,
+      maxPuzzleCount: 0,
+      defaultPuzzleCount: 0,
+      description: 'Reporting placement; puzzles contribute signals only.',
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.rewardCollection,
+      minPuzzleCount: 1,
+      maxPuzzleCount: 1,
+      defaultPuzzleCount: 1,
+      description: 'Special milestone puzzle that unlocks a reward moment.',
+      preferredDifficulties: [
+        PuzzleDifficulty.normal,
+        PuzzleDifficulty.hard,
+      ],
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.ageTrack,
+      minPuzzleCount: 5,
+      maxPuzzleCount: 5,
+      defaultPuzzleCount: 5,
+      description: 'Age-band scoped content route.',
+    ),
+    ContentPlacementRule(
+      placement: ContentPlacement.weakSkillRecommendation,
+      minPuzzleCount: 3,
+      maxPuzzleCount: 5,
+      defaultPuzzleCount: 4,
+      description: 'Recommended practice for the weakest recent skill.',
+    ),
+  ];
 
   static const List<AgeBand> ageBands = [
     AgeBand(
@@ -1827,6 +1969,25 @@ class FoundationCatalog {
         'visualPuzzleCount':
             allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
       },
+      'placementRules': [
+        for (final rule in placementRules) rule.toJson(),
+      ],
+      'lessonPlacements': [
+        for (final lesson in starterLessons)
+          {
+            'lessonId': lesson.id,
+            'placement': placementForLesson(lesson).name,
+            'defaultPuzzleCount':
+                placementRuleFor(placementForLesson(lesson)).defaultPuzzleCount,
+          },
+        {
+          'lessonId': adaptiveReviewLesson.id,
+          'placement': ContentPlacement.adaptiveReview.name,
+          'defaultPuzzleCount':
+              placementRuleFor(ContentPlacement.adaptiveReview)
+                  .defaultPuzzleCount,
+        },
+      ],
       'puzzles': [
         for (final puzzle in allPuzzles) puzzle.toJson(),
       ],
@@ -1836,9 +1997,12 @@ class FoundationCatalog {
   static List<PuzzleDefinition> puzzlesForLesson({
     required Lesson lesson,
     required AgeBandId ageBandId,
-    int targetCount = 5,
+    int? targetCount,
     PracticeReviewProfile reviewProfile = const PracticeReviewProfile(),
   }) {
+    final placement = placementForLesson(lesson);
+    final rule = placementRuleFor(placement);
+    final effectiveTargetCount = targetCount ?? rule.defaultPuzzleCount;
     final fixedPuzzles = [
       for (final step in stepsForLesson(lesson)) puzzleForStep(step),
     ];
@@ -1855,19 +2019,27 @@ class FoundationCatalog {
     void addCandidates(
       Iterable<PuzzleDefinition> candidates, {
       required bool balanced,
+      required bool enforcePlacement,
     }) {
       for (final puzzle in candidates) {
-        if (selected.length >= targetCount) {
+        if (selected.length >= effectiveTargetCount) {
           return;
         }
         if (seenIds.contains(puzzle.id)) {
+          continue;
+        }
+        if (enforcePlacement &&
+            !_fitsPlacement(
+              puzzle: puzzle,
+              placement: placement,
+            )) {
           continue;
         }
         if (balanced &&
             !_fitsLessonBalance(
               puzzle: puzzle,
               selected: selected,
-              targetCount: targetCount,
+              targetCount: effectiveTargetCount,
             )) {
           continue;
         }
@@ -1907,38 +2079,84 @@ class FoundationCatalog {
       ),
       lessonNumber * 5,
     );
+    final bossMix = _rotated(
+      puzzlesFor(ageBandId: ageBandId)
+          .where(
+            (puzzle) =>
+                puzzle.type == PuzzleType.mixedBoss ||
+                puzzle.difficulty == PuzzleDifficulty.boss,
+          )
+          .toList(growable: false),
+      lessonNumber * 6,
+    );
     final adjacent = _rotated(
       puzzlesFor(ageBandId: ageBandId)
           .where((puzzle) => puzzle.skillTag != primarySkill)
           .toList(growable: false),
-      lessonNumber * 6,
+      lessonNumber * 7,
     );
     final ageBandPool = _rotated(
       puzzlesFor(ageBandId: ageBandId),
-      lessonNumber * 7,
+      lessonNumber * 8,
     );
 
-    final pools = [
-      fixedPuzzles
-          .take(reviewProfile.hasSignals ? 1 : 2)
-          .toList(growable: false),
-      reviewMistakes,
-      weakSkillReview,
-      primaryDifficulty,
-      primarySkillPool,
-      difficultyMatch,
-      adjacent,
-      ageBandPool,
-    ];
+    final fixedTakeCount = placement == ContentPlacement.bossNode
+        ? fixedPuzzles.length
+        : fixedPuzzles.take(reviewProfile.hasSignals ? 1 : 2).length;
+    final fixedPool = fixedPuzzles.take(fixedTakeCount).toList(growable: false);
+    final pools = placement == ContentPlacement.bossNode
+        ? [
+            fixedPool,
+            bossMix,
+            difficultyMatch,
+            primaryDifficulty,
+            adjacent,
+            ageBandPool,
+          ]
+        : [
+            fixedPool,
+            reviewMistakes,
+            weakSkillReview,
+            primaryDifficulty,
+            primarySkillPool,
+            difficultyMatch,
+            adjacent,
+            ageBandPool,
+          ];
 
     for (final pool in pools) {
-      addCandidates(pool, balanced: true);
+      addCandidates(
+        pool,
+        balanced: true,
+        enforcePlacement: !identical(pool, fixedPool),
+      );
     }
     for (final pool in pools) {
-      addCandidates(pool, balanced: false);
+      addCandidates(
+        pool,
+        balanced: false,
+        enforcePlacement: !identical(pool, fixedPool),
+      );
     }
 
     return selected;
+  }
+
+  static ContentPlacement placementForLesson(Lesson lesson) {
+    if (lesson.id == adaptiveReviewLesson.id) {
+      return ContentPlacement.adaptiveReview;
+    }
+
+    final lessonNumber = _lessonNumber(lesson.id);
+    if (lessonNumber % 12 == 0) {
+      return ContentPlacement.bossNode;
+    }
+
+    return ContentPlacement.mainRoute;
+  }
+
+  static ContentPlacementRule placementRuleFor(ContentPlacement placement) {
+    return placementRules.firstWhere((rule) => rule.placement == placement);
   }
 
   static Lesson lessonForNode(MapNode node) {
@@ -2027,6 +2245,29 @@ class FoundationCatalog {
     }
 
     return true;
+  }
+
+  static bool _fitsPlacement({
+    required PuzzleDefinition puzzle,
+    required ContentPlacement placement,
+  }) {
+    return switch (placement) {
+      ContentPlacement.mainRoute ||
+      ContentPlacement.ageTrack ||
+      ContentPlacement.adaptiveReview ||
+      ContentPlacement.mistakeRepeat ||
+      ContentPlacement.weakSkillRecommendation =>
+        puzzle.difficulty != PuzzleDifficulty.boss &&
+            puzzle.type != PuzzleType.mixedBoss,
+      ContentPlacement.dailyChallenge =>
+        puzzle.difficulty == PuzzleDifficulty.easy ||
+            puzzle.difficulty == PuzzleDifficulty.normal,
+      ContentPlacement.bossNode => true,
+      ContentPlacement.rewardCollection =>
+        puzzle.difficulty == PuzzleDifficulty.normal ||
+            puzzle.difficulty == PuzzleDifficulty.hard,
+      ContentPlacement.parentAnalytics => true,
+    };
   }
 
   static List<PuzzleDefinition> _reviewMistakePuzzles({

@@ -259,6 +259,10 @@ Stage 21 delivered:
 
 Define where each puzzle type is used.
 
+Status: implemented in `FoundationCatalog` as explicit placement rules and
+lesson placement routing. Normal lessons, adaptive review lessons, and boss
+nodes now use different default puzzle counts and candidate filters.
+
 Placements:
 
 - main learning route;
@@ -278,6 +282,16 @@ Rules:
 - boss lesson: 6-8 mixed puzzles;
 - daily challenge: 1 short puzzle;
 - streak milestone: special reward puzzle.
+
+Stage 22 delivered:
+
+- `ContentPlacement` enum for route, review, boss, daily, reward, analytics,
+  age track, mistake repeat, and weak-skill recommendation placements;
+- `ContentPlacementRule` model with min/max/default puzzle counts;
+- manifest export for placement rules and per-lesson placement;
+- normal lessons fixed at 5 puzzles;
+- adaptive review lessons kept within 3-5 puzzles;
+- boss lessons expanded to 6-8 puzzles with priority for mixed or boss content.
 
 ## Stage 23. Content Dashboard
 

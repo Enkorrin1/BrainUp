@@ -235,7 +235,7 @@ void main() {
         ageBandId: AgeBandId.age7to8,
       );
 
-      expect(puzzles.length, 5);
+      expect(puzzles.length, 7);
       expect(
         puzzles.any((puzzle) => puzzle.lessonId == 'lesson.generated'),
         isTrue,
@@ -243,6 +243,100 @@ void main() {
       expect(
         puzzles.map((puzzle) => puzzle.skillTag).toSet().length,
         greaterThanOrEqualTo(2),
+      );
+    });
+
+    test('content manifest exports placement rules for production routing', () {
+      final manifest = FoundationCatalog.contentManifest();
+      final placementRules = manifest['placementRules'] as List<Object?>;
+      final lessonPlacements = manifest['lessonPlacements'] as List<Object?>;
+
+      expect(
+        placementRules
+            .cast<Map<String, Object?>>()
+            .map((rule) => rule['placement']),
+        containsAll([
+          ContentPlacement.mainRoute.name,
+          ContentPlacement.adaptiveReview.name,
+          ContentPlacement.bossNode.name,
+          ContentPlacement.dailyChallenge.name,
+        ]),
+      );
+      expect(
+        lessonPlacements.cast<Map<String, Object?>>(),
+        contains(
+          containsPair('lessonId', FoundationCatalog.adaptiveReviewLesson.id),
+        ),
+      );
+    });
+
+    test('lesson placement rules size normal, review, and boss lessons', () {
+      final normalLesson = FoundationCatalog.lessonForId('lesson.011');
+      final bossLesson = FoundationCatalog.lessonForId('lesson.012');
+      const reviewLesson = FoundationCatalog.adaptiveReviewLesson;
+
+      expect(
+        FoundationCatalog.placementForLesson(normalLesson),
+        ContentPlacement.mainRoute,
+      );
+      expect(
+        FoundationCatalog.placementForLesson(bossLesson),
+        ContentPlacement.bossNode,
+      );
+      expect(
+        FoundationCatalog.placementForLesson(reviewLesson),
+        ContentPlacement.adaptiveReview,
+      );
+      expect(
+        FoundationCatalog.puzzlesForLesson(
+          lesson: normalLesson,
+          ageBandId: AgeBandId.age7to8,
+        ).length,
+        5,
+      );
+      expect(
+        FoundationCatalog.puzzlesForLesson(
+          lesson: bossLesson,
+          ageBandId: AgeBandId.age7to8,
+        ).length,
+        inInclusiveRange(6, 8),
+      );
+      expect(
+        FoundationCatalog.puzzlesForLesson(
+          lesson: reviewLesson,
+          ageBandId: AgeBandId.age6,
+          reviewProfile: PracticeReviewProfile.fromSessions([
+            PracticeSession(
+              completedAt: DateTime(2026, 6, 12, 18),
+              challengeId: 'lesson.009',
+              challengeTitle: 'Hard memory lesson',
+              skill: 'Working memory',
+              minutes: 5,
+              correctAnswers: 2,
+              totalQuestions: 5,
+              wrongAttempts: 2,
+              mistakePuzzleIds: ['memory.order.normal.003'],
+            ),
+          ]),
+        ).length,
+        inInclusiveRange(3, 5),
+      );
+    });
+
+    test('boss placement prioritizes mixed or boss difficulty content', () {
+      final puzzles = FoundationCatalog.puzzlesForLesson(
+        lesson: FoundationCatalog.lessonForId('lesson.024'),
+        ageBandId: AgeBandId.age7to8,
+      );
+
+      expect(puzzles.length, inInclusiveRange(6, 8));
+      expect(
+        puzzles.any(
+          (puzzle) =>
+              puzzle.type == PuzzleType.mixedBoss ||
+              puzzle.difficulty == PuzzleDifficulty.boss,
+        ),
+        isTrue,
       );
     });
 
