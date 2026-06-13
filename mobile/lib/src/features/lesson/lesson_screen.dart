@@ -69,10 +69,13 @@ class _LessonScreenState extends State<LessonScreen> {
     if (_isComplete) {
       return _LessonCompleteView(
         lesson: lesson,
+        isReviewLesson: lesson.id == FoundationCatalog.adaptiveReviewLesson.id,
         totalQuestions: challenges.length,
         usedHints: _hintedStepIndexes.length,
         wrongAttempts: _wrongAttempts,
-        nextLessonId: _nextLessonIdAfter(lesson.id, child),
+        nextLessonId: lesson.id == FoundationCatalog.adaptiveReviewLesson.id
+            ? null
+            : _nextLessonIdAfter(lesson.id, child),
         onNextLessonSelected: widget.onNextLessonSelected,
         onBackToMap: widget.onBackToMap,
       );
@@ -1898,6 +1901,7 @@ class _LessonFeedback extends StatelessWidget {
 class _LessonCompleteView extends StatelessWidget {
   const _LessonCompleteView({
     required this.lesson,
+    required this.isReviewLesson,
     required this.totalQuestions,
     required this.usedHints,
     required this.wrongAttempts,
@@ -1907,6 +1911,7 @@ class _LessonCompleteView extends StatelessWidget {
   });
 
   final Lesson lesson;
+  final bool isReviewLesson;
   final int totalQuestions;
   final int usedHints;
   final int wrongAttempts;
@@ -1933,10 +1938,14 @@ class _LessonCompleteView extends StatelessWidget {
                     padding: const EdgeInsets.all(22),
                     child: Column(
                       children: [
-                        const _StickerReward(),
+                        isReviewLesson
+                            ? const _ReviewReward()
+                            : const _StickerReward(),
                         const SizedBox(height: 18),
                         Text(
-                          l10n.lessonCompleteTitle,
+                          isReviewLesson
+                              ? l10n.adaptiveReviewCompleteTitle
+                              : l10n.lessonCompleteTitle,
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -1948,7 +1957,9 @@ class _LessonCompleteView extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          l10n.lessonCompleteBody,
+                          isReviewLesson
+                              ? l10n.adaptiveReviewCompleteBody
+                              : l10n.lessonCompleteBody,
                           textAlign: TextAlign.center,
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -1957,11 +1968,13 @@ class _LessonCompleteView extends StatelessWidget {
                                   ),
                         ),
                         const SizedBox(height: 18),
-                        _StickerUnlockCard(
-                          title: l10n.lessonStickerUnlockedTitle,
-                          body: l10n.lessonStickerUnlockedBody,
-                        ),
-                        const SizedBox(height: 18),
+                        if (!isReviewLesson) ...[
+                          _StickerUnlockCard(
+                            title: l10n.lessonStickerUnlockedTitle,
+                            body: l10n.lessonStickerUnlockedBody,
+                          ),
+                          const SizedBox(height: 18),
+                        ],
                         _LessonReviewCard(
                           totalQuestions: totalQuestions,
                           usedHints: usedHints,
@@ -1972,8 +1985,12 @@ class _LessonCompleteView extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _RewardTile(
-                                icon: Icons.star_rounded,
-                                label: l10n.lessonRewardStars,
+                                icon: isReviewLesson
+                                    ? Icons.psychology_alt_rounded
+                                    : Icons.star_rounded,
+                                label: isReviewLesson
+                                    ? l10n.adaptiveReviewRewardFocus
+                                    : l10n.lessonRewardStars,
                                 color: const Color(0xFFFFC739),
                               ),
                             ),
@@ -1992,8 +2009,12 @@ class _LessonCompleteView extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _RewardTile(
-                                icon: Icons.auto_awesome_rounded,
-                                label: l10n.lessonRewardCollection,
+                                icon: isReviewLesson
+                                    ? Icons.replay_rounded
+                                    : Icons.auto_awesome_rounded,
+                                label: isReviewLesson
+                                    ? l10n.adaptiveReviewRewardMistakes
+                                    : l10n.lessonRewardCollection,
                                 color: const Color(0xFF9C6AF2),
                               ),
                             ),
@@ -2091,6 +2112,79 @@ class _StickerReward extends StatelessWidget {
             left: 12,
             bottom: 22,
             child: Icon(Icons.star_rounded, color: Color(0xFFFFC739), size: 24),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReviewReward extends StatelessWidget {
+  const _ReviewReward();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 176,
+      height: 176,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 164,
+            height: 164,
+            decoration: BoxDecoration(
+              color: _LessonPalette.aqua.withValues(alpha: 0.16),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: _LessonPalette.aqua.withValues(alpha: 0.34),
+              ),
+            ),
+          ),
+          Container(
+            width: 124,
+            height: 124,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  _LessonPalette.aqua,
+                  _LessonPalette.violet,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(34),
+              boxShadow: [
+                BoxShadow(
+                  color: _LessonPalette.aqua.withValues(alpha: 0.24),
+                  blurRadius: 22,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.psychology_alt_rounded,
+              color: _LessonPalette.text,
+              size: 62,
+            ),
+          ),
+          const Positioned(
+            top: 14,
+            right: 18,
+            child: Icon(
+              Icons.replay_rounded,
+              color: Color(0xFF42F4D2),
+              size: 32,
+            ),
+          ),
+          const Positioned(
+            left: 20,
+            bottom: 24,
+            child: Icon(
+              Icons.check_circle_rounded,
+              color: Color(0xFFFFD15C),
+              size: 30,
+            ),
           ),
         ],
       ),

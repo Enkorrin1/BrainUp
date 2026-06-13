@@ -25,6 +25,24 @@ extension LocalizedModels on AppLocalizations {
     return _isRu ? 'Повторить' : 'Review';
   }
 
+  String get adaptiveReviewCompleteTitle {
+    return _isRu ? 'Повторение готово!' : 'Review complete!';
+  }
+
+  String get adaptiveReviewCompleteBody {
+    return _isRu
+        ? 'Сложные места стали понятнее. Можно вернуться на маршрут.'
+        : 'The tricky bits are clearer. You can return to the path.';
+  }
+
+  String get adaptiveReviewRewardFocus {
+    return _isRu ? 'Навык закреплен' : 'Skill reinforced';
+  }
+
+  String get adaptiveReviewRewardMistakes {
+    return _isRu ? 'Ошибки разобраны' : 'Mistakes reviewed';
+  }
+
   String labelForAge(ChildAge age) {
     return ageYears(age.years);
   }

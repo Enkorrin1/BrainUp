@@ -123,6 +123,60 @@ void main() {
     expect(find.textContaining('Remember:'), findsOneWidget);
   });
 
+  testWidgets('shows adaptive review result without map reward',
+      (tester) async {
+    final store = _MemoryFamilyProfileStore(
+      _testProfileWithPracticeSessions([
+        PracticeSession(
+          completedAt: DateTime(2026, 6, 12, 18),
+          challengeId: 'lesson.009',
+          challengeTitle: 'Memory lesson',
+          skill: 'Working memory',
+          minutes: 5,
+          correctAnswers: 2,
+          totalQuestions: 5,
+          wrongAttempts: 2,
+          mistakePuzzleIds: ['memory.order.normal.003'],
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(
+      BrainUpApp(
+        familyProfileStore: store,
+        locale: const Locale('en'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Review'));
+    await tester.pumpAndSettle();
+
+    final answers = ['Shoe', 'Lock', 'Ball', 'Rocket', 'Red'];
+    for (var index = 0; index < answers.length; index += 1) {
+      final answerFinder = find.text(answers[index]).last;
+      await tester.ensureVisible(answerFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(answerFinder);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Check'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Check'));
+      await tester.pumpAndSettle();
+      final nextLabel = index == answers.length - 1 ? 'Finish lesson' : 'Next';
+      await tester.ensureVisible(find.text(nextLabel));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(nextLabel));
+      await tester.pumpAndSettle();
+    }
+
+    expect(find.text('Review complete!'), findsOneWidget);
+    expect(find.text('Skill reinforced'), findsOneWidget);
+    expect(find.text('Mistakes reviewed'), findsOneWidget);
+    expect(find.text('New sticker!'), findsNothing);
+    expect(find.text('Next lesson'), findsNothing);
+  });
+
   testWidgets('shows a lesson hint before checking an answer', (tester) async {
     final store = _MemoryFamilyProfileStore(_testProfile());
 

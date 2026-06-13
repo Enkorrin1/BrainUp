@@ -19,6 +19,8 @@ Current implementation notes:
   (`docs/content-stage-5-status.md`).
 - Stage 6: visible adaptive review path moment
   (`docs/content-stage-6-status.md`).
+- Stage 7: dedicated adaptive review result state
+  (`docs/content-stage-7-status.md`).
 
 ## Content Architecture
 
