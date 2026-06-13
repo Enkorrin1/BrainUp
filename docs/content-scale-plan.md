@@ -7,6 +7,13 @@ learning route, meet different puzzle formats, and keep getting new short
 challenges across logic, memory, math, attention, spatial thinking, and
 reasoning.
 
+Current implementation notes:
+
+- Stage 1: content scale plan and structured catalog direction.
+- Stage 2: generated puzzle variants connected to lessons.
+- Stage 3: generated puzzle localization and polish
+  (`docs/content-stage-3-status.md`).
+
 ## Content Architecture
 
 Each puzzle should carry:
