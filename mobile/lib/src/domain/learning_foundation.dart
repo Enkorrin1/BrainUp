@@ -13,6 +13,19 @@ enum PuzzleType {
   countBridge,
   visualCompare,
   analogy,
+  memoryGrid,
+  codeBreaker,
+  spatialRotation,
+  attentionScan,
+  rebus,
+  mixedBoss,
+}
+
+enum PuzzleDifficulty {
+  easy,
+  normal,
+  hard,
+  boss,
 }
 
 enum SkillTag {
@@ -174,6 +187,12 @@ class PuzzleDefinition {
     required this.payloadRef,
     required this.correctAnswerKey,
     required this.hintKeys,
+    this.ageBandIds = const [
+      AgeBandId.age4to5,
+      AgeBandId.age6,
+      AgeBandId.age7to8,
+    ],
+    this.difficulty = PuzzleDifficulty.easy,
   });
 
   final String id;
@@ -183,6 +202,8 @@ class PuzzleDefinition {
   final String payloadRef;
   final String correctAnswerKey;
   final List<String> hintKeys;
+  final List<AgeBandId> ageBandIds;
+  final PuzzleDifficulty difficulty;
 }
 
 class PuzzleAttempt {
@@ -1418,6 +1439,32 @@ class FoundationCatalog {
     ),
   ];
 
+  static final List<PuzzleDefinition> allPuzzles = [
+    ...starterPuzzles,
+    ...ContentBank.seedPuzzles,
+  ];
+
+  static List<PuzzleDefinition> puzzlesFor({
+    AgeBandId? ageBandId,
+    SkillTag? skillTag,
+    PuzzleDifficulty? difficulty,
+  }) {
+    return [
+      for (final puzzle in allPuzzles)
+        if ((ageBandId == null || puzzle.ageBandIds.contains(ageBandId)) &&
+            (skillTag == null || puzzle.skillTag == skillTag) &&
+            (difficulty == null || puzzle.difficulty == difficulty))
+          puzzle,
+    ];
+  }
+
+  static Map<SkillTag, int> puzzleCountBySkill() {
+    return {
+      for (final skill in SkillTag.values)
+        skill: allPuzzles.where((puzzle) => puzzle.skillTag == skill).length,
+    };
+  }
+
   static Lesson lessonForNode(MapNode node) {
     return lessonForId(node.lessonId);
   }
@@ -1439,9 +1486,142 @@ class FoundationCatalog {
   }
 
   static PuzzleDefinition puzzleForStep(LessonStep step) {
-    return starterPuzzles.firstWhere(
+    return allPuzzles.firstWhere(
       (puzzle) => puzzle.id == step.puzzleId,
-      orElse: () => starterPuzzles.first,
+      orElse: () => allPuzzles.first,
     );
   }
+}
+
+class ContentBank {
+  const ContentBank._();
+
+  static final List<PuzzleDefinition> seedPuzzles = _buildSeedPuzzles();
+
+  static List<PuzzleDefinition> _buildSeedPuzzles() {
+    const families = [
+      _PuzzleFamilySeed(
+        slug: 'pattern.trail',
+        type: PuzzleType.sequenceComplete,
+        skillTag: SkillTag.pattern,
+        answer: 'next',
+        hintKey: 'challengeShapePathHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'memory.pairs',
+        type: PuzzleType.memoryGrid,
+        skillTag: SkillTag.memory,
+        answer: 'pair',
+        hintKey: 'challengeMemoryPairsHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'math.bridge',
+        type: PuzzleType.countBridge,
+        skillTag: SkillTag.arithmetic,
+        answer: 'sum',
+        hintKey: 'challengeNumberBridgeHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'focus.details',
+        type: PuzzleType.attentionScan,
+        skillTag: SkillTag.attention,
+        answer: 'detail',
+        hintKey: 'challengeDetailCountHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'logic.code',
+        type: PuzzleType.codeBreaker,
+        skillTag: SkillTag.reasoning,
+        answer: 'rule',
+        hintKey: 'challengeCodeGridHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'space.turn',
+        type: PuzzleType.spatialRotation,
+        skillTag: SkillTag.spatial,
+        answer: 'same',
+        hintKey: 'challengeShapeRotationHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'sort.odd',
+        type: PuzzleType.oddOneOut,
+        skillTag: SkillTag.classification,
+        answer: 'odd',
+        hintKey: 'challengeOddCardHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'mixed.boss',
+        type: PuzzleType.mixedBoss,
+        skillTag: SkillTag.reasoning,
+        answer: 'boss',
+        hintKey: 'challengeCodeGridHint',
+      ),
+    ];
+
+    final puzzles = <PuzzleDefinition>[];
+    for (final family in families) {
+      for (var index = 1; index <= 9; index += 1) {
+        final difficulty = _difficultyFor(index);
+        puzzles.add(
+          PuzzleDefinition(
+            id: 'puzzle.${family.slug}.${index.toString().padLeft(3, '0')}',
+            lessonId: 'lesson.generated',
+            type: family.type,
+            skillTag: family.skillTag,
+            payloadRef:
+                '${family.slug}.${difficulty.name}.${index.toString().padLeft(3, '0')}',
+            correctAnswerKey: family.answer,
+            hintKeys: [family.hintKey],
+            ageBandIds: _ageBandsFor(index, difficulty),
+            difficulty: difficulty,
+          ),
+        );
+      }
+    }
+
+    return puzzles;
+  }
+
+  static PuzzleDifficulty _difficultyFor(int index) {
+    if (index == 9) {
+      return PuzzleDifficulty.boss;
+    }
+    if (index >= 6) {
+      return PuzzleDifficulty.hard;
+    }
+    if (index >= 3) {
+      return PuzzleDifficulty.normal;
+    }
+    return PuzzleDifficulty.easy;
+  }
+
+  static List<AgeBandId> _ageBandsFor(
+    int index,
+    PuzzleDifficulty difficulty,
+  ) {
+    if (difficulty == PuzzleDifficulty.boss) {
+      return const [AgeBandId.age7to8];
+    }
+    return switch (index % 3) {
+      1 => const [AgeBandId.age4to5, AgeBandId.age6],
+      2 => const [AgeBandId.age6, AgeBandId.age7to8],
+      _ => const [AgeBandId.age4to5, AgeBandId.age6, AgeBandId.age7to8],
+    };
+  }
+}
+
+class _PuzzleFamilySeed {
+  const _PuzzleFamilySeed({
+    required this.slug,
+    required this.type,
+    required this.skillTag,
+    required this.answer,
+    required this.hintKey,
+  });
+
+  final String slug;
+  final PuzzleType type;
+  final SkillTag skillTag;
+  final String answer;
+  final String hintKey;
 }

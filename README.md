@@ -21,6 +21,7 @@
 - [Созданные агентные чаты](docs/agent-threads.md)
 - [UX и учебный цикл](docs/learning-ux.md)
 - [Модель контента](docs/content-model.md)
+- [План масштабирования контента](docs/content-scale-plan.md)
 - [Технический стек](docs/tech-stack.md)
 - [Функциональные требования](docs/functional-requirements.md)
 - [Нефункциональные требования](docs/non-functional-requirements.md)

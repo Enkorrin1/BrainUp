@@ -23,5 +23,38 @@ void main() {
         expect(steps.map((step) => step.order), [1, 2, 3, 4]);
       }
     });
+
+    test('content bank exposes a large multi-skill puzzle pool', () {
+      expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(80));
+
+      final counts = FoundationCatalog.puzzleCountBySkill();
+      for (final skill in SkillTag.values) {
+        expect(counts[skill], greaterThanOrEqualTo(3), reason: skill.name);
+      }
+    });
+
+    test('content bank supports age, skill, and difficulty filtering', () {
+      final ageSixMath = FoundationCatalog.puzzlesFor(
+        ageBandId: AgeBandId.age6,
+        skillTag: SkillTag.arithmetic,
+      );
+      final hardFocus = FoundationCatalog.puzzlesFor(
+        skillTag: SkillTag.attention,
+        difficulty: PuzzleDifficulty.hard,
+      );
+      final bossPuzzles = FoundationCatalog.puzzlesFor(
+        difficulty: PuzzleDifficulty.boss,
+      );
+
+      expect(ageSixMath, isNotEmpty);
+      expect(hardFocus, isNotEmpty);
+      expect(bossPuzzles.length, greaterThanOrEqualTo(8));
+      expect(
+        bossPuzzles.every(
+          (puzzle) => puzzle.ageBandIds.contains(AgeBandId.age7to8),
+        ),
+        isTrue,
+      );
+    });
   });
 }
