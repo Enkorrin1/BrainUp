@@ -41,6 +41,8 @@ Current implementation notes:
   (`docs/content-stage-15-status.md`).
 - Stage 16: helper character system
   (`docs/content-stage-16-status.md`).
+- Stage 17: asset system
+  (`docs/content-stage-17-status.md`).
 
 ## Content Architecture
 

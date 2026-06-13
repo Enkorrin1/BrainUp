@@ -26,3 +26,7 @@ flutter:
   assets:
     - assets/images/generated/
     - assets/images/puzzles/
+    - assets/images/characters/
+    - assets/images/worlds/
+    - assets/images/rewards/
+    - assets/images/effects/

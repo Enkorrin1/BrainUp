@@ -129,6 +129,8 @@ Move puzzle content toward real visual scenes.
 
 Deliverable: asset structure and asset rules.
 
+Status: done in `docs/content-stage-17-status.md`.
+
 Target folders:
 
 - `mobile/assets/images/puzzles/`
