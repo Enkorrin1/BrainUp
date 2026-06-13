@@ -31,6 +31,8 @@ Current implementation notes:
   (`docs/content-stage-11-status.md`).
 - Stage 12: exportable content manifest for future tooling
   (`docs/content-stage-12-status.md`).
+- Stages 13-25: rich visual puzzle content expansion
+  (`docs/puzzle-content-master-plan.md`).
 
 ## Content Architecture
 
