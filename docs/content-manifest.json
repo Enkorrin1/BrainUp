@@ -6,70 +6,70 @@
     "passes": true
   },
   "coverage": {
-    "totalPuzzleCount": 151,
+    "totalPuzzleCount": 216,
     "countByAgeBand": {
-      "age4to5": 91,
-      "age6": 136,
-      "age7to8": 106
+      "age4to5": 130,
+      "age6": 201,
+      "age7to8": 158
     },
     "countBySkill": {
-      "attention": 19,
-      "memory": 20,
-      "pattern": 13,
-      "classification": 19,
-      "arithmetic": 22,
-      "spatial": 21,
-      "reasoning": 37
+      "attention": 24,
+      "memory": 30,
+      "pattern": 23,
+      "classification": 29,
+      "arithmetic": 37,
+      "spatial": 31,
+      "reasoning": 42
     },
     "countByDifficulty": {
-      "easy": 46,
-      "normal": 45,
-      "hard": 45,
+      "easy": 72,
+      "normal": 71,
+      "hard": 58,
       "boss": 15
     },
     "countByType": {
-      "oddOneOut": 10,
-      "sequenceComplete": 14,
+      "oddOneOut": 15,
+      "sequenceComplete": 24,
       "pairMatch": 2,
-      "categorySort": 9,
-      "pathPuzzle": 9,
-      "countBridge": 12,
-      "visualCompare": 14,
+      "categorySort": 14,
+      "pathPuzzle": 14,
+      "countBridge": 17,
+      "visualCompare": 24,
       "analogy": 9,
-      "memoryGrid": 18,
+      "memoryGrid": 28,
       "codeBreaker": 9,
-      "spatialRotation": 9,
-      "attentionScan": 18,
+      "spatialRotation": 14,
+      "attentionScan": 23,
       "rebus": 9,
-      "mixedBoss": 9
+      "mixedBoss": 14
     },
     "countByAgeBandAndSkill": {
       "age4to5": {
-        "attention": 11,
-        "memory": 12,
-        "pattern": 9,
-        "classification": 11,
-        "arithmetic": 14,
-        "spatial": 13,
-        "reasoning": 21
+        "attention": 14,
+        "memory": 18,
+        "pattern": 15,
+        "classification": 17,
+        "arithmetic": 23,
+        "spatial": 19,
+        "reasoning": 24
       },
       "age6": {
-        "attention": 17,
-        "memory": 18,
-        "pattern": 12,
-        "classification": 17,
-        "arithmetic": 20,
-        "spatial": 19,
-        "reasoning": 33
+        "attention": 22,
+        "memory": 28,
+        "pattern": 22,
+        "classification": 27,
+        "arithmetic": 35,
+        "spatial": 29,
+        "reasoning": 38
       },
       "age7to8": {
-        "attention": 13,
-        "memory": 14,
-        "pattern": 10,
-        "classification": 13,
-        "arithmetic": 16,
-        "spatial": 15,
-        "reasoning": 25
+        "attention": 17,
+        "memory": 22,
+        "pattern": 18,
+        "classification": 21,
+        "arithmetic": 28,
+        "spatial": 23,
+        "reasoning": 29
       }
     },
     "minimumPerAgeBandSkill": 4,
@@ -96,7 +96,7 @@
       "rulo",
       "mira"
     ],
-    "generatedPuzzleVisualCount": 135
+    "visualPuzzleCount": 200
   },
   "puzzles": [
     {
@@ -4907,6 +4907,2197 @@
         "bossMixTags": [
           "reasoning",
           "boss"
+        ]
+      }
+    },
+    {
+      "id": "puzzle.curated.odd.one.out.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "curated.odd-one-out.001",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "classification.odd_one_out",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.sorting_shelves",
+        "choiceAssets": [
+          "world.forest_lab.object.leaf",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.mushroom"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.odd.one.out.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "curated.odd-one-out.002",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "classification.odd_one_out",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.sorting_shelves",
+        "choiceAssets": [
+          "world.forest_lab.object.leaf",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.mushroom"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.odd.one.out.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "curated.odd-one-out.003",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "classification.odd_one_out",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.sorting_shelves",
+        "choiceAssets": [
+          "world.forest_lab.object.leaf",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.mushroom"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.odd.one.out.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "curated.odd-one-out.004",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "classification.odd_one_out",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.sorting_shelves",
+        "choiceAssets": [
+          "world.forest_lab.object.leaf",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.mushroom"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.odd.one.out.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "oddOneOut",
+      "skillTag": "classification",
+      "payloadRef": "curated.odd-one-out.005",
+      "correctAnswerKey": "odd",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "classification.odd_one_out",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.sorting_shelves",
+        "choiceAssets": [
+          "world.forest_lab.object.leaf",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.mushroom"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.sequence.complete.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.sequence-complete.001",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "pattern.sequence_complete",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.star_collection_path",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.planet",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.sequence.complete.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.sequence-complete.002",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "pattern.sequence_complete",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.star_collection_path",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.planet",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.sequence.complete.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.sequence-complete.003",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "pattern.sequence_complete",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.star_collection_path",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.planet",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.sequence.complete.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.sequence-complete.004",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "pattern.sequence_complete",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.star_collection_path",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.planet",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.sequence.complete.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.sequence-complete.005",
+      "correctAnswerKey": "next",
+      "hintKeys": [
+        "challengeShapePathHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "pattern.sequence_complete",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.star_collection_path",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.planet",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.pair.match.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.pair-match.001",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "memory.pair_match",
+        "worldId": "toy_shop",
+        "characterId": "lumi",
+        "sceneAsset": "world.toy_shop.background.shelf_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.gift_box",
+          "world.toy_shop.object.train_car",
+          "world.toy_shop.object.block"
+        ],
+        "interactionType": "matchPairs",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.pair.match.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.pair-match.002",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "memory.pair_match",
+        "worldId": "toy_shop",
+        "characterId": "lumi",
+        "sceneAsset": "world.toy_shop.background.shelf_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.gift_box",
+          "world.toy_shop.object.train_car",
+          "world.toy_shop.object.block"
+        ],
+        "interactionType": "matchPairs",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.pair.match.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.pair-match.003",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "memory.pair_match",
+        "worldId": "toy_shop",
+        "characterId": "lumi",
+        "sceneAsset": "world.toy_shop.background.shelf_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.gift_box",
+          "world.toy_shop.object.train_car",
+          "world.toy_shop.object.block"
+        ],
+        "interactionType": "matchPairs",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.pair.match.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.pair-match.004",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "memory.pair_match",
+        "worldId": "toy_shop",
+        "characterId": "lumi",
+        "sceneAsset": "world.toy_shop.background.shelf_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.gift_box",
+          "world.toy_shop.object.train_car",
+          "world.toy_shop.object.block"
+        ],
+        "interactionType": "matchPairs",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.pair.match.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.pair-match.005",
+      "correctAnswerKey": "pair",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "memory.pair_match",
+        "worldId": "toy_shop",
+        "characterId": "lumi",
+        "sceneAsset": "world.toy_shop.background.shelf_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.gift_box",
+          "world.toy_shop.object.train_car",
+          "world.toy_shop.object.block"
+        ],
+        "interactionType": "matchPairs",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.memory.order.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.memory-order.001",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "memory.order_recall",
+        "worldId": "space_station",
+        "characterId": "lumi",
+        "sceneAsset": "world.space_station.background.mission_control_desk",
+        "choiceAssets": [
+          "world.space_station.object.key_card",
+          "world.space_station.object.satellite",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "memoryReveal",
+        "animationType": "revealFlip",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.memory.order.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.memory-order.002",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "memory.order_recall",
+        "worldId": "space_station",
+        "characterId": "lumi",
+        "sceneAsset": "world.space_station.background.mission_control_desk",
+        "choiceAssets": [
+          "world.space_station.object.key_card",
+          "world.space_station.object.satellite",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "memoryReveal",
+        "animationType": "revealFlip",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.memory.order.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.memory-order.003",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "memory.order_recall",
+        "worldId": "space_station",
+        "characterId": "lumi",
+        "sceneAsset": "world.space_station.background.mission_control_desk",
+        "choiceAssets": [
+          "world.space_station.object.key_card",
+          "world.space_station.object.satellite",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "memoryReveal",
+        "animationType": "revealFlip",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.memory.order.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.memory-order.004",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "memory.order_recall",
+        "worldId": "space_station",
+        "characterId": "lumi",
+        "sceneAsset": "world.space_station.background.mission_control_desk",
+        "choiceAssets": [
+          "world.space_station.object.key_card",
+          "world.space_station.object.satellite",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "memoryReveal",
+        "animationType": "revealFlip",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.memory.order.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "memoryGrid",
+      "skillTag": "memory",
+      "payloadRef": "curated.memory-order.005",
+      "correctAnswerKey": "order",
+      "hintKeys": [
+        "challengeMemoryPairsHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "memory.order_recall",
+        "worldId": "space_station",
+        "characterId": "lumi",
+        "sceneAsset": "world.space_station.background.mission_control_desk",
+        "choiceAssets": [
+          "world.space_station.object.key_card",
+          "world.space_station.object.satellite",
+          "world.space_station.object.star"
+        ],
+        "interactionType": "memoryReveal",
+        "animationType": "revealFlip",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.route.build.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "curated.route-build.001",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "spatial.route_build",
+        "worldId": "space_station",
+        "characterId": "quadra",
+        "sceneAsset": "world.space_station.background.planet_map",
+        "choiceAssets": [
+          "world.space_station.object.path_tile",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "tracePath",
+        "animationType": "pathTrace",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.route.build.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "curated.route-build.002",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "spatial.route_build",
+        "worldId": "space_station",
+        "characterId": "quadra",
+        "sceneAsset": "world.space_station.background.planet_map",
+        "choiceAssets": [
+          "world.space_station.object.path_tile",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "tracePath",
+        "animationType": "pathTrace",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.route.build.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "curated.route-build.003",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "spatial.route_build",
+        "worldId": "space_station",
+        "characterId": "quadra",
+        "sceneAsset": "world.space_station.background.planet_map",
+        "choiceAssets": [
+          "world.space_station.object.path_tile",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "tracePath",
+        "animationType": "pathTrace",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.route.build.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "curated.route-build.004",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "spatial.route_build",
+        "worldId": "space_station",
+        "characterId": "quadra",
+        "sceneAsset": "world.space_station.background.planet_map",
+        "choiceAssets": [
+          "world.space_station.object.path_tile",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "tracePath",
+        "animationType": "pathTrace",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.route.build.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "pathPuzzle",
+      "skillTag": "spatial",
+      "payloadRef": "curated.route-build.005",
+      "correctAnswerKey": "route",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "spatial.route_build",
+        "worldId": "space_station",
+        "characterId": "quadra",
+        "sceneAsset": "world.space_station.background.planet_map",
+        "choiceAssets": [
+          "world.space_station.object.path_tile",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "tracePath",
+        "animationType": "pathTrace",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.count.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.object-count.001",
+      "correctAnswerKey": "count",
+      "hintKeys": [
+        "challengeToyCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "math.object_count",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.checkout_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.price_tag"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.count.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.object-count.002",
+      "correctAnswerKey": "count",
+      "hintKeys": [
+        "challengeToyCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "math.object_count",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.checkout_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.price_tag"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.count.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.object-count.003",
+      "correctAnswerKey": "count",
+      "hintKeys": [
+        "challengeToyCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "math.object_count",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.checkout_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.price_tag"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.count.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.object-count.004",
+      "correctAnswerKey": "count",
+      "hintKeys": [
+        "challengeToyCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "math.object_count",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.checkout_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.price_tag"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.count.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "countBridge",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.object-count.005",
+      "correctAnswerKey": "count",
+      "hintKeys": [
+        "challengeToyCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "math.object_count",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.checkout_counter",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.price_tag"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.group.compare.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.group-compare.001",
+      "correctAnswerKey": "compare",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "math.group_compare",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.block_corner",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.basket"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.group.compare.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.group-compare.002",
+      "correctAnswerKey": "compare",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "math.group_compare",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.block_corner",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.basket"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.group.compare.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.group-compare.003",
+      "correctAnswerKey": "compare",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "math.group_compare",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.block_corner",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.basket"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.group.compare.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.group-compare.004",
+      "correctAnswerKey": "compare",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "math.group_compare",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.block_corner",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.basket"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.group.compare.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.group-compare.005",
+      "correctAnswerKey": "compare",
+      "hintKeys": [
+        "challengeDetailCountHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "math.group_compare",
+        "worldId": "toy_shop",
+        "characterId": "numba",
+        "sceneAsset": "world.toy_shop.background.block_corner",
+        "choiceAssets": [
+          "world.toy_shop.object.block",
+          "world.toy_shop.object.ball",
+          "world.toy_shop.object.basket"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shadow.match.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "curated.shadow-match.001",
+      "correctAnswerKey": "shadow",
+      "hintKeys": [
+        "challengeShadowMatchHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "attention.shadow_match",
+        "worldId": "shape_garden",
+        "characterId": "mira",
+        "sceneAsset": "world.shape_garden.background.butterfly_board",
+        "choiceAssets": [
+          "world.shape_garden.object.butterfly",
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.garden_sign"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "softRetry",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shadow.match.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "curated.shadow-match.002",
+      "correctAnswerKey": "shadow",
+      "hintKeys": [
+        "challengeShadowMatchHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "attention.shadow_match",
+        "worldId": "shape_garden",
+        "characterId": "mira",
+        "sceneAsset": "world.shape_garden.background.butterfly_board",
+        "choiceAssets": [
+          "world.shape_garden.object.butterfly",
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.garden_sign"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "softRetry",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shadow.match.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "curated.shadow-match.003",
+      "correctAnswerKey": "shadow",
+      "hintKeys": [
+        "challengeShadowMatchHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "attention.shadow_match",
+        "worldId": "shape_garden",
+        "characterId": "mira",
+        "sceneAsset": "world.shape_garden.background.butterfly_board",
+        "choiceAssets": [
+          "world.shape_garden.object.butterfly",
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.garden_sign"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "softRetry",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shadow.match.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "curated.shadow-match.004",
+      "correctAnswerKey": "shadow",
+      "hintKeys": [
+        "challengeShadowMatchHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "attention.shadow_match",
+        "worldId": "shape_garden",
+        "characterId": "mira",
+        "sceneAsset": "world.shape_garden.background.butterfly_board",
+        "choiceAssets": [
+          "world.shape_garden.object.butterfly",
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.garden_sign"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "softRetry",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shadow.match.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "attentionScan",
+      "skillTag": "attention",
+      "payloadRef": "curated.shadow-match.005",
+      "correctAnswerKey": "shadow",
+      "hintKeys": [
+        "challengeShadowMatchHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "attention.shadow_match",
+        "worldId": "shape_garden",
+        "characterId": "mira",
+        "sceneAsset": "world.shape_garden.background.butterfly_board",
+        "choiceAssets": [
+          "world.shape_garden.object.butterfly",
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.garden_sign"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "hintPulse",
+        "feedbackStyle": "softRetry",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shape.rotation.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "curated.shape-rotation.001",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "spatial.shape_rotation",
+        "worldId": "shape_garden",
+        "characterId": "quadra",
+        "sceneAsset": "world.shape_garden.background.shape_flower_bed",
+        "choiceAssets": [
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.stone",
+          "world.shape_garden.object.petal"
+        ],
+        "interactionType": "rotateObject",
+        "animationType": "rotateTurn",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shape.rotation.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "curated.shape-rotation.002",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "spatial.shape_rotation",
+        "worldId": "shape_garden",
+        "characterId": "quadra",
+        "sceneAsset": "world.shape_garden.background.shape_flower_bed",
+        "choiceAssets": [
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.stone",
+          "world.shape_garden.object.petal"
+        ],
+        "interactionType": "rotateObject",
+        "animationType": "rotateTurn",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shape.rotation.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "curated.shape-rotation.003",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "spatial.shape_rotation",
+        "worldId": "shape_garden",
+        "characterId": "quadra",
+        "sceneAsset": "world.shape_garden.background.shape_flower_bed",
+        "choiceAssets": [
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.stone",
+          "world.shape_garden.object.petal"
+        ],
+        "interactionType": "rotateObject",
+        "animationType": "rotateTurn",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shape.rotation.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "curated.shape-rotation.004",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "spatial.shape_rotation",
+        "worldId": "shape_garden",
+        "characterId": "quadra",
+        "sceneAsset": "world.shape_garden.background.shape_flower_bed",
+        "choiceAssets": [
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.stone",
+          "world.shape_garden.object.petal"
+        ],
+        "interactionType": "rotateObject",
+        "animationType": "rotateTurn",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.shape.rotation.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "spatialRotation",
+      "skillTag": "spatial",
+      "payloadRef": "curated.shape-rotation.005",
+      "correctAnswerKey": "same",
+      "hintKeys": [
+        "challengeShapeRotationHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "spatial.shape_rotation",
+        "worldId": "shape_garden",
+        "characterId": "quadra",
+        "sceneAsset": "world.shape_garden.background.shape_flower_bed",
+        "choiceAssets": [
+          "world.shape_garden.object.shape_flower",
+          "world.shape_garden.object.stone",
+          "world.shape_garden.object.petal"
+        ],
+        "interactionType": "rotateObject",
+        "animationType": "rotateTurn",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.rule.detect.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.rule-detect.001",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "pattern.rule_detect",
+        "worldId": "robot_town",
+        "characterId": "rulo",
+        "sceneAsset": "world.robot_town.background.circuit_board",
+        "choiceAssets": [
+          "world.robot_town.object.code_tile",
+          "world.robot_town.object.switch",
+          "world.robot_town.object.circuit_node"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.rule.detect.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.rule-detect.002",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "pattern.rule_detect",
+        "worldId": "robot_town",
+        "characterId": "rulo",
+        "sceneAsset": "world.robot_town.background.circuit_board",
+        "choiceAssets": [
+          "world.robot_town.object.code_tile",
+          "world.robot_town.object.switch",
+          "world.robot_town.object.circuit_node"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.rule.detect.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.rule-detect.003",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "pattern.rule_detect",
+        "worldId": "robot_town",
+        "characterId": "rulo",
+        "sceneAsset": "world.robot_town.background.circuit_board",
+        "choiceAssets": [
+          "world.robot_town.object.code_tile",
+          "world.robot_town.object.switch",
+          "world.robot_town.object.circuit_node"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.rule.detect.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.rule-detect.004",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "pattern.rule_detect",
+        "worldId": "robot_town",
+        "characterId": "rulo",
+        "sceneAsset": "world.robot_town.background.circuit_board",
+        "choiceAssets": [
+          "world.robot_town.object.code_tile",
+          "world.robot_town.object.switch",
+          "world.robot_town.object.circuit_node"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.rule.detect.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "sequenceComplete",
+      "skillTag": "pattern",
+      "payloadRef": "curated.rule-detect.005",
+      "correctAnswerKey": "rule",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "pattern.rule_detect",
+        "worldId": "robot_town",
+        "characterId": "rulo",
+        "sceneAsset": "world.robot_town.background.circuit_board",
+        "choiceAssets": [
+          "world.robot_town.object.code_tile",
+          "world.robot_town.object.switch",
+          "world.robot_town.object.circuit_node"
+        ],
+        "interactionType": "tapChoice",
+        "animationType": "cardBounce",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.logic.scales.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.logic-scales.001",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "math.logic_scales",
+        "worldId": "robot_town",
+        "characterId": "numba",
+        "sceneAsset": "world.robot_town.background.gear_factory",
+        "choiceAssets": [
+          "world.robot_town.object.gear",
+          "world.robot_town.object.battery",
+          "world.robot_town.object.robot_part"
+        ],
+        "interactionType": "dragToTarget",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.logic.scales.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.logic-scales.002",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "math.logic_scales",
+        "worldId": "robot_town",
+        "characterId": "numba",
+        "sceneAsset": "world.robot_town.background.gear_factory",
+        "choiceAssets": [
+          "world.robot_town.object.gear",
+          "world.robot_town.object.battery",
+          "world.robot_town.object.robot_part"
+        ],
+        "interactionType": "dragToTarget",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.logic.scales.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.logic-scales.003",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "math.logic_scales",
+        "worldId": "robot_town",
+        "characterId": "numba",
+        "sceneAsset": "world.robot_town.background.gear_factory",
+        "choiceAssets": [
+          "world.robot_town.object.gear",
+          "world.robot_town.object.battery",
+          "world.robot_town.object.robot_part"
+        ],
+        "interactionType": "dragToTarget",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.logic.scales.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.logic-scales.004",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "math.logic_scales",
+        "worldId": "robot_town",
+        "characterId": "numba",
+        "sceneAsset": "world.robot_town.background.gear_factory",
+        "choiceAssets": [
+          "world.robot_town.object.gear",
+          "world.robot_town.object.battery",
+          "world.robot_town.object.robot_part"
+        ],
+        "interactionType": "dragToTarget",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.logic.scales.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "visualCompare",
+      "skillTag": "arithmetic",
+      "payloadRef": "curated.logic-scales.005",
+      "correctAnswerKey": "balance",
+      "hintKeys": [
+        "challengeBalanceScaleHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "math.logic_scales",
+        "worldId": "robot_town",
+        "characterId": "numba",
+        "sceneAsset": "world.robot_town.background.gear_factory",
+        "choiceAssets": [
+          "world.robot_town.object.gear",
+          "world.robot_town.object.battery",
+          "world.robot_town.object.robot_part"
+        ],
+        "interactionType": "dragToTarget",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.sort.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "curated.object-sort.001",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "classification.object_sort",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.garden_workbench",
+        "choiceAssets": [
+          "world.forest_lab.object.seed_packet",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.leaf"
+        ],
+        "interactionType": "sortObjects",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.sort.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "curated.object-sort.002",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "classification.object_sort",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.garden_workbench",
+        "choiceAssets": [
+          "world.forest_lab.object.seed_packet",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.leaf"
+        ],
+        "interactionType": "sortObjects",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.sort.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "curated.object-sort.003",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "classification.object_sort",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.garden_workbench",
+        "choiceAssets": [
+          "world.forest_lab.object.seed_packet",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.leaf"
+        ],
+        "interactionType": "sortObjects",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.sort.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "curated.object-sort.004",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "classification.object_sort",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.garden_workbench",
+        "choiceAssets": [
+          "world.forest_lab.object.seed_packet",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.leaf"
+        ],
+        "interactionType": "sortObjects",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.object.sort.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "categorySort",
+      "skillTag": "classification",
+      "payloadRef": "curated.object-sort.005",
+      "correctAnswerKey": "group",
+      "hintKeys": [
+        "challengeOddCardHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "classification.object_sort",
+        "worldId": "forest_lab",
+        "characterId": "mira",
+        "sceneAsset": "world.forest_lab.background.garden_workbench",
+        "choiceAssets": [
+          "world.forest_lab.object.seed_packet",
+          "world.forest_lab.object.jar",
+          "world.forest_lab.object.leaf"
+        ],
+        "interactionType": "sortObjects",
+        "animationType": "objectSnap",
+        "feedbackStyle": "characterCoach",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": []
+      }
+    },
+    {
+      "id": "puzzle.curated.mixed.boss.001",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "curated.mixed-boss.001",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "boss.mixed_challenge",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.repair_module",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "multiStepBoss",
+        "animationType": "rewardBurst",
+        "feedbackStyle": "bossMilestone",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": [
+          "mixed",
+          "boss",
+          "first_pack"
+        ]
+      }
+    },
+    {
+      "id": "puzzle.curated.mixed.boss.002",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "curated.mixed-boss.002",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "easy",
+      "visualMetadata": {
+        "familyId": "boss.mixed_challenge",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.repair_module",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "multiStepBoss",
+        "animationType": "rewardBurst",
+        "feedbackStyle": "bossMilestone",
+        "estimatedSeconds": 25,
+        "cognitiveLoad": "light",
+        "bossMixTags": [
+          "mixed",
+          "boss",
+          "first_pack"
+        ]
+      }
+    },
+    {
+      "id": "puzzle.curated.mixed.boss.003",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "curated.mixed-boss.003",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "boss.mixed_challenge",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.repair_module",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "multiStepBoss",
+        "animationType": "rewardBurst",
+        "feedbackStyle": "bossMilestone",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": [
+          "mixed",
+          "boss",
+          "first_pack"
+        ]
+      }
+    },
+    {
+      "id": "puzzle.curated.mixed.boss.004",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "curated.mixed-boss.004",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age4to5",
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "normal",
+      "visualMetadata": {
+        "familyId": "boss.mixed_challenge",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.repair_module",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "multiStepBoss",
+        "animationType": "rewardBurst",
+        "feedbackStyle": "bossMilestone",
+        "estimatedSeconds": 35,
+        "cognitiveLoad": "medium",
+        "bossMixTags": [
+          "mixed",
+          "boss",
+          "first_pack"
+        ]
+      }
+    },
+    {
+      "id": "puzzle.curated.mixed.boss.005",
+      "lessonId": "lesson.curated.rich.001",
+      "type": "mixedBoss",
+      "skillTag": "reasoning",
+      "payloadRef": "curated.mixed-boss.005",
+      "correctAnswerKey": "boss",
+      "hintKeys": [
+        "challengeCodeGridHint"
+      ],
+      "ageBandIds": [
+        "age6",
+        "age7to8"
+      ],
+      "difficulty": "hard",
+      "visualMetadata": {
+        "familyId": "boss.mixed_challenge",
+        "worldId": "space_station",
+        "characterId": "brainy",
+        "sceneAsset": "world.space_station.background.repair_module",
+        "choiceAssets": [
+          "world.space_station.object.rocket",
+          "world.space_station.object.fuel_cell",
+          "world.space_station.object.control_button"
+        ],
+        "interactionType": "multiStepBoss",
+        "animationType": "rewardBurst",
+        "feedbackStyle": "bossMilestone",
+        "estimatedSeconds": 50,
+        "cognitiveLoad": "high",
+        "bossMixTags": [
+          "mixed",
+          "boss",
+          "first_pack"
         ]
       }
     }

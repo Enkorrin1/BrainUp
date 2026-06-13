@@ -128,8 +128,8 @@ void main() {
       expect(qualityGate['passes'], isTrue);
       expect(coverage['totalPuzzleCount'], FoundationCatalog.allPuzzles.length);
       expect(
-        visualMetadata['generatedPuzzleVisualCount'],
-        greaterThanOrEqualTo(100),
+        visualMetadata['visualPuzzleCount'],
+        greaterThanOrEqualTo(200),
       );
       expect(puzzles.length, FoundationCatalog.allPuzzles.length);
       expect(focusTracker['skillTag'], SkillTag.attention.name);
@@ -138,6 +138,66 @@ void main() {
       expect(focusTrackerVisual['worldId'], 'forest_lab');
       expect(focusTrackerVisual['characterId'], 'mira');
       expect(focusTrackerVisual['interactionType'], 'tapChoice');
+    });
+
+    test('curated rich puzzle pack covers first-pack P0 families', () {
+      final curatedPuzzles = CuratedRichPuzzlePack.puzzles;
+      final countsByFamily = <String, int>{};
+      final firstPackWorldIds = {
+        'space_station',
+        'forest_lab',
+        'robot_town',
+        'toy_shop',
+        'shape_garden',
+      };
+
+      for (final puzzle in curatedPuzzles) {
+        final metadata = puzzle.visualMetadata;
+
+        expect(metadata, isNotNull, reason: puzzle.id);
+        expect(
+          FoundationCatalog.knownWorldIds.contains(metadata!.worldId),
+          isTrue,
+          reason: puzzle.id,
+        );
+        expect(firstPackWorldIds.contains(metadata.worldId), isTrue);
+        expect(
+          FoundationCatalog.knownCharacterIds.contains(metadata.characterId),
+          isTrue,
+          reason: puzzle.id,
+        );
+        countsByFamily.update(
+          metadata.familyId,
+          (count) => count + 1,
+          ifAbsent: () => 1,
+        );
+      }
+
+      expect(curatedPuzzles.length, 65);
+      for (final familyId in [
+        'classification.odd_one_out',
+        'pattern.sequence_complete',
+        'memory.pair_match',
+        'memory.order_recall',
+        'spatial.route_build',
+        'math.object_count',
+        'math.group_compare',
+        'attention.shadow_match',
+        'spatial.shape_rotation',
+        'pattern.rule_detect',
+        'math.logic_scales',
+        'classification.object_sort',
+        'boss.mixed_challenge',
+      ]) {
+        expect(countsByFamily[familyId], 5, reason: familyId);
+      }
+      expect(
+        curatedPuzzles
+            .map((puzzle) => puzzle.visualMetadata!.interactionType)
+            .toSet()
+            .length,
+        greaterThanOrEqualTo(7),
+      );
     });
 
     test('generated visual metadata references known worlds and characters',

@@ -173,6 +173,8 @@ Result: each puzzle becomes a mini-scene that future UI and tooling can render.
 
 Create the first high-quality content pack beyond generated variants.
 
+Status: done in `docs/content-stage-19-status.md`.
+
 Targets:
 
 - 25 unique puzzle families;

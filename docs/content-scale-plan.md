@@ -45,6 +45,8 @@ Current implementation notes:
   (`docs/content-stage-17-status.md`).
 - Stage 18: visual puzzle metadata
   (`docs/content-stage-18-status.md`).
+- Stage 19: first curated rich puzzle pack
+  (`docs/content-stage-19-status.md`).
 
 ## Content Architecture
 

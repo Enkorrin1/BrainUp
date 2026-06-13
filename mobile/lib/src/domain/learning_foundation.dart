@@ -1749,6 +1749,7 @@ class FoundationCatalog {
   static final List<PuzzleDefinition> allPuzzles = [
     ...starterPuzzles,
     ...ContentBank.seedPuzzles,
+    ...CuratedRichPuzzlePack.puzzles,
   ];
 
   static List<PuzzleDefinition> puzzlesFor({
@@ -1823,7 +1824,7 @@ class FoundationCatalog {
       'visualMetadata': {
         'knownWorldIds': knownWorldIds.toList(growable: false),
         'knownCharacterIds': knownCharacterIds.toList(growable: false),
-        'generatedPuzzleVisualCount':
+        'visualPuzzleCount':
             allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
       },
       'puzzles': [
@@ -2503,6 +2504,350 @@ class ContentBank {
   }
 }
 
+class CuratedRichPuzzlePack {
+  const CuratedRichPuzzlePack._();
+
+  static const String lessonId = 'lesson.curated.rich.001';
+
+  static final List<PuzzleDefinition> puzzles = _buildPuzzles();
+
+  static List<PuzzleDefinition> _buildPuzzles() {
+    const seeds = [
+      _CuratedPuzzleFamilySeed(
+        slug: 'odd.one.out',
+        familyId: 'classification.odd_one_out',
+        type: PuzzleType.oddOneOut,
+        skillTag: SkillTag.classification,
+        answer: 'odd',
+        hintKey: 'challengeOddCardHint',
+        worldId: 'forest_lab',
+        characterId: 'mira',
+        sceneAsset: 'world.forest_lab.background.sorting_shelves',
+        choiceAssets: [
+          'world.forest_lab.object.leaf',
+          'world.forest_lab.object.jar',
+          'world.forest_lab.object.mushroom',
+        ],
+        interactionType: PuzzleInteractionType.tapChoice,
+        animationType: PuzzleAnimationType.cardBounce,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'sequence.complete',
+        familyId: 'pattern.sequence_complete',
+        type: PuzzleType.sequenceComplete,
+        skillTag: SkillTag.pattern,
+        answer: 'next',
+        hintKey: 'challengeShapePathHint',
+        worldId: 'space_station',
+        characterId: 'brainy',
+        sceneAsset: 'world.space_station.background.star_collection_path',
+        choiceAssets: [
+          'world.space_station.object.rocket',
+          'world.space_station.object.planet',
+          'world.space_station.object.star',
+        ],
+        interactionType: PuzzleInteractionType.tapChoice,
+        animationType: PuzzleAnimationType.cardBounce,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'pair.match',
+        familyId: 'memory.pair_match',
+        type: PuzzleType.memoryGrid,
+        skillTag: SkillTag.memory,
+        answer: 'pair',
+        hintKey: 'challengeMemoryPairsHint',
+        worldId: 'toy_shop',
+        characterId: 'lumi',
+        sceneAsset: 'world.toy_shop.background.shelf_counter',
+        choiceAssets: [
+          'world.toy_shop.object.gift_box',
+          'world.toy_shop.object.train_car',
+          'world.toy_shop.object.block',
+        ],
+        interactionType: PuzzleInteractionType.matchPairs,
+        animationType: PuzzleAnimationType.objectSnap,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'memory.order',
+        familyId: 'memory.order_recall',
+        type: PuzzleType.memoryGrid,
+        skillTag: SkillTag.memory,
+        answer: 'order',
+        hintKey: 'challengeMemoryPairsHint',
+        worldId: 'space_station',
+        characterId: 'lumi',
+        sceneAsset: 'world.space_station.background.mission_control_desk',
+        choiceAssets: [
+          'world.space_station.object.key_card',
+          'world.space_station.object.satellite',
+          'world.space_station.object.star',
+        ],
+        interactionType: PuzzleInteractionType.memoryReveal,
+        animationType: PuzzleAnimationType.revealFlip,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'route.build',
+        familyId: 'spatial.route_build',
+        type: PuzzleType.pathPuzzle,
+        skillTag: SkillTag.spatial,
+        answer: 'route',
+        hintKey: 'challengeShapeRotationHint',
+        worldId: 'space_station',
+        characterId: 'quadra',
+        sceneAsset: 'world.space_station.background.planet_map',
+        choiceAssets: [
+          'world.space_station.object.path_tile',
+          'world.space_station.object.fuel_cell',
+          'world.space_station.object.control_button',
+        ],
+        interactionType: PuzzleInteractionType.tracePath,
+        animationType: PuzzleAnimationType.pathTrace,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'object.count',
+        familyId: 'math.object_count',
+        type: PuzzleType.countBridge,
+        skillTag: SkillTag.arithmetic,
+        answer: 'count',
+        hintKey: 'challengeToyCountHint',
+        worldId: 'toy_shop',
+        characterId: 'numba',
+        sceneAsset: 'world.toy_shop.background.checkout_counter',
+        choiceAssets: [
+          'world.toy_shop.object.block',
+          'world.toy_shop.object.ball',
+          'world.toy_shop.object.price_tag',
+        ],
+        interactionType: PuzzleInteractionType.tapChoice,
+        animationType: PuzzleAnimationType.hintPulse,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'group.compare',
+        familyId: 'math.group_compare',
+        type: PuzzleType.visualCompare,
+        skillTag: SkillTag.arithmetic,
+        answer: 'compare',
+        hintKey: 'challengeDetailCountHint',
+        worldId: 'toy_shop',
+        characterId: 'numba',
+        sceneAsset: 'world.toy_shop.background.block_corner',
+        choiceAssets: [
+          'world.toy_shop.object.block',
+          'world.toy_shop.object.ball',
+          'world.toy_shop.object.basket',
+        ],
+        interactionType: PuzzleInteractionType.tapChoice,
+        animationType: PuzzleAnimationType.hintPulse,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'shadow.match',
+        familyId: 'attention.shadow_match',
+        type: PuzzleType.attentionScan,
+        skillTag: SkillTag.attention,
+        answer: 'shadow',
+        hintKey: 'challengeShadowMatchHint',
+        worldId: 'shape_garden',
+        characterId: 'mira',
+        sceneAsset: 'world.shape_garden.background.butterfly_board',
+        choiceAssets: [
+          'world.shape_garden.object.butterfly',
+          'world.shape_garden.object.shape_flower',
+          'world.shape_garden.object.garden_sign',
+        ],
+        interactionType: PuzzleInteractionType.tapChoice,
+        animationType: PuzzleAnimationType.hintPulse,
+        feedbackStyle: PuzzleFeedbackStyle.softRetry,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'shape.rotation',
+        familyId: 'spatial.shape_rotation',
+        type: PuzzleType.spatialRotation,
+        skillTag: SkillTag.spatial,
+        answer: 'same',
+        hintKey: 'challengeShapeRotationHint',
+        worldId: 'shape_garden',
+        characterId: 'quadra',
+        sceneAsset: 'world.shape_garden.background.shape_flower_bed',
+        choiceAssets: [
+          'world.shape_garden.object.shape_flower',
+          'world.shape_garden.object.stone',
+          'world.shape_garden.object.petal',
+        ],
+        interactionType: PuzzleInteractionType.rotateObject,
+        animationType: PuzzleAnimationType.rotateTurn,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'rule.detect',
+        familyId: 'pattern.rule_detect',
+        type: PuzzleType.sequenceComplete,
+        skillTag: SkillTag.pattern,
+        answer: 'rule',
+        hintKey: 'challengeCodeGridHint',
+        worldId: 'robot_town',
+        characterId: 'rulo',
+        sceneAsset: 'world.robot_town.background.circuit_board',
+        choiceAssets: [
+          'world.robot_town.object.code_tile',
+          'world.robot_town.object.switch',
+          'world.robot_town.object.circuit_node',
+        ],
+        interactionType: PuzzleInteractionType.tapChoice,
+        animationType: PuzzleAnimationType.cardBounce,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'logic.scales',
+        familyId: 'math.logic_scales',
+        type: PuzzleType.visualCompare,
+        skillTag: SkillTag.arithmetic,
+        answer: 'balance',
+        hintKey: 'challengeBalanceScaleHint',
+        worldId: 'robot_town',
+        characterId: 'numba',
+        sceneAsset: 'world.robot_town.background.gear_factory',
+        choiceAssets: [
+          'world.robot_town.object.gear',
+          'world.robot_town.object.battery',
+          'world.robot_town.object.robot_part',
+        ],
+        interactionType: PuzzleInteractionType.dragToTarget,
+        animationType: PuzzleAnimationType.objectSnap,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'object.sort',
+        familyId: 'classification.object_sort',
+        type: PuzzleType.categorySort,
+        skillTag: SkillTag.classification,
+        answer: 'group',
+        hintKey: 'challengeOddCardHint',
+        worldId: 'forest_lab',
+        characterId: 'mira',
+        sceneAsset: 'world.forest_lab.background.garden_workbench',
+        choiceAssets: [
+          'world.forest_lab.object.seed_packet',
+          'world.forest_lab.object.jar',
+          'world.forest_lab.object.leaf',
+        ],
+        interactionType: PuzzleInteractionType.sortObjects,
+        animationType: PuzzleAnimationType.objectSnap,
+        feedbackStyle: PuzzleFeedbackStyle.characterCoach,
+      ),
+      _CuratedPuzzleFamilySeed(
+        slug: 'mixed.boss',
+        familyId: 'boss.mixed_challenge',
+        type: PuzzleType.mixedBoss,
+        skillTag: SkillTag.reasoning,
+        answer: 'boss',
+        hintKey: 'challengeCodeGridHint',
+        worldId: 'space_station',
+        characterId: 'brainy',
+        sceneAsset: 'world.space_station.background.repair_module',
+        choiceAssets: [
+          'world.space_station.object.rocket',
+          'world.space_station.object.fuel_cell',
+          'world.space_station.object.control_button',
+        ],
+        interactionType: PuzzleInteractionType.multiStepBoss,
+        animationType: PuzzleAnimationType.rewardBurst,
+        feedbackStyle: PuzzleFeedbackStyle.bossMilestone,
+      ),
+    ];
+
+    return [
+      for (final seed in seeds)
+        for (var index = 1; index <= 5; index += 1)
+          _puzzleFor(seed: seed, index: index),
+    ];
+  }
+
+  static PuzzleDefinition _puzzleFor({
+    required _CuratedPuzzleFamilySeed seed,
+    required int index,
+  }) {
+    final difficulty = _difficultyFor(index);
+    final paddedIndex = index.toString().padLeft(3, '0');
+    final payloadSlug = seed.slug.replaceAll('.', '-');
+
+    return PuzzleDefinition(
+      id: 'puzzle.curated.${seed.slug}.$paddedIndex',
+      lessonId: lessonId,
+      type: seed.type,
+      skillTag: seed.skillTag,
+      payloadRef: 'curated.$payloadSlug.$paddedIndex',
+      correctAnswerKey: seed.answer,
+      hintKeys: [seed.hintKey],
+      ageBandIds: _ageBandsFor(index, difficulty),
+      difficulty: difficulty,
+      visualMetadata: VisualPuzzleMetadata(
+        familyId: seed.familyId,
+        worldId: seed.worldId,
+        characterId: seed.characterId,
+        sceneAsset: seed.sceneAsset,
+        choiceAssets: seed.choiceAssets,
+        interactionType: seed.interactionType,
+        animationType: seed.animationType,
+        feedbackStyle: seed.feedbackStyle,
+        estimatedSeconds: _estimatedSecondsFor(difficulty),
+        cognitiveLoad: _cognitiveLoadFor(difficulty),
+        bossMixTags: seed.type == PuzzleType.mixedBoss
+            ? const ['mixed', 'boss', 'first_pack']
+            : const [],
+      ),
+    );
+  }
+
+  static PuzzleDifficulty _difficultyFor(int index) {
+    return switch (index) {
+      1 || 2 => PuzzleDifficulty.easy,
+      3 || 4 => PuzzleDifficulty.normal,
+      _ => PuzzleDifficulty.hard,
+    };
+  }
+
+  static List<AgeBandId> _ageBandsFor(
+    int index,
+    PuzzleDifficulty difficulty,
+  ) {
+    if (difficulty == PuzzleDifficulty.hard) {
+      return const [AgeBandId.age6, AgeBandId.age7to8];
+    }
+    return switch (index) {
+      1 => const [AgeBandId.age4to5, AgeBandId.age6],
+      2 => const [AgeBandId.age4to5, AgeBandId.age6, AgeBandId.age7to8],
+      3 => const [AgeBandId.age6, AgeBandId.age7to8],
+      4 => const [AgeBandId.age4to5, AgeBandId.age6, AgeBandId.age7to8],
+      _ => const [AgeBandId.age7to8],
+    };
+  }
+
+  static int _estimatedSecondsFor(PuzzleDifficulty difficulty) {
+    return switch (difficulty) {
+      PuzzleDifficulty.easy => 25,
+      PuzzleDifficulty.normal => 35,
+      PuzzleDifficulty.hard => 50,
+      PuzzleDifficulty.boss => 75,
+    };
+  }
+
+  static PuzzleCognitiveLoad _cognitiveLoadFor(PuzzleDifficulty difficulty) {
+    return switch (difficulty) {
+      PuzzleDifficulty.easy => PuzzleCognitiveLoad.light,
+      PuzzleDifficulty.normal => PuzzleCognitiveLoad.medium,
+      PuzzleDifficulty.hard => PuzzleCognitiveLoad.high,
+      PuzzleDifficulty.boss => PuzzleCognitiveLoad.boss,
+    };
+  }
+}
+
 class _PuzzleFamilySeed {
   const _PuzzleFamilySeed({
     required this.slug,
@@ -2517,4 +2862,36 @@ class _PuzzleFamilySeed {
   final SkillTag skillTag;
   final String answer;
   final String hintKey;
+}
+
+class _CuratedPuzzleFamilySeed {
+  const _CuratedPuzzleFamilySeed({
+    required this.slug,
+    required this.familyId,
+    required this.type,
+    required this.skillTag,
+    required this.answer,
+    required this.hintKey,
+    required this.worldId,
+    required this.characterId,
+    required this.sceneAsset,
+    required this.choiceAssets,
+    required this.interactionType,
+    required this.animationType,
+    required this.feedbackStyle,
+  });
+
+  final String slug;
+  final String familyId;
+  final PuzzleType type;
+  final SkillTag skillTag;
+  final String answer;
+  final String hintKey;
+  final String worldId;
+  final String characterId;
+  final String sceneAsset;
+  final List<String> choiceAssets;
+  final PuzzleInteractionType interactionType;
+  final PuzzleAnimationType animationType;
+  final PuzzleFeedbackStyle feedbackStyle;
 }
