@@ -75,6 +75,39 @@ void main() {
       );
     });
 
+    test('content coverage report locks age, skill, and type balance', () {
+      final report = FoundationCatalog.contentCoverageReport();
+
+      expect(report.totalPuzzleCount, FoundationCatalog.allPuzzles.length);
+      for (final ageBandId in AgeBandId.values) {
+        expect(
+          report.countByAgeBand[ageBandId],
+          greaterThanOrEqualTo(40),
+          reason: ageBandId.name,
+        );
+      }
+      for (final skillTag in SkillTag.values) {
+        expect(
+          report.countBySkill[skillTag],
+          greaterThanOrEqualTo(12),
+          reason: skillTag.name,
+        );
+      }
+      for (final difficulty in PuzzleDifficulty.values) {
+        expect(
+          report.countByDifficulty[difficulty],
+          greaterThan(0),
+          reason: difficulty.name,
+        );
+      }
+
+      expect(
+        report.countByType.values.where((count) => count > 0).length,
+        greaterThanOrEqualTo(10),
+      );
+      expect(report.skillGaps(minimumPerAgeBand: 4), isEmpty);
+    });
+
     test('lesson generator mixes fixed and generated content bank puzzles', () {
       final lesson = FoundationCatalog.lessonForId('lesson.012');
       final puzzles = FoundationCatalog.puzzlesForLesson(

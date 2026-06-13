@@ -27,6 +27,8 @@ Current implementation notes:
   (`docs/content-stage-9-status.md`).
 - Stage 10: Android emulator smoke and visual QA
   (`docs/content-stage-10-status.md`).
+- Stage 11: content coverage report and quality gate
+  (`docs/content-stage-11-status.md`).
 
 ## Content Architecture
 

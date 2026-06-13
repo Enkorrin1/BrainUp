@@ -208,6 +208,66 @@ class PuzzleDefinition {
   final PuzzleDifficulty difficulty;
 }
 
+class ContentCoverageGap {
+  const ContentCoverageGap({
+    required this.ageBandId,
+    required this.skillTag,
+    required this.count,
+    required this.minimum,
+  });
+
+  final AgeBandId ageBandId;
+  final SkillTag skillTag;
+  final int count;
+  final int minimum;
+
+  String get key {
+    return '${ageBandId.name}.${skillTag.name}';
+  }
+}
+
+class ContentCoverageReport {
+  const ContentCoverageReport({
+    required this.totalPuzzleCount,
+    required this.countByAgeBand,
+    required this.countBySkill,
+    required this.countByDifficulty,
+    required this.countByType,
+    required this.countByAgeBandAndSkill,
+  });
+
+  final int totalPuzzleCount;
+  final Map<AgeBandId, int> countByAgeBand;
+  final Map<SkillTag, int> countBySkill;
+  final Map<PuzzleDifficulty, int> countByDifficulty;
+  final Map<PuzzleType, int> countByType;
+  final Map<AgeBandId, Map<SkillTag, int>> countByAgeBandAndSkill;
+
+  int countFor({
+    required AgeBandId ageBandId,
+    required SkillTag skillTag,
+  }) {
+    return countByAgeBandAndSkill[ageBandId]?[skillTag] ?? 0;
+  }
+
+  List<ContentCoverageGap> skillGaps({
+    required int minimumPerAgeBand,
+  }) {
+    return [
+      for (final ageBandId in AgeBandId.values)
+        for (final skillTag in SkillTag.values)
+          if (countFor(ageBandId: ageBandId, skillTag: skillTag) <
+              minimumPerAgeBand)
+            ContentCoverageGap(
+              ageBandId: ageBandId,
+              skillTag: skillTag,
+              count: countFor(ageBandId: ageBandId, skillTag: skillTag),
+              minimum: minimumPerAgeBand,
+            ),
+    ];
+  }
+}
+
 class PuzzleAttempt {
   const PuzzleAttempt({
     required this.puzzleId,
@@ -1545,6 +1605,35 @@ class FoundationCatalog {
     };
   }
 
+  static ContentCoverageReport contentCoverageReport() {
+    return ContentCoverageReport(
+      totalPuzzleCount: allPuzzles.length,
+      countByAgeBand: {
+        for (final ageBandId in AgeBandId.values)
+          ageBandId: puzzlesFor(ageBandId: ageBandId).length,
+      },
+      countBySkill: puzzleCountBySkill(),
+      countByDifficulty: {
+        for (final difficulty in PuzzleDifficulty.values)
+          difficulty: puzzlesFor(difficulty: difficulty).length,
+      },
+      countByType: {
+        for (final type in PuzzleType.values)
+          type: allPuzzles.where((puzzle) => puzzle.type == type).length,
+      },
+      countByAgeBandAndSkill: {
+        for (final ageBandId in AgeBandId.values)
+          ageBandId: {
+            for (final skillTag in SkillTag.values)
+              skillTag: puzzlesFor(
+                ageBandId: ageBandId,
+                skillTag: skillTag,
+              ).length,
+          },
+      },
+    );
+  }
+
   static List<PuzzleDefinition> puzzlesForLesson({
     required Lesson lesson,
     required AgeBandId ageBandId,
@@ -1855,6 +1944,13 @@ class ContentBank {
         type: PuzzleType.attentionScan,
         skillTag: SkillTag.attention,
         answer: 'detail',
+        hintKey: 'challengeDetailCountHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'focus.tracker',
+        type: PuzzleType.attentionScan,
+        skillTag: SkillTag.attention,
+        answer: 'target',
         hintKey: 'challengeDetailCountHint',
       ),
       _PuzzleFamilySeed(
