@@ -25,6 +25,8 @@ Current implementation notes:
   (`docs/content-stage-8-status.md`).
 - Stage 9: parent-facing review mastery feedback
   (`docs/content-stage-9-status.md`).
+- Stage 10: Android emulator smoke and visual QA
+  (`docs/content-stage-10-status.md`).
 
 ## Content Architecture
 
