@@ -39,6 +39,8 @@ Current implementation notes:
   (`docs/content-stage-14-status.md`).
 - Stage 15: visual content worlds
   (`docs/content-stage-15-status.md`).
+- Stage 16: helper character system
+  (`docs/content-stage-16-status.md`).
 
 ## Content Architecture
 

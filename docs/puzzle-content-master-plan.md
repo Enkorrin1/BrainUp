@@ -109,6 +109,8 @@ Create recurring characters that make feedback warmer and more recognizable.
 
 Deliverable: `docs/content-characters.md`
 
+Status: done in `docs/content-stage-16-status.md`.
+
 Initial roles:
 
 - main BrainUp guide;
