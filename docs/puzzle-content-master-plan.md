@@ -85,6 +85,8 @@ Create memorable content worlds for tasks and lessons.
 
 Deliverable: `docs/content-worlds.md`
 
+Status: done in `docs/content-stage-15-status.md`.
+
 Initial worlds:
 
 - space station;
