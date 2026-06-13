@@ -601,6 +601,14 @@ class FoundationCatalog {
     ),
   ];
 
+  static const Lesson adaptiveReviewLesson = Lesson(
+    id: 'lesson.review.adaptive',
+    titleKey: 'lesson_review_adaptive_title',
+    stepIds: [],
+    xpReward: 12,
+    maxHearts: 5,
+  );
+
   static const List<CourseDefinition> starterCourses = [
     CourseDefinition(
       id: 'course.logic',
@@ -1530,8 +1538,11 @@ class FoundationCatalog {
     final fixedPuzzles = [
       for (final step in stepsForLesson(lesson)) puzzleForStep(step),
     ];
-    final primarySkill =
-        fixedPuzzles.isEmpty ? SkillTag.pattern : fixedPuzzles.first.skillTag;
+    final primarySkill = fixedPuzzles.isEmpty
+        ? (reviewProfile.weakSkillTags.isEmpty
+            ? SkillTag.pattern
+            : reviewProfile.weakSkillTags.first)
+        : fixedPuzzles.first.skillTag;
     final lessonNumber = _lessonNumber(lesson.id);
     final targetDifficulty = _difficultyForLessonNumber(lessonNumber);
     final selected = <PuzzleDefinition>[];
@@ -1631,6 +1642,10 @@ class FoundationCatalog {
   }
 
   static Lesson lessonForId(String lessonId) {
+    if (lessonId == adaptiveReviewLesson.id) {
+      return adaptiveReviewLesson;
+    }
+
     return starterLessons.firstWhere(
       (lesson) => lesson.id == lessonId,
       orElse: () => starterLessons.first,

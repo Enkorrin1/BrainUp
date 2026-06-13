@@ -3,6 +3,7 @@ import 'package:brain_up/src/app/app_controller.dart';
 import 'package:brain_up/src/data/family_profile_store.dart';
 import 'package:brain_up/src/domain/daily_challenge.dart';
 import 'package:brain_up/src/domain/family_profile.dart';
+import 'package:brain_up/src/domain/learning_foundation.dart';
 
 void main() {
   group('AppController', () {
@@ -178,6 +179,49 @@ void main() {
       expect(savedProfile?.practiceSessions.first.mistakePuzzleIds, [
         'shape-path',
         'toy-count',
+      ]);
+    });
+
+    test('records adaptive review without advancing the main path', () async {
+      final profile = FamilyProfile(
+        childName: 'Leo',
+        childAge: ChildAge.five,
+        createdAt: DateTime(2026, 6, 8),
+        childProfiles: [
+          ChildProfile(
+            id: 'child-review',
+            name: 'Leo',
+            age: ChildAge.five,
+            createdAt: DateTime(2026, 6, 8),
+            completedLessonIds: const ['lesson.001'],
+            completedMapNodeIds: const ['node.001'],
+            mapStars: 1,
+          ),
+        ],
+        activeChildId: 'child-review',
+      );
+      final store = _InMemoryFamilyProfileStore(profile);
+      final controller = AppController(store);
+
+      await controller.load();
+      await controller.completeLesson(
+        lessonId: FoundationCatalog.adaptiveReviewLesson.id,
+        challenge: _challenge,
+        correctAnswers: 4,
+        totalQuestions: 5,
+        usedHints: 1,
+        wrongAttempts: 1,
+        mistakePuzzleIds: ['memory.order.normal.003'],
+      );
+
+      final child = controller.familyProfile?.activeChild;
+      expect(child?.completedLessonIds, ['lesson.001']);
+      expect(child?.completedMapNodeIds, ['node.001']);
+      expect(child?.mapStars, 1);
+      expect(child?.mapXp, FoundationCatalog.adaptiveReviewLesson.xpReward);
+      expect(child?.lastChallengeId, FoundationCatalog.adaptiveReviewLesson.id);
+      expect(child?.lastSession?.mistakePuzzleIds, [
+        'memory.order.normal.003',
       ]);
     });
 

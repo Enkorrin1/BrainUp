@@ -17,6 +17,8 @@ Current implementation notes:
   (`docs/content-stage-4-status.md`).
 - Stage 5: review-aware delivery from practice history
   (`docs/content-stage-5-status.md`).
+- Stage 6: visible adaptive review path moment
+  (`docs/content-stage-6-status.md`).
 
 ## Content Architecture
 

@@ -6,6 +6,25 @@ import '../domain/learning_foundation.dart';
 import 'generated/app_localizations.dart';
 
 extension LocalizedModels on AppLocalizations {
+  String get adaptiveReviewTitle {
+    return _isRu ? 'Повтори сложное' : 'Practice tricky bits';
+  }
+
+  String adaptiveReviewBody(int count) {
+    if (_isRu) {
+      return count == 1
+          ? 'Есть 1 задание для закрепления.'
+          : 'Есть $count заданий для закрепления.';
+    }
+    return count == 1
+        ? '1 puzzle is ready for review.'
+        : '$count puzzles are ready for review.';
+  }
+
+  String get adaptiveReviewButton {
+    return _isRu ? 'Повторить' : 'Review';
+  }
+
   String labelForAge(ChildAge age) {
     return ageYears(age.years);
   }

@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 
@@ -136,6 +136,8 @@ class AppController extends ChangeNotifier {
     final activeChild = currentProfile.activeChild;
     final currentNode = _nodeForLesson(lessonId);
     final lesson = FoundationCatalog.lessonForId(lessonId);
+    final isReviewLesson =
+        lessonId == FoundationCatalog.adaptiveReviewLesson.id;
     final wasCompleted = activeChild.completedLessonIds.contains(lessonId);
 
     final yesterday = today.subtract(const Duration(days: 1));
@@ -155,13 +157,14 @@ class AppController extends ChangeNotifier {
     );
     final completedMapNodeIds = [
       ...activeChild.completedMapNodeIds,
-      if (currentNode != null &&
+      if (!isReviewLesson &&
+          currentNode != null &&
           !activeChild.completedMapNodeIds.contains(currentNode.id))
         currentNode.id,
     ];
     final completedLessonIds = [
       ...activeChild.completedLessonIds,
-      lessonId,
+      if (!isReviewLesson) lessonId,
     ];
     final nextChild = activeChild.copyWith(
       completedChallenges: activeChild.completedChallenges + 1,
@@ -178,7 +181,7 @@ class AppController extends ChangeNotifier {
       ],
       completedMapNodeIds: completedMapNodeIds,
       completedLessonIds: completedLessonIds,
-      mapStars: activeChild.mapStars + 1,
+      mapStars: activeChild.mapStars + (isReviewLesson ? 0 : 1),
       mapXp: activeChild.mapXp + (wasCompleted ? 8 : lesson.xpReward),
       hearts: math.min(5, activeChild.hearts + 1),
     );

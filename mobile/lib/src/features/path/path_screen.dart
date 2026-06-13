@@ -25,6 +25,8 @@ class PathScreen extends StatelessWidget {
         PrototypeLearningPathCatalog.completedNodeIdsFromLessons(
             child.completedLessonIds);
     final currentNode = path.nextNode(completedNodeIds);
+    final reviewProfile =
+        PracticeReviewProfile.fromSessions(child.practiceSessions);
 
     return Scaffold(
       backgroundColor: _PathPalette.voidBlue,
@@ -49,6 +51,15 @@ class PathScreen extends StatelessWidget {
                       ? null
                       : () => onLessonSelected(currentNode.lessonId),
                 ),
+                if (reviewProfile.hasSignals) ...[
+                  const SizedBox(height: 14),
+                  _AdaptiveReviewPanel(
+                    reviewProfile: reviewProfile,
+                    onStart: () => onLessonSelected(
+                      FoundationCatalog.adaptiveReviewLesson.id,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 26),
                 _StarRoute(
                   path: path,
@@ -59,6 +70,101 @@ class PathScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AdaptiveReviewPanel extends StatelessWidget {
+  const _AdaptiveReviewPanel({
+    required this.reviewProfile,
+    required this.onStart,
+  });
+
+  final PracticeReviewProfile reviewProfile;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final count = math.max(
+      reviewProfile.mistakePuzzleIds.length,
+      reviewProfile.weakSkillTags.length,
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _PathPalette.aqua.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _PathPalette.aqua.withValues(alpha: 0.35)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+        child: Row(
+          children: [
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: _PathPalette.aqua.withValues(alpha: 0.20),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.replay_rounded,
+                color: _PathPalette.aqua,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.adaptiveReviewTitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    l10n.adaptiveReviewBody(math.max(1, count)),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: _PathPalette.lavender,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 104,
+              child: FilledButton(
+                onPressed: onStart,
+                style: FilledButton.styleFrom(
+                  backgroundColor: _PathPalette.aqua,
+                  foregroundColor: _PathPalette.ink,
+                  minimumSize: const Size(0, 44),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: Text(
+                  l10n.adaptiveReviewButton,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
