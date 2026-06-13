@@ -566,6 +566,16 @@ class _LessonQuestionCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
+            if (challenge.interaction != null) ...[
+              _LessonInteractionStage(
+                challenge: challenge,
+                selectedChoiceId: selectedChoiceId,
+                hasSubmitted: hasSubmitted,
+                isCorrect: isCorrect,
+                onChoiceSelected: onChoiceSelected,
+              ),
+              const SizedBox(height: 18),
+            ],
             _HintButton(
               expanded: showHint,
               onPressed: onToggleHint,
@@ -595,13 +605,704 @@ class _LessonQuestionCard extends StatelessWidget {
               ),
             if (hasSubmitted) ...[
               const SizedBox(height: 4),
-              _LessonFeedback(
-                isCorrect: isCorrect,
-                challenge: challenge,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 240),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(
+                    scale: Tween<double>(begin: 0.96, end: 1).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutBack,
+                      ),
+                    ),
+                    child: FadeTransition(opacity: animation, child: child),
+                  );
+                },
+                child: _LessonFeedback(
+                  key: ValueKey('${challenge.id}-$isCorrect'),
+                  isCorrect: isCorrect,
+                  challenge: challenge,
+                ),
               ),
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _LessonInteractionStage extends StatelessWidget {
+  const _LessonInteractionStage({
+    required this.challenge,
+    required this.selectedChoiceId,
+    required this.hasSubmitted,
+    required this.isCorrect,
+    required this.onChoiceSelected,
+  });
+
+  final DailyChallenge challenge;
+  final String? selectedChoiceId;
+  final bool hasSubmitted;
+  final bool isCorrect;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final interaction = challenge.interaction;
+    if (interaction == null) {
+      return const SizedBox.shrink();
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _stageColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _stageBorderColor),
+        boxShadow: [
+          BoxShadow(
+            color: _stageBorderColor.withValues(alpha: 0.18),
+            blurRadius: hasSubmitted ? 18 : 10,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _InteractionBadge(type: interaction.type),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  interaction.instruction,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          switch (interaction.type) {
+            PuzzleInteractionType.matchPairs => _MatchPairsStage(
+                challenge: challenge,
+                interaction: interaction,
+                selectedChoiceId: selectedChoiceId,
+                onChoiceSelected: onChoiceSelected,
+              ),
+            PuzzleInteractionType.dragToTarget ||
+            PuzzleInteractionType.tracePath ||
+            PuzzleInteractionType.sortObjects =>
+              _DropTargetStage(
+                challenge: challenge,
+                interaction: interaction,
+                selectedChoiceId: selectedChoiceId,
+                onChoiceSelected: onChoiceSelected,
+              ),
+            PuzzleInteractionType.memoryReveal ||
+            PuzzleInteractionType.reorderCards =>
+              _MemoryRevealStage(
+                challenge: challenge,
+                interaction: interaction,
+                selectedChoiceId: selectedChoiceId,
+                onChoiceSelected: onChoiceSelected,
+              ),
+            PuzzleInteractionType.rotateObject => _RotateObjectStage(
+                challenge: challenge,
+                interaction: interaction,
+                selectedChoiceId: selectedChoiceId,
+                onChoiceSelected: onChoiceSelected,
+              ),
+            PuzzleInteractionType.multiStepBoss => _BossInteractionStage(
+                challenge: challenge,
+                interaction: interaction,
+                selectedChoiceId: selectedChoiceId,
+                onChoiceSelected: onChoiceSelected,
+              ),
+            PuzzleInteractionType.tapChoice => const SizedBox.shrink(),
+          },
+        ],
+      ),
+    );
+  }
+
+  Color get _stageColor {
+    if (hasSubmitted && isCorrect) {
+      return _LessonPalette.aqua.withValues(alpha: 0.18);
+    }
+    if (hasSubmitted && !isCorrect) {
+      return _LessonPalette.coral.withValues(alpha: 0.14);
+    }
+    return Colors.white.withValues(alpha: 0.08);
+  }
+
+  Color get _stageBorderColor {
+    if (hasSubmitted && isCorrect) {
+      return _LessonPalette.aqua.withValues(alpha: 0.72);
+    }
+    if (hasSubmitted && !isCorrect) {
+      return _LessonPalette.coral.withValues(alpha: 0.64);
+    }
+    return _LessonPalette.aqua.withValues(alpha: 0.24);
+  }
+}
+
+class _InteractionBadge extends StatelessWidget {
+  const _InteractionBadge({required this.type});
+
+  final PuzzleInteractionType type;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: label,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: color.withValues(alpha: 0.45)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: _LessonPalette.text,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData get icon {
+    return switch (type) {
+      PuzzleInteractionType.dragToTarget => Icons.open_with_rounded,
+      PuzzleInteractionType.reorderCards => Icons.swap_vert_rounded,
+      PuzzleInteractionType.matchPairs => Icons.hub_rounded,
+      PuzzleInteractionType.memoryReveal => Icons.style_rounded,
+      PuzzleInteractionType.tracePath => Icons.route_rounded,
+      PuzzleInteractionType.rotateObject => Icons.threesixty_rounded,
+      PuzzleInteractionType.sortObjects => Icons.inventory_2_rounded,
+      PuzzleInteractionType.multiStepBoss => Icons.auto_awesome_rounded,
+      PuzzleInteractionType.tapChoice => Icons.touch_app_rounded,
+    };
+  }
+
+  String get label {
+    return switch (type) {
+      PuzzleInteractionType.dragToTarget => 'Drag',
+      PuzzleInteractionType.reorderCards => 'Order',
+      PuzzleInteractionType.matchPairs => 'Match',
+      PuzzleInteractionType.memoryReveal => 'Reveal',
+      PuzzleInteractionType.tracePath => 'Trace',
+      PuzzleInteractionType.rotateObject => 'Rotate',
+      PuzzleInteractionType.sortObjects => 'Sort',
+      PuzzleInteractionType.multiStepBoss => 'Boss',
+      PuzzleInteractionType.tapChoice => 'Tap',
+    };
+  }
+
+  Color get color {
+    return switch (type) {
+      PuzzleInteractionType.matchPairs ||
+      PuzzleInteractionType.memoryReveal =>
+        _LessonPalette.star,
+      PuzzleInteractionType.dragToTarget ||
+      PuzzleInteractionType.sortObjects =>
+        _LessonPalette.aqua,
+      PuzzleInteractionType.rotateObject ||
+      PuzzleInteractionType.tracePath =>
+        _LessonPalette.violet,
+      PuzzleInteractionType.multiStepBoss => _LessonPalette.coral,
+      PuzzleInteractionType.reorderCards ||
+      PuzzleInteractionType.tapChoice =>
+        _LessonPalette.aqua,
+    };
+  }
+}
+
+class _MatchPairsStage extends StatelessWidget {
+  const _MatchPairsStage({
+    required this.challenge,
+    required this.interaction,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
+
+  final DailyChallenge challenge;
+  final ChallengeInteractionSpec interaction;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final clue = interaction.items.first;
+
+    return Row(
+      children: [
+        Expanded(
+          child: _InteractionCard(
+            icon: Icons.psychology_alt_rounded,
+            title: clue.label,
+            subtitle: 'Clue',
+            selected: true,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Icon(
+            Icons.multiple_stop_rounded,
+            color: _LessonPalette.star,
+          ),
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              for (final choice in challenge.choices)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _InteractionOptionChip(
+                    label: choice.label,
+                    selected: selectedChoiceId == choice.id,
+                    icon: Icons.add_link_rounded,
+                    onTap: () => onChoiceSelected(choice.id),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DropTargetStage extends StatelessWidget {
+  const _DropTargetStage({
+    required this.challenge,
+    required this.interaction,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
+
+  final DailyChallenge challenge;
+  final ChallengeInteractionSpec interaction;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedChoice = selectedChoiceId == null
+        ? null
+        : challenge.choices.where((choice) => choice.id == selectedChoiceId);
+    final selectedLabel = selectedChoice == null || selectedChoice.isEmpty
+        ? 'Drop answer here'
+        : selectedChoice.first.label;
+
+    return Column(
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: selectedChoiceId == null
+                ? Colors.white.withValues(alpha: 0.08)
+                : _LessonPalette.aqua.withValues(alpha: 0.18),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: selectedChoiceId == null
+                  ? Colors.white.withValues(alpha: 0.20)
+                  : _LessonPalette.aqua,
+              width: 2,
+            ),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.center_focus_strong_rounded,
+                color: _LessonPalette.aqua,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  selectedLabel,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _InteractionChoiceWrap(
+          choices: challenge.choices,
+          selectedChoiceId: selectedChoiceId,
+          icon: Icons.back_hand_rounded,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      ],
+    );
+  }
+}
+
+class _MemoryRevealStage extends StatelessWidget {
+  const _MemoryRevealStage({
+    required this.challenge,
+    required this.interaction,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
+
+  final DailyChallenge challenge;
+  final ChallengeInteractionSpec interaction;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (var index = 0; index < interaction.items.length; index += 1)
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: 1),
+                duration: Duration(milliseconds: 260 + index * 90),
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 10 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _MemoryToken(
+                  label: interaction.items[index].label,
+                  index: index,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _InteractionChoiceWrap(
+          choices: challenge.choices,
+          selectedChoiceId: selectedChoiceId,
+          icon: Icons.visibility_rounded,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      ],
+    );
+  }
+}
+
+class _RotateObjectStage extends StatelessWidget {
+  const _RotateObjectStage({
+    required this.challenge,
+    required this.interaction,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
+
+  final DailyChallenge challenge;
+  final ChallengeInteractionSpec interaction;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TweenAnimationBuilder<double>(
+          tween: Tween(begin: -0.08, end: 0.08),
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOut,
+          builder: (context, value, child) {
+            return Transform.rotate(angle: value, child: child);
+          },
+          child: const Icon(
+            Icons.change_history_rounded,
+            color: _LessonPalette.star,
+            size: 58,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _InteractionChoiceWrap(
+          choices: challenge.choices,
+          selectedChoiceId: selectedChoiceId,
+          icon: Icons.threesixty_rounded,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      ],
+    );
+  }
+}
+
+class _BossInteractionStage extends StatelessWidget {
+  const _BossInteractionStage({
+    required this.challenge,
+    required this.interaction,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
+
+  final DailyChallenge challenge;
+  final ChallengeInteractionSpec interaction;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Row(
+          children: [
+            Expanded(
+              child: _InteractionCard(
+                icon: Icons.filter_1_rounded,
+                title: 'Clue',
+                subtitle: 'Find rule',
+                selected: true,
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: _InteractionCard(
+                icon: Icons.filter_2_rounded,
+                title: 'Check',
+                subtitle: 'Combine',
+                selected: true,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _InteractionChoiceWrap(
+          choices: challenge.choices,
+          selectedChoiceId: selectedChoiceId,
+          icon: Icons.auto_awesome_rounded,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      ],
+    );
+  }
+}
+
+class _InteractionChoiceWrap extends StatelessWidget {
+  const _InteractionChoiceWrap({
+    required this.choices,
+    required this.selectedChoiceId,
+    required this.icon,
+    required this.onChoiceSelected,
+  });
+
+  final List<ChallengeChoice> choices;
+  final String? selectedChoiceId;
+  final IconData icon;
+  final ValueChanged<String> onChoiceSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final choice in choices)
+          _InteractionOptionChip(
+            label: choice.label,
+            selected: selectedChoiceId == choice.id,
+            icon: icon,
+            onTap: () => onChoiceSelected(choice.id),
+          ),
+      ],
+    );
+  }
+}
+
+class _InteractionOptionChip extends StatelessWidget {
+  const _InteractionOptionChip({
+    required this.label,
+    required this.selected,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        constraints: const BoxConstraints(minHeight: 44, minWidth: 92),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected
+              ? _LessonPalette.aqua.withValues(alpha: 0.24)
+              : Colors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected
+                ? _LessonPalette.aqua
+                : Colors.white.withValues(alpha: 0.18),
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: selected ? _LessonPalette.aqua : _LessonPalette.muted,
+              size: 18,
+            ),
+            const SizedBox(width: 7),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: _LessonPalette.text,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InteractionCard extends StatelessWidget {
+  const _InteractionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: selected
+            ? _LessonPalette.star.withValues(alpha: 0.18)
+            : Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: selected
+              ? _LessonPalette.star.withValues(alpha: 0.70)
+              : Colors.white.withValues(alpha: 0.18),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: _LessonPalette.star, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: _LessonPalette.text,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: _LessonPalette.muted,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MemoryToken extends StatelessWidget {
+  const _MemoryToken({
+    required this.label,
+    required this.index,
+  });
+
+  final String label;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 88,
+      height: 68,
+      padding: const EdgeInsets.all(9),
+      decoration: BoxDecoration(
+        color: index.isEven
+            ? _LessonPalette.violet.withValues(alpha: 0.22)
+            : _LessonPalette.star.withValues(alpha: 0.20),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '${index + 1}',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: _LessonPalette.muted,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: _LessonPalette.text,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+        ],
       ),
     );
   }
@@ -1859,6 +2560,7 @@ class _LessonFeedback extends StatelessWidget {
   const _LessonFeedback({
     required this.isCorrect,
     required this.challenge,
+    super.key,
   });
 
   final bool isCorrect;

@@ -121,6 +121,11 @@ void main() {
 
     expect(find.text('Step 1 of 5'), findsOneWidget);
     expect(find.textContaining('Remember:'), findsOneWidget);
+    expect(find.text('Reveal'), findsOneWidget);
+    expect(
+      find.text('Reveal the cards, remember the order, then answer.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows adaptive review result without map reward',

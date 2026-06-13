@@ -232,6 +232,11 @@ Stage 20 delivered:
 
 Make puzzle reactions pleasant and educational.
 
+Status: first lesson UI layer implemented. Rich puzzle interaction specs now
+render as lightweight in-lesson stages with visible mechanics, selectable
+chips, animated memory reveal tokens, animated answer feedback, and state colors
+for correct and retry outcomes.
+
 Feedback examples:
 
 - correct answer: card bounce, character celebration, reward sparkle;
@@ -241,6 +246,14 @@ Feedback examples:
 - boss complete: portal, chest, badge, or star reveal.
 
 Animations should support learning clarity rather than distract from the task.
+
+Stage 21 delivered:
+
+- in-lesson interaction stage for rich puzzle specs;
+- visible badges for match, drag, reveal, order, trace, rotate, sort, and boss;
+- memory reveal card entrance animations;
+- animated answer feedback with scale and fade transitions;
+- widget coverage for the adaptive review reveal mechanic.
 
 ## Stage 22. Content Placement Rules
 
