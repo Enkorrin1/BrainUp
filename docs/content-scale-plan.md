@@ -33,6 +33,8 @@ Current implementation notes:
   (`docs/content-stage-12-status.md`).
 - Stages 13-25: rich visual puzzle content expansion
   (`docs/puzzle-content-master-plan.md`).
+- Stage 13: puzzle content quality system
+  (`docs/content-stage-13-status.md`).
 
 ## Content Architecture
 

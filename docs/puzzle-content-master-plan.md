@@ -30,6 +30,8 @@ Create the quality standard for BrainUp puzzles.
 
 Deliverable: `docs/puzzle-content-system.md`
 
+Status: done in `docs/content-stage-13-status.md`.
+
 Define:
 
 - puzzle anatomy;
