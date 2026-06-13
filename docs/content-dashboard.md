@@ -79,6 +79,21 @@
 - Puzzles without assets: 16 (Needs review)
 - Puzzles without hints: 0 (OK)
 
+## QA
+
+| Metric | Value |
+| --- | ---: |
+| QA passes | true |
+| Blockers | 0 |
+| Warnings | 44 |
+
+### QA Warning Types
+
+| Type | Count |
+| --- | ---: |
+| missingVisualMetadata | 16 |
+| excessiveFamilyRepetition | 28 |
+
 ## Repeated Families
 
 | Family | Count | Examples |

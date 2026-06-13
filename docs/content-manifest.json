@@ -203,6 +203,277 @@
       "preferredTypes": []
     }
   ],
+  "qa": {
+    "passes": true,
+    "blockerCount": 0,
+    "warningCount": 44,
+    "issues": [
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.shape_path"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.fruit_pattern"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.toy_count"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.odd_card"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.memory_pairs"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.lock_key"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.shadow_match"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.logic_train"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.sticker_sum"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.balance_scale"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.code_grid"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.number_bridge"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.detail_count"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.shape_rotation"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.space_sequence"
+      },
+      {
+        "type": "missingVisualMetadata",
+        "severity": "warning",
+        "message": "Puzzle has no visual metadata yet.",
+        "puzzleId": "puzzle.shape_stack"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "analogy.link"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "category.groups"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "compare.weight"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "focus.details"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "focus.tracker"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "logic.code"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "math.bridge"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "memory.order"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "memory.pairs"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "mixed.boss"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "pattern.trail"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "rebus.picture"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "route.path"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "sort.odd"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 9 variants; review saturation.",
+        "familyId": "space.turn"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.group-compare"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.logic-scales"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.memory-order"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.mixed-boss"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.object-count"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.object-sort"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.odd-one-out"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.pair-match"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.route-build"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.rule-detect"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.sequence-complete"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.shadow-match"
+      },
+      {
+        "type": "excessiveFamilyRepetition",
+        "severity": "warning",
+        "message": "Family has 5 variants; review saturation.",
+        "familyId": "curated.shape-rotation"
+      }
+    ]
+  },
   "lessonPlacements": [
     {
       "lessonId": "lesson.001",

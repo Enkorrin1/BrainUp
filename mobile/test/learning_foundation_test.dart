@@ -142,8 +142,8 @@ void main() {
 
     test('content dashboard report exposes quality and saturation signals', () {
       final dashboard = FoundationCatalog.contentDashboardReport();
-      final json = jsonDecode(jsonEncode(dashboard.toJson()))
-          as Map<String, Object?>;
+      final json =
+          jsonDecode(jsonEncode(dashboard.toJson())) as Map<String, Object?>;
       final issues = json['issues'] as Map<String, Object?>;
       final repeatedFamilies = json['repeatedFamilies'] as List<Object?>;
 
@@ -153,12 +153,37 @@ void main() {
       expect(dashboard.qualityGatePasses, isTrue);
       expect(dashboard.skillGaps, isEmpty);
       expect(dashboard.lowTypeCoverage, isEmpty);
+      expect(dashboard.qaReport.passes, isTrue);
+      expect(dashboard.qaReport.blockers, isEmpty);
+      expect(dashboard.qaReport.warnings, isNotEmpty);
       expect(issues['puzzleIdsWithoutHints'], isEmpty);
       expect(repeatedFamilies, isNotEmpty);
       expect(
         repeatedFamilies.cast<Map<String, Object?>>().first,
         containsPair('familyId', isA<String>()),
       );
+    });
+
+    test('content QA report blocks structural errors and warns on polish gaps',
+        () {
+      final report = FoundationCatalog.contentQaReport();
+      final json =
+          jsonDecode(jsonEncode(report.toJson())) as Map<String, Object?>;
+      final issues = json['issues'] as List<Object?>;
+
+      expect(report.passes, isTrue);
+      expect(report.blockers, isEmpty);
+      expect(
+        report.warnings.map((issue) => issue.type),
+        contains(ContentQaIssueType.missingVisualMetadata),
+      );
+      expect(
+        report.warnings.map((issue) => issue.type),
+        contains(ContentQaIssueType.excessiveFamilyRepetition),
+      );
+      expect(json['blockerCount'], 0);
+      expect(json['warningCount'], report.warnings.length);
+      expect(issues, isNotEmpty);
     });
 
     test('curated rich puzzle pack covers first-pack P0 families', () {

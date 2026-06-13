@@ -123,6 +123,28 @@ void main() {
           challenge.choices.map((choice) => choice.id), contains('sunflower'));
     });
 
+    test('all puzzle definitions produce QA-ready playable challenges', () {
+      for (final puzzle in FoundationCatalog.allPuzzles) {
+        final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+
+        expect(challenge.prompt.trim(), isNotEmpty, reason: puzzle.id);
+        expect(challenge.question.trim(), isNotEmpty, reason: puzzle.id);
+        expect(challenge.hint.trim(), isNotEmpty, reason: puzzle.id);
+        expect(challenge.explanation.trim(), isNotEmpty, reason: puzzle.id);
+        expect(challenge.prompt.length, lessThanOrEqualTo(140),
+            reason: puzzle.id);
+        expect(challenge.question.length, lessThanOrEqualTo(180),
+            reason: puzzle.id);
+        expect(
+          challenge.choices
+              .where((choice) => choice.id == challenge.correctChoiceId)
+              .length,
+          1,
+          reason: puzzle.id,
+        );
+      }
+    });
+
     test('curated pair puzzles expose match pair interaction specs', () {
       final puzzle = CuratedRichPuzzlePack.puzzles.firstWhere(
         (puzzle) =>

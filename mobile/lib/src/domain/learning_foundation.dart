@@ -83,6 +83,25 @@ enum ContentPlacement {
   weakSkillRecommendation,
 }
 
+enum ContentQaSeverity {
+  blocker,
+  warning,
+}
+
+enum ContentQaIssueType {
+  duplicatePuzzleId,
+  duplicatePayloadRef,
+  missingCorrectAnswer,
+  missingHint,
+  missingVisualMetadata,
+  invalidVisualWorld,
+  invalidVisualCharacter,
+  missingChoiceAssets,
+  invalidEstimatedSeconds,
+  bossAgeMismatch,
+  excessiveFamilyRepetition,
+}
+
 enum PuzzleCognitiveLoad {
   light,
   medium,
@@ -481,6 +500,69 @@ class ContentFamilySummary {
   }
 }
 
+class ContentQaIssue {
+  const ContentQaIssue({
+    required this.type,
+    required this.severity,
+    required this.message,
+    this.puzzleId,
+    this.familyId,
+  });
+
+  final ContentQaIssueType type;
+  final ContentQaSeverity severity;
+  final String message;
+  final String? puzzleId;
+  final String? familyId;
+
+  Map<String, Object?> toJson() {
+    return {
+      'type': type.name,
+      'severity': severity.name,
+      'message': message,
+      if (puzzleId != null) 'puzzleId': puzzleId,
+      if (familyId != null) 'familyId': familyId,
+    };
+  }
+}
+
+class ContentQaReport {
+  const ContentQaReport({
+    required this.issues,
+  });
+
+  final List<ContentQaIssue> issues;
+
+  List<ContentQaIssue> get blockers {
+    return [
+      for (final issue in issues)
+        if (issue.severity == ContentQaSeverity.blocker) issue,
+    ];
+  }
+
+  List<ContentQaIssue> get warnings {
+    return [
+      for (final issue in issues)
+        if (issue.severity == ContentQaSeverity.warning) issue,
+    ];
+  }
+
+  bool get passes {
+    return blockers.isEmpty;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'passes': passes,
+      'blockerCount': blockers.length,
+      'warningCount': warnings.length,
+      'issues': [
+        for (final issue in issues) issue.toJson(),
+      ],
+    };
+  }
+}
+
 class ContentDashboardReport {
   const ContentDashboardReport({
     required this.totalPuzzleCount,
@@ -494,6 +576,7 @@ class ContentDashboardReport {
     required this.skillGaps,
     required this.lowTypeCoverage,
     required this.repeatedFamilies,
+    required this.qaReport,
   });
 
   final int totalPuzzleCount;
@@ -507,12 +590,14 @@ class ContentDashboardReport {
   final List<ContentCoverageGap> skillGaps;
   final Map<PuzzleType, int> lowTypeCoverage;
   final List<ContentFamilySummary> repeatedFamilies;
+  final ContentQaReport qaReport;
 
   bool get hasBlockingIssues {
     return !qualityGatePasses ||
         skillGaps.isNotEmpty ||
         lowTypeCoverage.isNotEmpty ||
-        puzzleIdsWithoutHints.isNotEmpty;
+        puzzleIdsWithoutHints.isNotEmpty ||
+        !qaReport.passes;
   }
 
   Map<String, Object?> toJson() {
@@ -540,6 +625,7 @@ class ContentDashboardReport {
       'repeatedFamilies': [
         for (final family in repeatedFamilies) family.toJson(),
       ],
+      'qa': qaReport.toJson(),
     };
   }
 }
@@ -2055,6 +2141,7 @@ class FoundationCatalog {
       'placementRules': [
         for (final rule in placementRules) rule.toJson(),
       ],
+      'qa': contentQaReport().toJson(),
       'lessonPlacements': [
         for (final lesson in starterLessons)
           {
@@ -2094,6 +2181,9 @@ class FoundationCatalog {
       for (final entry in report.countByType.entries)
         if (entry.value < minimumPerType) entry.key: entry.value,
     };
+    final qaReport = contentQaReport(
+      repeatedFamilyWarningThreshold: repeatedFamilyThreshold,
+    );
 
     return ContentDashboardReport(
       totalPuzzleCount: report.totalPuzzleCount,
@@ -2115,7 +2205,153 @@ class FoundationCatalog {
       repeatedFamilies: _repeatedFamilySummaries(
         threshold: repeatedFamilyThreshold,
       ),
+      qaReport: qaReport,
     );
+  }
+
+  static ContentQaReport contentQaReport({
+    int repeatedFamilyWarningThreshold = 5,
+  }) {
+    final issues = <ContentQaIssue>[];
+    final ids = <String, int>{};
+    final payloadRefs = <String, int>{};
+
+    for (final puzzle in allPuzzles) {
+      ids.update(puzzle.id, (count) => count + 1, ifAbsent: () => 1);
+      payloadRefs.update(
+        puzzle.payloadRef,
+        (count) => count + 1,
+        ifAbsent: () => 1,
+      );
+
+      if (puzzle.correctAnswerKey.trim().isEmpty) {
+        issues.add(
+          ContentQaIssue(
+            type: ContentQaIssueType.missingCorrectAnswer,
+            severity: ContentQaSeverity.blocker,
+            puzzleId: puzzle.id,
+            message: 'Puzzle has an empty correct answer key.',
+          ),
+        );
+      }
+
+      if (puzzle.hintKeys.isEmpty) {
+        issues.add(
+          ContentQaIssue(
+            type: ContentQaIssueType.missingHint,
+            severity: ContentQaSeverity.blocker,
+            puzzleId: puzzle.id,
+            message: 'Puzzle has no hint key.',
+          ),
+        );
+      }
+
+      final metadata = puzzle.visualMetadata;
+      if (metadata == null) {
+        issues.add(
+          ContentQaIssue(
+            type: ContentQaIssueType.missingVisualMetadata,
+            severity: ContentQaSeverity.warning,
+            puzzleId: puzzle.id,
+            message: 'Puzzle has no visual metadata yet.',
+          ),
+        );
+      } else {
+        if (!knownWorldIds.contains(metadata.worldId)) {
+          issues.add(
+            ContentQaIssue(
+              type: ContentQaIssueType.invalidVisualWorld,
+              severity: ContentQaSeverity.blocker,
+              puzzleId: puzzle.id,
+              message: 'Puzzle references an unknown visual world.',
+            ),
+          );
+        }
+        if (!knownCharacterIds.contains(metadata.characterId)) {
+          issues.add(
+            ContentQaIssue(
+              type: ContentQaIssueType.invalidVisualCharacter,
+              severity: ContentQaSeverity.blocker,
+              puzzleId: puzzle.id,
+              message: 'Puzzle references an unknown helper character.',
+            ),
+          );
+        }
+        if (metadata.choiceAssets.isEmpty) {
+          issues.add(
+            ContentQaIssue(
+              type: ContentQaIssueType.missingChoiceAssets,
+              severity: ContentQaSeverity.blocker,
+              puzzleId: puzzle.id,
+              message: 'Puzzle visual metadata has no choice assets.',
+            ),
+          );
+        }
+        if (metadata.estimatedSeconds <= 0) {
+          issues.add(
+            ContentQaIssue(
+              type: ContentQaIssueType.invalidEstimatedSeconds,
+              severity: ContentQaSeverity.blocker,
+              puzzleId: puzzle.id,
+              message: 'Puzzle estimated seconds must be positive.',
+            ),
+          );
+        }
+      }
+
+      if (puzzle.difficulty == PuzzleDifficulty.boss &&
+          !puzzle.ageBandIds.contains(AgeBandId.age7to8)) {
+        issues.add(
+          ContentQaIssue(
+            type: ContentQaIssueType.bossAgeMismatch,
+            severity: ContentQaSeverity.blocker,
+            puzzleId: puzzle.id,
+            message: 'Boss puzzle must be available for age7to8.',
+          ),
+        );
+      }
+    }
+
+    for (final entry in ids.entries) {
+      if (entry.value > 1) {
+        issues.add(
+          ContentQaIssue(
+            type: ContentQaIssueType.duplicatePuzzleId,
+            severity: ContentQaSeverity.blocker,
+            puzzleId: entry.key,
+            message: 'Puzzle id appears ${entry.value} times.',
+          ),
+        );
+      }
+    }
+
+    for (final entry in payloadRefs.entries) {
+      if (entry.value > 1) {
+        issues.add(
+          ContentQaIssue(
+            type: ContentQaIssueType.duplicatePayloadRef,
+            severity: ContentQaSeverity.blocker,
+            puzzleId: entry.key,
+            message: 'Puzzle payloadRef appears ${entry.value} times.',
+          ),
+        );
+      }
+    }
+
+    for (final family in _repeatedFamilySummaries(
+      threshold: repeatedFamilyWarningThreshold,
+    )) {
+      issues.add(
+        ContentQaIssue(
+          type: ContentQaIssueType.excessiveFamilyRepetition,
+          severity: ContentQaSeverity.warning,
+          familyId: family.familyId,
+          message: 'Family has ${family.count} variants; review saturation.',
+        ),
+      );
+    }
+
+    return ContentQaReport(issues: issues);
   }
 
   static List<PuzzleDefinition> puzzlesForLesson({

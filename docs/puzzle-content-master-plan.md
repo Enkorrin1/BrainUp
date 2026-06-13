@@ -325,6 +325,9 @@ Stage 23 delivered:
 
 Add quality checks for every puzzle.
 
+Status: implemented as automated QA reports, dashboard QA output, manifest QA
+output, and playability tests for every puzzle definition.
+
 Checklist:
 
 - task is clear for the target age;
@@ -344,6 +347,17 @@ Automated tests:
 - each type has a minimum count;
 - each age band has balanced coverage;
 - visual metadata is complete for production-ready puzzles.
+
+Stage 24 delivered:
+
+- `ContentQaReport` with blocker and warning severities;
+- QA checks for duplicate ids, duplicate payload refs, missing correct answers,
+  missing hints, visual metadata gaps, invalid visual worlds/characters, missing
+  choice assets, invalid estimated time, boss age mismatch, and family
+  saturation;
+- manifest `qa` export;
+- dashboard QA section with blocker/warning counts and warning types;
+- playable challenge QA test for every puzzle definition.
 
 ## Stage 25. Large Content Milestone
 

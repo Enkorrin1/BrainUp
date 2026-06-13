@@ -4,11 +4,9 @@ import 'dart:io';
 import 'package:brain_up/src/domain/learning_foundation.dart';
 
 void main(List<String> args) {
-  final jsonPath =
-      args.isEmpty ? '../docs/content-dashboard.json' : args.first;
-  final markdownPath = args.length < 2
-      ? '../docs/content-dashboard.md'
-      : args[1];
+  final jsonPath = args.isEmpty ? '../docs/content-dashboard.json' : args.first;
+  final markdownPath =
+      args.length < 2 ? '../docs/content-dashboard.md' : args[1];
   final report = FoundationCatalog.contentDashboardReport();
   const encoder = JsonEncoder.withIndent('  ');
 
@@ -74,11 +72,36 @@ String _renderMarkdown(ContentDashboardReport report) {
     ..writeln(_issueLine('Skill gaps', report.skillGaps.length))
     ..writeln(_issueLine('Low type coverage', report.lowTypeCoverage.length))
     ..writeln(
-      _issueLine('Puzzles without assets', report.puzzleIdsWithoutAssets.length),
+      _issueLine(
+          'Puzzles without assets', report.puzzleIdsWithoutAssets.length),
     )
     ..writeln(
       _issueLine('Puzzles without hints', report.puzzleIdsWithoutHints.length),
     )
+    ..writeln()
+    ..writeln('## QA')
+    ..writeln()
+    ..writeln('| Metric | Value |')
+    ..writeln('| --- | ---: |')
+    ..writeln('| QA passes | ${report.qaReport.passes} |')
+    ..writeln('| Blockers | ${report.qaReport.blockers.length} |')
+    ..writeln('| Warnings | ${report.qaReport.warnings.length} |')
+    ..writeln()
+    ..writeln('### QA Warning Types')
+    ..writeln()
+    ..writeln('| Type | Count |')
+    ..writeln('| --- | ---: |');
+
+  final warningCounts = _qaCountsByType(report.qaReport.warnings);
+  if (warningCounts.isEmpty) {
+    buffer.writeln('| none | 0 |');
+  } else {
+    for (final entry in warningCounts.entries) {
+      buffer.writeln('| ${entry.key.name} | ${entry.value} |');
+    }
+  }
+
+  buffer
     ..writeln()
     ..writeln('## Repeated Families')
     ..writeln()
@@ -101,7 +124,8 @@ String _renderMarkdown(ContentDashboardReport report) {
     ..writeln('## Next QA Focus')
     ..writeln()
     ..writeln('- Add visual metadata to puzzles listed without assets.')
-    ..writeln('- Keep type coverage above the minimum before adding new routes.')
+    ..writeln(
+        '- Keep type coverage above the minimum before adding new routes.')
     ..writeln('- Split repeated families when the dashboard shows saturation.')
     ..writeln();
 
@@ -121,4 +145,12 @@ String _tableFromEnumCounts<T extends Enum>(Map<T, int> counts) {
 String _issueLine(String label, int count) {
   final status = count == 0 ? 'OK' : 'Needs review';
   return '- $label: $count ($status)';
+}
+
+Map<ContentQaIssueType, int> _qaCountsByType(List<ContentQaIssue> issues) {
+  final counts = <ContentQaIssueType, int>{};
+  for (final issue in issues) {
+    counts.update(issue.type, (count) => count + 1, ifAbsent: () => 1);
+  }
+  return counts;
 }
