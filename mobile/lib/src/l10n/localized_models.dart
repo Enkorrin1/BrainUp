@@ -287,6 +287,12 @@ extension LocalizedModels on AppLocalizations {
         _GeneratedChallengeFamily.logicCode => 'Секретный код',
         _GeneratedChallengeFamily.spaceTurn => 'Поворот в уме',
         _GeneratedChallengeFamily.sortOdd => 'Лишний предмет',
+        _GeneratedChallengeFamily.categoryGroups => 'Найди группу',
+        _GeneratedChallengeFamily.routePath => 'Маршрут по шагам',
+        _GeneratedChallengeFamily.analogyLink => 'Связанные пары',
+        _GeneratedChallengeFamily.rebusPicture => 'Картинный ребус',
+        _GeneratedChallengeFamily.compareWeight => 'Сравни стороны',
+        _GeneratedChallengeFamily.memoryOrder => 'Порядок по памяти',
         _GeneratedChallengeFamily.mixedBoss => 'Босс-головоломка',
       };
     }
@@ -299,6 +305,12 @@ extension LocalizedModels on AppLocalizations {
       _GeneratedChallengeFamily.logicCode => 'Secret code',
       _GeneratedChallengeFamily.spaceTurn => 'Mind turn',
       _GeneratedChallengeFamily.sortOdd => 'Odd one out',
+      _GeneratedChallengeFamily.categoryGroups => 'Find the group',
+      _GeneratedChallengeFamily.routePath => 'Step route',
+      _GeneratedChallengeFamily.analogyLink => 'Linked pairs',
+      _GeneratedChallengeFamily.rebusPicture => 'Picture rebus',
+      _GeneratedChallengeFamily.compareWeight => 'Compare sides',
+      _GeneratedChallengeFamily.memoryOrder => 'Memory order',
       _GeneratedChallengeFamily.mixedBoss => 'Boss puzzle',
     };
   }
@@ -325,6 +337,16 @@ extension LocalizedModels on AppLocalizations {
           'Представь, как предмет поворачивается.',
         _GeneratedChallengeFamily.sortOdd =>
           'Найди предмет, который не подходит к группе.',
+        _GeneratedChallengeFamily.categoryGroups =>
+          'Отсортируй предметы по общей идее.',
+        _GeneratedChallengeFamily.routePath => 'Проследи маршрут в голове.',
+        _GeneratedChallengeFamily.analogyLink => 'Закончи связь между парами.',
+        _GeneratedChallengeFamily.rebusPicture =>
+          'Собери одно слово из двух картинок.',
+        _GeneratedChallengeFamily.compareWeight =>
+          'Внимательно сравни обе стороны.',
+        _GeneratedChallengeFamily.memoryOrder =>
+          'Удержи порядок предметов в памяти.',
         _GeneratedChallengeFamily.mixedBoss =>
           'Соедини два правила в одной задаче.',
       };
@@ -338,6 +360,14 @@ extension LocalizedModels on AppLocalizations {
       _GeneratedChallengeFamily.logicCode => 'Break the number code.',
       _GeneratedChallengeFamily.spaceTurn => 'Imagine the object turning.',
       _GeneratedChallengeFamily.sortOdd => 'Find what does not belong.',
+      _GeneratedChallengeFamily.categoryGroups => 'Sort by the shared idea.',
+      _GeneratedChallengeFamily.routePath => 'Trace the route in your head.',
+      _GeneratedChallengeFamily.analogyLink => 'Complete the relationship.',
+      _GeneratedChallengeFamily.rebusPicture =>
+        'Combine two picture clues into one word.',
+      _GeneratedChallengeFamily.compareWeight =>
+        'Compare both sides carefully.',
+      _GeneratedChallengeFamily.memoryOrder => 'Hold the order in memory.',
       _GeneratedChallengeFamily.mixedBoss => 'Combine two rules.',
     };
   }
@@ -386,6 +416,36 @@ extension LocalizedModels on AppLocalizations {
                 'Круг, квадрат, треугольник, ботинок. Что лишнее?',
                 'Замок, ключ, дверь, банан. Что лишнее?',
               ],
+            _GeneratedChallengeFamily.categoryGroups => const [
+                'Морковь, яблоко, груша. Какая группа подходит?',
+                'Круг, квадрат, треугольник. Какая группа подходит?',
+                'Ракета, планета, звезда. Какая группа подходит?',
+              ],
+            _GeneratedChallengeFamily.routePath => const [
+                'Иди: вправо, вправо, вверх. Куда попадешь?',
+                'Безопасный путь обходит лаву и проходит через воду. Какая плитка поможет?',
+                'Робот идет 2 шага вперед и 1 влево. Какая метка в конце?',
+              ],
+            _GeneratedChallengeFamily.analogyLink => const [
+                'Птица относится к небу так же, как рыба к...',
+                'День относится к солнцу так же, как ночь к...',
+                'Рука относится к перчатке так же, как стопа к...',
+              ],
+            _GeneratedChallengeFamily.rebusPicture => const [
+                'Солнце + цветок = ...',
+                'Дождь + дуга = ...',
+                'Звезда + рыба = ...',
+              ],
+            _GeneratedChallengeFamily.compareWeight => const [
+                'Два яблока уравновешивают одну грушу. Что тяжелее?',
+                'Слева 3 звезды, справа 2 звезды. Какая сторона выигрывает?',
+                'Один большой куб равен скольким маленьким кубам?',
+              ],
+            _GeneratedChallengeFamily.memoryOrder => const [
+                'Запомни: ракета, звезда, планета. Что было вторым?',
+                'Запомни: красный, синий, зеленый. Что было первым?',
+                'Запомни: ключ, облако, ботинок. Что было третьим?',
+              ],
             _GeneratedChallengeFamily.mixedBoss => const [
                 'Закономерность и математика: 2, 4, 6, ? Число должно быть четным.',
                 'Память и логика: ключ подходит к замку, ботинок подходит к ?',
@@ -428,6 +488,36 @@ extension LocalizedModels on AppLocalizations {
                 'Circle, square, triangle, shoe. What does not belong?',
                 'Lock, key, door, banana. What does not belong?',
               ],
+            _GeneratedChallengeFamily.categoryGroups => const [
+                'Carrot, apple, pear. Which group fits?',
+                'Circle, square, triangle. Which group fits?',
+                'Rocket, planet, star. Which group fits?',
+              ],
+            _GeneratedChallengeFamily.routePath => const [
+                'Follow: right, right, up. Which endpoint do you reach?',
+                'The safe route avoids lava and crosses water. Which tile helps?',
+                'A robot moves 2 forward and 1 left. What marker is at the end?',
+              ],
+            _GeneratedChallengeFamily.analogyLink => const [
+                'Bird is to sky as fish is to...',
+                'Day is to sun as night is to...',
+                'Hand is to glove as foot is to...',
+              ],
+            _GeneratedChallengeFamily.rebusPicture => const [
+                'Sun + flower makes...',
+                'Rain + bow makes...',
+                'Star + fish makes...',
+              ],
+            _GeneratedChallengeFamily.compareWeight => const [
+                'Two apples balance one pear. Which is heavier?',
+                'Left has 3 stars, right has 2 stars. Which side wins?',
+                'One big cube equals how many small cubes?',
+              ],
+            _GeneratedChallengeFamily.memoryOrder => const [
+                'Remember: rocket, star, planet. What was second?',
+                'Remember: red, blue, green. What was first?',
+                'Remember: key, cloud, shoe. What was third?',
+              ],
             _GeneratedChallengeFamily.mixedBoss => const [
                 'Pattern + math: 2, 4, 6, ? The number must be even.',
                 'Memory + logic: key pairs with lock, shoe pairs with ?',
@@ -459,6 +549,18 @@ extension LocalizedModels on AppLocalizations {
           'Поворот меняет направление, но не сам предмет.',
         _GeneratedChallengeFamily.sortOdd =>
           'У трех предметов есть общая идея, а один выбивается.',
+        _GeneratedChallengeFamily.categoryGroups =>
+          'Найди, что общего у всех трех предметов.',
+        _GeneratedChallengeFamily.routePath =>
+          'Двигайся по одному шагу и держи место в памяти.',
+        _GeneratedChallengeFamily.analogyLink =>
+          'Назови связь в первой паре и повтори эту идею.',
+        _GeneratedChallengeFamily.rebusPicture =>
+          'Соедини два слова-подсказки вместе.',
+        _GeneratedChallengeFamily.compareWeight =>
+          'Посмотри на количество или баланс с каждой стороны.',
+        _GeneratedChallengeFamily.memoryOrder =>
+          'Повтори список один раз и найди нужное место.',
         _GeneratedChallengeFamily.mixedBoss =>
           'Сначала реши первое правило, потом проверь вторую подсказку.',
       };
@@ -479,6 +581,18 @@ extension LocalizedModels on AppLocalizations {
         'A turn changes direction, not the object identity.',
       _GeneratedChallengeFamily.sortOdd =>
         'Three items share one idea. One does not.',
+      _GeneratedChallengeFamily.categoryGroups =>
+        'Find what all three items have in common.',
+      _GeneratedChallengeFamily.routePath =>
+        'Move one step at a time and keep your place.',
+      _GeneratedChallengeFamily.analogyLink =>
+        'Say how the first pair is connected, then reuse that idea.',
+      _GeneratedChallengeFamily.rebusPicture =>
+        'Join the two clue words together.',
+      _GeneratedChallengeFamily.compareWeight =>
+        'Look at the amount or balance on each side.',
+      _GeneratedChallengeFamily.memoryOrder =>
+        'Repeat the list once, then point to the requested place.',
       _GeneratedChallengeFamily.mixedBoss =>
         'Solve the first rule, then check the second clue.',
     };
@@ -506,6 +620,18 @@ extension LocalizedModels on AppLocalizations {
           'После поворота предмет сохраняет свою форму.',
         _GeneratedChallengeFamily.sortOdd =>
           'Лишний предмет нарушает правило группы.',
+        _GeneratedChallengeFamily.categoryGroups =>
+          'Правильный ответ называет общую категорию.',
+        _GeneratedChallengeFamily.routePath =>
+          'Правильный ответ показывает, где заканчивается весь маршрут.',
+        _GeneratedChallengeFamily.analogyLink =>
+          'Правильный ответ сохраняет такую же связь.',
+        _GeneratedChallengeFamily.rebusPicture =>
+          'Ответ получается из двух соединенных подсказок.',
+        _GeneratedChallengeFamily.compareWeight =>
+          'Правильный выбор совпадает с правилом сравнения.',
+        _GeneratedChallengeFamily.memoryOrder =>
+          'Ответ находится на нужном месте в запомненном порядке.',
         _GeneratedChallengeFamily.mixedBoss =>
           'В босс-задаче нужно объединить навыки, а не угадывать.',
       };
@@ -526,6 +652,18 @@ extension LocalizedModels on AppLocalizations {
         'The object keeps its shape after rotation.',
       _GeneratedChallengeFamily.sortOdd =>
         'The odd item breaks the group rule.',
+      _GeneratedChallengeFamily.categoryGroups =>
+        'The correct group names the shared category.',
+      _GeneratedChallengeFamily.routePath =>
+        'The right answer is where the full route ends.',
+      _GeneratedChallengeFamily.analogyLink =>
+        'The correct answer keeps the same relationship.',
+      _GeneratedChallengeFamily.rebusPicture =>
+        'The answer is made by combining both clues.',
+      _GeneratedChallengeFamily.compareWeight =>
+        'The correct choice matches the comparison rule.',
+      _GeneratedChallengeFamily.memoryOrder =>
+        'The answer is the item in the requested position.',
       _GeneratedChallengeFamily.mixedBoss =>
         'Boss puzzles ask you to combine skills, not guess.',
     };
@@ -568,6 +706,34 @@ extension LocalizedModels on AppLocalizations {
       'square' => 'Квадрат',
       'triangle' => 'Треугольник',
       'door' => 'Дверь',
+      'food' => 'Еда',
+      'toys' => 'Игрушки',
+      'space' => 'Космос',
+      'shapes' => 'Фигуры',
+      'animals' => 'Животные',
+      'numbers' => 'Числа',
+      'clothes' => 'Одежда',
+      'water' => 'Вода',
+      'tree' => 'Дерево',
+      'sand' => 'Песок',
+      'sun' => 'Солнце',
+      'hat' => 'Шапка',
+      'sunflower' => 'Подсолнух',
+      'rainbow' => 'Радуга',
+      'starfish' => 'Морская звезда',
+      'moonlight' => 'Лунный свет',
+      'snowball' => 'Снежок',
+      'bridge' => 'Мост',
+      'rock' => 'Камень',
+      'lava' => 'Лава',
+      'flag' => 'Флажок',
+      'tree marker' => 'Дерево',
+      'left' => 'Левая',
+      'right' => 'Правая',
+      'same' => 'Одинаково',
+      '2 small cubes' => '2 маленьких куба',
+      '3 small cubes' => '3 маленьких куба',
+      '4 small cubes' => '4 маленьких куба',
       'same shape' => 'Та же фигура',
       'direction only' => 'Только направление',
       'shape type' => 'Вид фигуры',
@@ -606,6 +772,24 @@ extension LocalizedModels on AppLocalizations {
     }
     if (id.startsWith('sort.odd.')) {
       return _GeneratedChallengeFamily.sortOdd;
+    }
+    if (id.startsWith('category.groups.')) {
+      return _GeneratedChallengeFamily.categoryGroups;
+    }
+    if (id.startsWith('route.path.')) {
+      return _GeneratedChallengeFamily.routePath;
+    }
+    if (id.startsWith('analogy.link.')) {
+      return _GeneratedChallengeFamily.analogyLink;
+    }
+    if (id.startsWith('rebus.picture.')) {
+      return _GeneratedChallengeFamily.rebusPicture;
+    }
+    if (id.startsWith('compare.weight.')) {
+      return _GeneratedChallengeFamily.compareWeight;
+    }
+    if (id.startsWith('memory.order.')) {
+      return _GeneratedChallengeFamily.memoryOrder;
     }
     if (id.startsWith('mixed.boss.')) {
       return _GeneratedChallengeFamily.mixedBoss;
@@ -666,5 +850,11 @@ enum _GeneratedChallengeFamily {
   logicCode,
   spaceTurn,
   sortOdd,
+  categoryGroups,
+  routePath,
+  analogyLink,
+  rebusPicture,
+  compareWeight,
+  memoryOrder,
   mixedBoss,
 }

@@ -110,5 +110,17 @@ void main() {
 
       expect(variants.map((challenge) => challenge.question).toSet().length, 3);
     });
+
+    test('new generated puzzle families expose concrete challenge copy', () {
+      final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+        (puzzle) => puzzle.payloadRef.startsWith('rebus.picture.'),
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+
+      expect(challenge.prompt, 'Combine two picture clues into one word.');
+      expect(challenge.question, isNot(contains('Choose the best answer')));
+      expect(
+          challenge.choices.map((choice) => choice.id), contains('sunflower'));
+    });
   });
 }

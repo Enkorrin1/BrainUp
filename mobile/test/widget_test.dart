@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/app/brain_up_app.dart';
 import 'package:brain_up/src/data/app_locale_store.dart';
@@ -166,7 +166,9 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    for (final answer in ['Circle', '3', 'Apple', 'Red', 'Rocket']) {
+    final answers = ['Circle', '3', 'Ball', 'Lock', 'Lock'];
+    for (var index = 0; index < answers.length; index += 1) {
+      final answer = answers[index];
       final answerFinder = find.text(answer).last;
       await tester.ensureVisible(answerFinder);
       await tester.pumpAndSettle();
@@ -176,7 +178,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Check'));
       await tester.pumpAndSettle();
-      final nextLabel = answer == 'Rocket' ? 'Finish lesson' : 'Next';
+      final nextLabel = index == answers.length - 1 ? 'Finish lesson' : 'Next';
       await tester.ensureVisible(find.text(nextLabel));
       await tester.pumpAndSettle();
       await tester.tap(find.text(nextLabel));

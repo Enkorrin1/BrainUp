@@ -13,6 +13,8 @@ Current implementation notes:
 - Stage 2: generated puzzle variants connected to lessons.
 - Stage 3: generated puzzle localization and polish
   (`docs/content-stage-3-status.md`).
+- Stage 4: content bank expansion and balanced lesson delivery
+  (`docs/content-stage-4-status.md`).
 
 ## Content Architecture
 

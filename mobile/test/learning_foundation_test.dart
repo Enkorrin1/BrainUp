@@ -25,11 +25,28 @@ void main() {
     });
 
     test('content bank exposes a large multi-skill puzzle pool', () {
-      expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(80));
+      expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(140));
 
       final counts = FoundationCatalog.puzzleCountBySkill();
       for (final skill in SkillTag.values) {
         expect(counts[skill], greaterThanOrEqualTo(3), reason: skill.name);
+      }
+
+      for (final familyPrefix in [
+        'category.groups.',
+        'route.path.',
+        'analogy.link.',
+        'rebus.picture.',
+        'compare.weight.',
+        'memory.order.',
+      ]) {
+        expect(
+          FoundationCatalog.allPuzzles.any(
+            (puzzle) => puzzle.payloadRef.startsWith(familyPrefix),
+          ),
+          isTrue,
+          reason: familyPrefix,
+        );
       }
     });
 
@@ -72,6 +89,28 @@ void main() {
       expect(
         puzzles.map((puzzle) => puzzle.skillTag).toSet().length,
         greaterThanOrEqualTo(2),
+      );
+    });
+
+    test('lesson generator balances skills and puzzle types', () {
+      final lesson = FoundationCatalog.lessonForId('lesson.021');
+      final puzzles = FoundationCatalog.puzzlesForLesson(
+        lesson: lesson,
+        ageBandId: AgeBandId.age7to8,
+      );
+      final skillCounts = {
+        for (final skill in SkillTag.values)
+          skill: puzzles.where((puzzle) => puzzle.skillTag == skill).length,
+      };
+
+      expect(puzzles.length, 5);
+      expect(
+        skillCounts.values.where((count) => count > 2),
+        isEmpty,
+      );
+      expect(
+        puzzles.map((puzzle) => puzzle.type).toSet().length,
+        greaterThanOrEqualTo(4),
       );
     });
   });

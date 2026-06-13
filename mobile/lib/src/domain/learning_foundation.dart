@@ -1477,27 +1477,27 @@ class FoundationCatalog {
         fixedPuzzles.isEmpty ? SkillTag.pattern : fixedPuzzles.first.skillTag;
     final lessonNumber = _lessonNumber(lesson.id);
     final targetDifficulty = _difficultyForLessonNumber(lessonNumber);
-    final generated = _rotated(
-      puzzlesFor(ageBandId: ageBandId, skillTag: primarySkill),
-      lessonNumber,
-    );
-    final adjacent = _rotated(
-      puzzlesFor(ageBandId: ageBandId)
-          .where((puzzle) => puzzle.skillTag != primarySkill)
-          .toList(growable: false),
-      lessonNumber * 2,
-    );
-    final difficultyMatch = _rotated(
-      puzzlesFor(ageBandId: ageBandId, difficulty: targetDifficulty),
-      lessonNumber * 3,
-    );
     final selected = <PuzzleDefinition>[];
     final seenIds = <String>{};
 
-    void addCandidates(Iterable<PuzzleDefinition> candidates) {
+    void addCandidates(
+      Iterable<PuzzleDefinition> candidates, {
+      required bool balanced,
+    }) {
       for (final puzzle in candidates) {
         if (selected.length >= targetCount) {
           return;
+        }
+        if (seenIds.contains(puzzle.id)) {
+          continue;
+        }
+        if (balanced &&
+            !_fitsLessonBalance(
+              puzzle: puzzle,
+              selected: selected,
+              targetCount: targetCount,
+            )) {
+          continue;
         }
         if (seenIds.add(puzzle.id)) {
           selected.add(puzzle);
@@ -1505,11 +1505,48 @@ class FoundationCatalog {
       }
     }
 
-    addCandidates(fixedPuzzles.take(2));
-    addCandidates(generated);
-    addCandidates(adjacent);
-    addCandidates(difficultyMatch);
-    addCandidates(_rotated(allPuzzles, lessonNumber));
+    final primaryDifficulty = _rotated(
+      puzzlesFor(
+        ageBandId: ageBandId,
+        skillTag: primarySkill,
+        difficulty: targetDifficulty,
+      ),
+      lessonNumber,
+    );
+    final primarySkillPool = _rotated(
+      puzzlesFor(ageBandId: ageBandId, skillTag: primarySkill),
+      lessonNumber * 2,
+    );
+    final difficultyMatch = _rotated(
+      puzzlesFor(ageBandId: ageBandId, difficulty: targetDifficulty),
+      lessonNumber * 3,
+    );
+    final adjacent = _rotated(
+      puzzlesFor(ageBandId: ageBandId)
+          .where((puzzle) => puzzle.skillTag != primarySkill)
+          .toList(growable: false),
+      lessonNumber * 4,
+    );
+    final ageBandPool = _rotated(
+      puzzlesFor(ageBandId: ageBandId),
+      lessonNumber * 5,
+    );
+
+    final pools = [
+      fixedPuzzles.take(2).toList(growable: false),
+      primaryDifficulty,
+      primarySkillPool,
+      difficultyMatch,
+      adjacent,
+      ageBandPool,
+    ];
+
+    for (final pool in pools) {
+      addCandidates(pool, balanced: true);
+    }
+    for (final pool in pools) {
+      addCandidates(pool, balanced: false);
+    }
 
     return selected;
   }
@@ -1572,6 +1609,31 @@ class FoundationCatalog {
       ...puzzles.take(offset),
     ];
   }
+
+  static bool _fitsLessonBalance({
+    required PuzzleDefinition puzzle,
+    required List<PuzzleDefinition> selected,
+    required int targetCount,
+  }) {
+    if (selected.isEmpty) {
+      return true;
+    }
+
+    final skillCount = selected
+        .where((candidate) => candidate.skillTag == puzzle.skillTag)
+        .length;
+    if (skillCount >= 2) {
+      return false;
+    }
+
+    final typeCount =
+        selected.where((candidate) => candidate.type == puzzle.type).length;
+    if (typeCount >= 1 && selected.length < targetCount - 1) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 class ContentBank {
@@ -1629,6 +1691,48 @@ class ContentBank {
         skillTag: SkillTag.classification,
         answer: 'odd',
         hintKey: 'challengeOddCardHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'category.groups',
+        type: PuzzleType.categorySort,
+        skillTag: SkillTag.classification,
+        answer: 'group',
+        hintKey: 'challengeOddCardHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'route.path',
+        type: PuzzleType.pathPuzzle,
+        skillTag: SkillTag.spatial,
+        answer: 'route',
+        hintKey: 'challengeShapeRotationHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'analogy.link',
+        type: PuzzleType.analogy,
+        skillTag: SkillTag.reasoning,
+        answer: 'match',
+        hintKey: 'challengeCodeGridHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'rebus.picture',
+        type: PuzzleType.rebus,
+        skillTag: SkillTag.reasoning,
+        answer: 'word',
+        hintKey: 'challengeCodeGridHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'compare.weight',
+        type: PuzzleType.visualCompare,
+        skillTag: SkillTag.arithmetic,
+        answer: 'balance',
+        hintKey: 'challengeBalanceScaleHint',
+      ),
+      _PuzzleFamilySeed(
+        slug: 'memory.order',
+        type: PuzzleType.memoryGrid,
+        skillTag: SkillTag.memory,
+        answer: 'order',
+        hintKey: 'challengeMemoryPairsHint',
       ),
       _PuzzleFamilySeed(
         slug: 'mixed.boss',

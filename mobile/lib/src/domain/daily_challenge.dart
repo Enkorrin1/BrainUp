@@ -202,12 +202,21 @@ _GeneratedPuzzleData _generatedPuzzleData(PuzzleDefinition puzzle) {
   final variant = _payloadVariant(puzzle.payloadRef);
   return switch (puzzle.type) {
     PuzzleType.sequenceComplete => _patternTrailData(variant),
-    PuzzleType.memoryGrid => _memoryGridData(variant),
+    PuzzleType.memoryGrid => puzzle.payloadRef.startsWith('memory.order.')
+        ? _memoryOrderData(variant)
+        : _memoryGridData(variant),
     PuzzleType.countBridge => _mathBridgeData(variant),
     PuzzleType.attentionScan => _focusDetailsData(variant),
     PuzzleType.codeBreaker => _logicCodeData(variant),
     PuzzleType.spatialRotation => _spaceTurnData(variant),
     PuzzleType.oddOneOut => _sortOddData(variant),
+    PuzzleType.categorySort => _categoryGroupData(variant),
+    PuzzleType.pathPuzzle => _routePathData(variant),
+    PuzzleType.analogy => _analogyLinkData(variant),
+    PuzzleType.rebus => _rebusPictureData(variant),
+    PuzzleType.visualCompare => puzzle.payloadRef.startsWith('compare.weight.')
+        ? _compareWeightData(variant)
+        : _fallbackPuzzleData(puzzle),
     PuzzleType.mixedBoss => _mixedBossData(variant),
     _ => _fallbackPuzzleData(puzzle),
   };
@@ -357,6 +366,160 @@ _GeneratedPuzzleData _sortOddData(int variant) {
     correctChoiceId: data.$2,
     hint: 'Three items share one idea. One does not.',
     explanation: 'The odd item breaks the group rule.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _categoryGroupData(int variant) {
+  final options = [
+    (
+      'Carrot, apple, pear. Which group fits?',
+      'food',
+      ['food', 'toys', 'space']
+    ),
+    (
+      'Circle, square, triangle. Which group fits?',
+      'shapes',
+      ['animals', 'shapes', 'numbers']
+    ),
+    (
+      'Rocket, planet, star. Which group fits?',
+      'space',
+      ['clothes', 'food', 'space']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Sort by the shared idea.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Find what all three items have in common.',
+    explanation: 'The correct group names the shared category.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _routePathData(int variant) {
+  final options = [
+    (
+      'Follow: right, right, up. Which endpoint do you reach?',
+      'star',
+      ['moon', 'star', 'cloud']
+    ),
+    (
+      'The safe route avoids lava and crosses water. Which tile helps?',
+      'bridge',
+      ['bridge', 'rock', 'lava']
+    ),
+    (
+      'A robot moves 2 forward and 1 left. What marker is at the end?',
+      'flag',
+      ['flag', 'tree', 'door']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Trace the route in your head.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Move one step at a time and keep your place.',
+    explanation: 'The right answer is where the full route ends.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _analogyLinkData(int variant) {
+  final options = [
+    ('Bird is to sky as fish is to...', 'water', ['water', 'tree', 'sand']),
+    ('Day is to sun as night is to...', 'moon', ['cloud', 'moon', 'rain']),
+    ('Hand is to glove as foot is to...', 'shoe', ['shoe', 'hat', 'key']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Complete the relationship.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Say how the first pair is connected, then reuse that idea.',
+    explanation: 'The correct answer keeps the same relationship.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _rebusPictureData(int variant) {
+  final options = [
+    (
+      'Sun + flower makes...',
+      'sunflower',
+      ['sunflower', 'rainbow', 'starfish']
+    ),
+    ('Rain + bow makes...', 'rainbow', ['moonlight', 'rainbow', 'sunflower']),
+    ('Star + fish makes...', 'starfish', ['starfish', 'sunflower', 'snowball']),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Combine two picture clues into one word.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Join the two clue words together.',
+    explanation: 'The answer is made by combining both clues.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _compareWeightData(int variant) {
+  final options = [
+    (
+      'Two apples balance one pear. Which is heavier?',
+      'pear',
+      ['apple', 'pear', 'same']
+    ),
+    (
+      'Left has 3 stars, right has 2 stars. Which side wins?',
+      'left',
+      ['left', 'right', 'same']
+    ),
+    (
+      'One big cube equals how many small cubes?',
+      '3 small cubes',
+      ['2 small cubes', '3 small cubes', '4 small cubes']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Compare both sides carefully.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Look at the amount or balance on each side.',
+    explanation: 'The correct choice matches the comparison rule.',
+    choices: _choices(data.$3),
+  );
+}
+
+_GeneratedPuzzleData _memoryOrderData(int variant) {
+  final options = [
+    (
+      'Remember: rocket, star, planet. What was second?',
+      'star',
+      ['rocket', 'star', 'planet']
+    ),
+    (
+      'Remember: red, blue, green. What was first?',
+      'red',
+      ['green', 'red', 'blue']
+    ),
+    (
+      'Remember: key, cloud, shoe. What was third?',
+      'shoe',
+      ['key', 'shoe', 'cloud']
+    ),
+  ];
+  final data = options[(variant - 1) % options.length];
+  return _GeneratedPuzzleData(
+    prompt: 'Hold the order in memory.',
+    question: data.$1,
+    correctChoiceId: data.$2,
+    hint: 'Repeat the list once, then point to the requested place.',
+    explanation: 'The answer is the item in the requested position.',
     choices: _choices(data.$3),
   );
 }

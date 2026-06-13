@@ -985,6 +985,24 @@ class _PuzzleVisual extends StatelessWidget {
     if (id.startsWith('sort.odd.')) {
       return const _GeneratedSortOddVisual();
     }
+    if (id.startsWith('category.groups.')) {
+      return const _GeneratedSortOddVisual();
+    }
+    if (id.startsWith('route.path.')) {
+      return const _GeneratedSpaceTurnVisual();
+    }
+    if (id.startsWith('analogy.link.')) {
+      return const _GeneratedLogicCodeVisual();
+    }
+    if (id.startsWith('rebus.picture.')) {
+      return const _GeneratedBossVisual();
+    }
+    if (id.startsWith('compare.weight.')) {
+      return const _GeneratedMathBridgeVisual();
+    }
+    if (id.startsWith('memory.order.')) {
+      return const _GeneratedMemoryGridVisual();
+    }
     if (id.startsWith('mixed.boss.')) {
       return const _GeneratedBossVisual();
     }
