@@ -7,6 +7,7 @@ import 'package:brain_up/src/domain/family_profile.dart';
 import 'package:brain_up/src/domain/learning_foundation.dart';
 import 'package:brain_up/src/features/course/course_screen.dart';
 import 'package:brain_up/src/features/parent/parent_screen.dart';
+import 'package:brain_up/src/features/path/path_screen.dart';
 import 'package:brain_up/src/l10n/l10n.dart';
 import 'package:brain_up/src/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -141,6 +142,38 @@ void main() {
       'reward.outfit.mira_explorer',
     );
     expect(find.text('Equipped'), findsAtLeastNWidgets(1));
+  });
+
+  testWidgets('shows weekly event progress on the path', (tester) async {
+    String? selectedLessonId;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: buildAppTheme(),
+        home: PathScreen(
+          profile: _testProfileWithCompletedLessons(['lesson.001']),
+          now: DateTime(2026, 6, 16),
+          onLessonSelected: (lessonId) {
+            selectedLessonId = lessonId;
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Star Hunt'), findsOneWidget);
+    expect(find.text('1/3 lessons'), findsOneWidget);
+    expect(find.text('Play event lesson'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Play event lesson'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Play event lesson'));
+    await tester.pumpAndSettle();
+
+    expect(selectedLessonId, 'lesson.002');
   });
 
   testWidgets('shows adaptive review entry from practice history',

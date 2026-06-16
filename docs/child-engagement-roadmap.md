@@ -203,6 +203,17 @@ Definition of done:
 - event progress is visible;
 - event does not break normal route progress.
 
+Implemented in Stage 30:
+
+- added configurable weekly event definitions with dates, themed filters,
+  featured lessons, target progress, and reward ids;
+- exported weekly events in `docs/content-manifest.json`;
+- added active event progress derived from existing completed lessons;
+- added event-specific puzzle filtering helpers;
+- added a path banner with event progress, remaining days, reward, and CTA;
+- added tests for active event selection, event puzzle filters, manifest export,
+  and path banner behavior.
+
 ## Stage 31. Boss Mini-Games
 
 Make boss levels feel like special moments.

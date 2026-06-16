@@ -248,6 +248,60 @@ void main() {
       );
     });
 
+    test('weekly events expose active progress filters and manifest metadata',
+        () {
+      final event = FoundationCatalog.activeWeeklyEventFor(
+        DateTime(2026, 6, 16),
+      );
+      final progress = FoundationCatalog.activeWeeklyEventProgress(
+        now: DateTime(2026, 6, 16),
+        completedLessonIds: const ['lesson.001'],
+        ageBandId: AgeBandId.age4to5,
+      );
+      final completedProgress = FoundationCatalog.weeklyEventProgressFor(
+        event: event!,
+        now: DateTime(2026, 6, 16),
+        completedLessonIds: const [
+          'lesson.001',
+          'lesson.002',
+          'lesson.003',
+        ],
+        ageBandId: AgeBandId.age4to5,
+      );
+      final eventPuzzles = FoundationCatalog.puzzlesForWeeklyEvent(
+        event,
+        ageBandId: AgeBandId.age4to5,
+      );
+      final manifest = FoundationCatalog.contentManifest();
+      final manifestEvents = manifest['weeklyEvents'] as List<Object?>;
+
+      expect(event.title, 'Star Hunt');
+      expect(event.isActiveOn(DateTime(2026, 6, 16, 23)), isTrue);
+      expect(progress?.completedLessonCount, 1);
+      expect(progress?.targetLessonCount, 3);
+      expect(progress?.state, WeeklyEventState.active);
+      expect(completedProgress.state, WeeklyEventState.completed);
+      expect(
+        FoundationCatalog.nextWeeklyEventLessonId(
+          event: event,
+          completedLessonIds: const ['lesson.001'],
+        ),
+        'lesson.002',
+      );
+      expect(eventPuzzles, isNotEmpty);
+      expect(
+        eventPuzzles.every((puzzle) {
+          return event.skillTags.contains(puzzle.skillTag) &&
+              event.puzzleTypes.contains(puzzle.type);
+        }),
+        isTrue,
+      );
+      expect(
+        manifestEvents.cast<Map<String, Object?>>().first,
+        containsPair('rewardId', 'reward.decoration.star_window'),
+      );
+    });
+
     test('content dashboard report exposes quality and saturation signals', () {
       final dashboard = FoundationCatalog.contentDashboardReport();
       final json =

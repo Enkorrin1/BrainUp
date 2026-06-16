@@ -11,11 +11,13 @@ class PathScreen extends StatelessWidget {
   const PathScreen({
     required this.profile,
     required this.onLessonSelected,
+    this.now,
     super.key,
   });
 
   final FamilyProfile profile;
   final ValueChanged<String> onLessonSelected;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,17 @@ class PathScreen extends StatelessWidget {
     final currentWorldProgress = FoundationCatalog.currentStoryWorldProgress(
       child.completedLessonIds,
     );
+    final eventProgress = FoundationCatalog.activeWeeklyEventProgress(
+      now: now ?? DateTime.now(),
+      completedLessonIds: child.completedLessonIds,
+      ageBandId: _ageBandIdFor(child.age),
+    );
+    final eventLessonId = eventProgress == null
+        ? null
+        : FoundationCatalog.nextWeeklyEventLessonId(
+            event: eventProgress.event,
+            completedLessonIds: child.completedLessonIds,
+          );
 
     return Scaffold(
       backgroundColor: _PathPalette.voidBlue,
@@ -42,6 +55,7 @@ class PathScreen extends StatelessWidget {
           SafeArea(
             bottom: false,
             child: ListView(
+              key: const ValueKey('path-scroll'),
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 116),
               children: [
                 _MissionStatusBar(
@@ -69,6 +83,15 @@ class PathScreen extends StatelessWidget {
                 ],
                 const SizedBox(height: 14),
                 _StoryWorldStrip(progress: worldProgress),
+                if (eventProgress != null) ...[
+                  const SizedBox(height: 14),
+                  _WeeklyEventPanel(
+                    progress: eventProgress,
+                    onStart: eventLessonId == null
+                        ? null
+                        : () => onLessonSelected(eventLessonId),
+                  ),
+                ],
                 const SizedBox(height: 26),
                 _StarRoute(
                   path: path,
@@ -81,6 +104,14 @@ class PathScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  AgeBandId _ageBandIdFor(ChildAge age) {
+    return switch (age) {
+      ChildAge.four || ChildAge.five => AgeBandId.age4to5,
+      ChildAge.six => AgeBandId.age6,
+      ChildAge.seven || ChildAge.eight => AgeBandId.age7to8,
+    };
   }
 }
 
@@ -174,6 +205,259 @@ class _AdaptiveReviewPanel extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _WeeklyEventPanel extends StatelessWidget {
+  const _WeeklyEventPanel({
+    required this.progress,
+    required this.onStart,
+  });
+
+  final WeeklyEventProgress progress;
+  final VoidCallback? onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final event = progress.event;
+    final color = Color(event.accentHex);
+    final reward = FoundationCatalog.rewardForId(event.rewardId);
+    final status = progress.completed
+        ? 'Event complete'
+        : '${progress.completedLessonCount}/${progress.targetLessonCount} lessons';
+    final timeLabel = progress.completed
+        ? 'Reward ready'
+        : '${progress.remainingDays} days left';
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: color.withValues(alpha: 0.42)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.24),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.event_available_rounded,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        event.bannerLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: color,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        event.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                _EventPill(
+                  label: timeLabel,
+                  color: color,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              event.subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _PathPalette.lavender,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                value: progress.progress,
+                minHeight: 10,
+                color: color,
+                backgroundColor: Colors.white.withValues(alpha: 0.16),
+              ),
+            ),
+            const SizedBox(height: 11),
+            Row(
+              children: [
+                Expanded(
+                  child: _EventMetric(
+                    icon: Icons.flag_rounded,
+                    label: status,
+                    detail: '${progress.matchingPuzzleCount} themed puzzles',
+                    color: color,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _EventMetric(
+                    icon: Icons.workspace_premium_rounded,
+                    label: reward?.titleKey ?? 'Event reward',
+                    detail: progress.completed ? 'Unlocked' : 'Reward',
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: progress.completed ? null : onStart,
+              icon: Icon(
+                progress.completed
+                    ? Icons.verified_rounded
+                    : Icons.play_arrow_rounded,
+              ),
+              label: Text(
+                progress.completed ? 'Completed' : 'Play event lesson',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: _PathPalette.ink,
+                disabledBackgroundColor: Colors.white.withValues(alpha: 0.16),
+                disabledForegroundColor: Colors.white70,
+                minimumSize: const Size.fromHeight(50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EventMetric extends StatelessWidget {
+  const _EventMetric({
+    required this.icon,
+    required this.label,
+    required this.detail,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String detail;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 72),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.11)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  detail,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: _PathPalette.lavender,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EventPill extends StatelessWidget {
+  const _EventPill({
+    required this.label,
+    required this.color,
+  });
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 116),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+            ),
       ),
     );
   }

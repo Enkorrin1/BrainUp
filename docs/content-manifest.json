@@ -758,6 +758,153 @@
       "canEquip": true
     }
   ],
+  "weeklyEvents": [
+    {
+      "id": "event.star_hunt.2026w25",
+      "title": "Star Hunt",
+      "subtitle": "Collect star clues in Space Station lessons this week.",
+      "bannerLabel": "Weekly event",
+      "startDateIso8601": "2026-06-15",
+      "endDateIso8601": "2026-06-21",
+      "rewardId": "reward.decoration.star_window",
+      "targetLessonCount": 3,
+      "accentHex": 4282578130,
+      "worldIds": [
+        "space_station"
+      ],
+      "skillTags": [
+        "attention",
+        "memory",
+        "pattern"
+      ],
+      "puzzleTypes": [
+        "sequenceComplete",
+        "pairMatch",
+        "attentionScan"
+      ],
+      "featuredLessonIds": [
+        "lesson.001",
+        "lesson.002",
+        "lesson.003"
+      ]
+    },
+    {
+      "id": "event.robot_week.2026w26",
+      "title": "Robot Week",
+      "subtitle": "Decode rules and restart the Robot Town parade.",
+      "bannerLabel": "Next weekly event",
+      "startDateIso8601": "2026-06-22",
+      "endDateIso8601": "2026-06-28",
+      "rewardId": "reward.decoration.parade_lights",
+      "targetLessonCount": 3,
+      "accentHex": 4294955356,
+      "worldIds": [
+        "robot_town"
+      ],
+      "skillTags": [
+        "pattern",
+        "reasoning",
+        "classification"
+      ],
+      "puzzleTypes": [
+        "sequenceComplete",
+        "codeBreaker",
+        "categorySort"
+      ],
+      "featuredLessonIds": [
+        "lesson.007",
+        "lesson.008",
+        "lesson.009"
+      ]
+    },
+    {
+      "id": "event.shape_festival.2026w27",
+      "title": "Shape Garden Festival",
+      "subtitle": "Turn, trace, and grow pattern flowers.",
+      "bannerLabel": "Next weekly event",
+      "startDateIso8601": "2026-06-29",
+      "endDateIso8601": "2026-07-05",
+      "rewardId": "reward.badge.shape_master",
+      "targetLessonCount": 3,
+      "accentHex": 4288441074,
+      "worldIds": [
+        "shape_garden"
+      ],
+      "skillTags": [
+        "spatial",
+        "pattern",
+        "attention"
+      ],
+      "puzzleTypes": [
+        "spatialRotation",
+        "pathPuzzle",
+        "visualCompare"
+      ],
+      "featuredLessonIds": [
+        "lesson.010",
+        "lesson.011",
+        "lesson.012"
+      ]
+    },
+    {
+      "id": "event.memory_mission.2026w28",
+      "title": "Memory Mission",
+      "subtitle": "Remember signals and pair hidden clues.",
+      "bannerLabel": "Next weekly event",
+      "startDateIso8601": "2026-07-06",
+      "endDateIso8601": "2026-07-12",
+      "rewardId": "reward.badge.memory_captain",
+      "targetLessonCount": 3,
+      "accentHex": 4284255991,
+      "worldIds": [
+        "underwater_city"
+      ],
+      "skillTags": [
+        "memory",
+        "attention"
+      ],
+      "puzzleTypes": [
+        "pairMatch",
+        "memoryGrid",
+        "attentionScan"
+      ],
+      "featuredLessonIds": [
+        "lesson.016",
+        "lesson.017",
+        "lesson.018"
+      ]
+    },
+    {
+      "id": "event.logic_detective.2026w29",
+      "title": "Logic Detective Week",
+      "subtitle": "Follow clues, compare rules, and solve the case.",
+      "bannerLabel": "Next weekly event",
+      "startDateIso8601": "2026-07-13",
+      "endDateIso8601": "2026-07-19",
+      "rewardId": "reward.badge.rule_finder",
+      "targetLessonCount": 3,
+      "accentHex": 4294941998,
+      "worldIds": [
+        "detective_academy",
+        "riddle_castle"
+      ],
+      "skillTags": [
+        "reasoning",
+        "classification",
+        "pattern"
+      ],
+      "puzzleTypes": [
+        "oddOneOut",
+        "analogy",
+        "codeBreaker"
+      ],
+      "featuredLessonIds": [
+        "lesson.022",
+        "lesson.023",
+        "lesson.024"
+      ]
+    }
+  ],
   "placementRules": [
     {
       "placement": "mainRoute",

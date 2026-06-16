@@ -136,6 +136,13 @@ enum StoryWorldState {
   completed,
 }
 
+enum WeeklyEventState {
+  upcoming,
+  active,
+  completed,
+  expired,
+}
+
 enum CharacterCoachMoment {
   neutral,
   hint,
@@ -321,6 +328,145 @@ class StoryWorldProgress {
       'completedLessonCount': completedLessonCount,
       'totalLessonCount': totalLessonCount,
       'progress': progress,
+    };
+  }
+}
+
+class WeeklyEventDefinition {
+  const WeeklyEventDefinition({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.bannerLabel,
+    required this.startDateIso8601,
+    required this.endDateIso8601,
+    required this.rewardId,
+    required this.targetLessonCount,
+    required this.accentHex,
+    this.worldIds = const [],
+    this.skillTags = const [],
+    this.puzzleTypes = const [],
+    this.featuredLessonIds = const [],
+  });
+
+  final String id;
+  final String title;
+  final String subtitle;
+  final String bannerLabel;
+  final String startDateIso8601;
+  final String endDateIso8601;
+  final String rewardId;
+  final int targetLessonCount;
+  final int accentHex;
+  final List<String> worldIds;
+  final List<SkillTag> skillTags;
+  final List<PuzzleType> puzzleTypes;
+  final List<String> featuredLessonIds;
+
+  DateTime get startDate {
+    return _dateOnly(DateTime.parse(startDateIso8601));
+  }
+
+  DateTime get endDate {
+    return _dateOnly(DateTime.parse(endDateIso8601));
+  }
+
+  bool isActiveOn(DateTime date) {
+    final day = _dateOnly(date);
+    return !day.isBefore(startDate) && !day.isAfter(endDate);
+  }
+
+  WeeklyEventState stateFor({
+    required DateTime now,
+    required int completedLessonCount,
+  }) {
+    if (completedLessonCount >= targetLessonCount) {
+      return WeeklyEventState.completed;
+    }
+
+    final day = _dateOnly(now);
+    if (day.isBefore(startDate)) {
+      return WeeklyEventState.upcoming;
+    }
+    if (day.isAfter(endDate)) {
+      return WeeklyEventState.expired;
+    }
+    return WeeklyEventState.active;
+  }
+
+  int remainingDays(DateTime now) {
+    final day = _dateOnly(now);
+    if (day.isAfter(endDate)) {
+      return 0;
+    }
+
+    return endDate.difference(day).inDays + 1;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'subtitle': subtitle,
+      'bannerLabel': bannerLabel,
+      'startDateIso8601': startDateIso8601,
+      'endDateIso8601': endDateIso8601,
+      'rewardId': rewardId,
+      'targetLessonCount': targetLessonCount,
+      'accentHex': accentHex,
+      'worldIds': worldIds,
+      'skillTags': [
+        for (final skillTag in skillTags) skillTag.name,
+      ],
+      'puzzleTypes': [
+        for (final puzzleType in puzzleTypes) puzzleType.name,
+      ],
+      'featuredLessonIds': featuredLessonIds,
+    };
+  }
+}
+
+class WeeklyEventProgress {
+  const WeeklyEventProgress({
+    required this.event,
+    required this.completedLessonCount,
+    required this.matchingPuzzleCount,
+    required this.remainingDays,
+    required this.state,
+  });
+
+  final WeeklyEventDefinition event;
+  final int completedLessonCount;
+  final int matchingPuzzleCount;
+  final int remainingDays;
+  final WeeklyEventState state;
+
+  int get targetLessonCount {
+    return event.targetLessonCount;
+  }
+
+  double get progress {
+    if (targetLessonCount <= 0) {
+      return 0;
+    }
+
+    return completedLessonCount.clamp(0, targetLessonCount) / targetLessonCount;
+  }
+
+  bool get completed {
+    return state == WeeklyEventState.completed;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'eventId': event.id,
+      'state': state.name,
+      'completedLessonCount': completedLessonCount,
+      'targetLessonCount': targetLessonCount,
+      'progress': progress,
+      'remainingDays': remainingDays,
+      'matchingPuzzleCount': matchingPuzzleCount,
+      'rewardId': event.rewardId,
     };
   }
 }
@@ -1667,6 +1813,143 @@ class FoundationCatalog {
     ),
   ];
 
+  static const List<WeeklyEventDefinition> weeklyEvents = [
+    WeeklyEventDefinition(
+      id: 'event.star_hunt.2026w25',
+      title: 'Star Hunt',
+      subtitle: 'Collect star clues in Space Station lessons this week.',
+      bannerLabel: 'Weekly event',
+      startDateIso8601: '2026-06-15',
+      endDateIso8601: '2026-06-21',
+      rewardId: 'reward.decoration.star_window',
+      targetLessonCount: 3,
+      accentHex: 0xFF42F4D2,
+      worldIds: ['space_station'],
+      skillTags: [
+        SkillTag.attention,
+        SkillTag.memory,
+        SkillTag.pattern,
+      ],
+      puzzleTypes: [
+        PuzzleType.sequenceComplete,
+        PuzzleType.pairMatch,
+        PuzzleType.attentionScan,
+      ],
+      featuredLessonIds: [
+        'lesson.001',
+        'lesson.002',
+        'lesson.003',
+      ],
+    ),
+    WeeklyEventDefinition(
+      id: 'event.robot_week.2026w26',
+      title: 'Robot Week',
+      subtitle: 'Decode rules and restart the Robot Town parade.',
+      bannerLabel: 'Next weekly event',
+      startDateIso8601: '2026-06-22',
+      endDateIso8601: '2026-06-28',
+      rewardId: 'reward.decoration.parade_lights',
+      targetLessonCount: 3,
+      accentHex: 0xFFFFD15C,
+      worldIds: ['robot_town'],
+      skillTags: [
+        SkillTag.pattern,
+        SkillTag.reasoning,
+        SkillTag.classification,
+      ],
+      puzzleTypes: [
+        PuzzleType.sequenceComplete,
+        PuzzleType.codeBreaker,
+        PuzzleType.categorySort,
+      ],
+      featuredLessonIds: [
+        'lesson.007',
+        'lesson.008',
+        'lesson.009',
+      ],
+    ),
+    WeeklyEventDefinition(
+      id: 'event.shape_festival.2026w27',
+      title: 'Shape Garden Festival',
+      subtitle: 'Turn, trace, and grow pattern flowers.',
+      bannerLabel: 'Next weekly event',
+      startDateIso8601: '2026-06-29',
+      endDateIso8601: '2026-07-05',
+      rewardId: 'reward.badge.shape_master',
+      targetLessonCount: 3,
+      accentHex: 0xFF9C6AF2,
+      worldIds: ['shape_garden'],
+      skillTags: [
+        SkillTag.spatial,
+        SkillTag.pattern,
+        SkillTag.attention,
+      ],
+      puzzleTypes: [
+        PuzzleType.spatialRotation,
+        PuzzleType.pathPuzzle,
+        PuzzleType.visualCompare,
+      ],
+      featuredLessonIds: [
+        'lesson.010',
+        'lesson.011',
+        'lesson.012',
+      ],
+    ),
+    WeeklyEventDefinition(
+      id: 'event.memory_mission.2026w28',
+      title: 'Memory Mission',
+      subtitle: 'Remember signals and pair hidden clues.',
+      bannerLabel: 'Next weekly event',
+      startDateIso8601: '2026-07-06',
+      endDateIso8601: '2026-07-12',
+      rewardId: 'reward.badge.memory_captain',
+      targetLessonCount: 3,
+      accentHex: 0xFF5C8EF7,
+      worldIds: ['underwater_city'],
+      skillTags: [
+        SkillTag.memory,
+        SkillTag.attention,
+      ],
+      puzzleTypes: [
+        PuzzleType.pairMatch,
+        PuzzleType.memoryGrid,
+        PuzzleType.attentionScan,
+      ],
+      featuredLessonIds: [
+        'lesson.016',
+        'lesson.017',
+        'lesson.018',
+      ],
+    ),
+    WeeklyEventDefinition(
+      id: 'event.logic_detective.2026w29',
+      title: 'Logic Detective Week',
+      subtitle: 'Follow clues, compare rules, and solve the case.',
+      bannerLabel: 'Next weekly event',
+      startDateIso8601: '2026-07-13',
+      endDateIso8601: '2026-07-19',
+      rewardId: 'reward.badge.rule_finder',
+      targetLessonCount: 3,
+      accentHex: 0xFFFF9D2E,
+      worldIds: ['detective_academy', 'riddle_castle'],
+      skillTags: [
+        SkillTag.reasoning,
+        SkillTag.classification,
+        SkillTag.pattern,
+      ],
+      puzzleTypes: [
+        PuzzleType.oddOneOut,
+        PuzzleType.analogy,
+        PuzzleType.codeBreaker,
+      ],
+      featuredLessonIds: [
+        'lesson.022',
+        'lesson.023',
+        'lesson.024',
+      ],
+    ),
+  ];
+
   static const List<ContentPlacementRule> placementRules = [
     ContentPlacementRule(
       placement: ContentPlacement.mainRoute,
@@ -2982,6 +3265,90 @@ class FoundationCatalog {
     return null;
   }
 
+  static WeeklyEventDefinition? activeWeeklyEventFor(DateTime now) {
+    for (final event in weeklyEvents) {
+      if (event.isActiveOn(now)) {
+        return event;
+      }
+    }
+
+    return null;
+  }
+
+  static WeeklyEventProgress? activeWeeklyEventProgress({
+    required DateTime now,
+    required List<String> completedLessonIds,
+    AgeBandId? ageBandId,
+  }) {
+    final event = activeWeeklyEventFor(now);
+    if (event == null) {
+      return null;
+    }
+
+    return weeklyEventProgressFor(
+      event: event,
+      now: now,
+      completedLessonIds: completedLessonIds,
+      ageBandId: ageBandId,
+    );
+  }
+
+  static WeeklyEventProgress weeklyEventProgressFor({
+    required WeeklyEventDefinition event,
+    required DateTime now,
+    required List<String> completedLessonIds,
+    AgeBandId? ageBandId,
+  }) {
+    final completedLessonSet = completedLessonIds.toSet();
+    final completedLessonCount = event.featuredLessonIds
+        .where(completedLessonSet.contains)
+        .length
+        .clamp(0, event.targetLessonCount);
+    final matchingPuzzleCount = puzzlesForWeeklyEvent(
+      event,
+      ageBandId: ageBandId,
+    ).length;
+
+    return WeeklyEventProgress(
+      event: event,
+      completedLessonCount: completedLessonCount,
+      matchingPuzzleCount: matchingPuzzleCount,
+      remainingDays: event.remainingDays(now),
+      state: event.stateFor(
+        now: now,
+        completedLessonCount: completedLessonCount,
+      ),
+    );
+  }
+
+  static List<PuzzleDefinition> puzzlesForWeeklyEvent(
+    WeeklyEventDefinition event, {
+    AgeBandId? ageBandId,
+  }) {
+    return [
+      for (final puzzle in allPuzzles)
+        if (_puzzleMatchesWeeklyEvent(
+          puzzle,
+          event,
+          ageBandId: ageBandId,
+        ))
+          puzzle,
+    ];
+  }
+
+  static String? nextWeeklyEventLessonId({
+    required WeeklyEventDefinition event,
+    required List<String> completedLessonIds,
+  }) {
+    for (final lessonId in event.featuredLessonIds) {
+      if (!completedLessonIds.contains(lessonId)) {
+        return lessonId;
+      }
+    }
+
+    return null;
+  }
+
   static Map<SkillTag, int> puzzleCountBySkill() {
     return {
       for (final skill in SkillTag.values)
@@ -3051,6 +3418,9 @@ class FoundationCatalog {
       ],
       'collectionRewards': [
         for (final reward in collectionRewards) reward.toJson(),
+      ],
+      'weeklyEvents': [
+        for (final event in weeklyEvents) event.toJson(),
       ],
       'placementRules': [
         for (final rule in placementRules) rule.toJson(),
@@ -4575,6 +4945,38 @@ class CuratedRichPuzzlePack {
       PuzzleDifficulty.boss => PuzzleCognitiveLoad.boss,
     };
   }
+}
+
+DateTime _dateOnly(DateTime value) {
+  return DateTime(value.year, value.month, value.day);
+}
+
+bool _puzzleMatchesWeeklyEvent(
+  PuzzleDefinition puzzle,
+  WeeklyEventDefinition event, {
+  AgeBandId? ageBandId,
+}) {
+  if (ageBandId != null && !puzzle.ageBandIds.contains(ageBandId)) {
+    return false;
+  }
+
+  if (event.skillTags.isNotEmpty &&
+      !event.skillTags.contains(puzzle.skillTag)) {
+    return false;
+  }
+
+  if (event.puzzleTypes.isNotEmpty &&
+      !event.puzzleTypes.contains(puzzle.type)) {
+    return false;
+  }
+
+  final metadata = puzzle.visualMetadata;
+  if (event.worldIds.isNotEmpty &&
+      (metadata == null || !event.worldIds.contains(metadata.worldId))) {
+    return false;
+  }
+
+  return true;
 }
 
 class _PuzzleFamilySeed {
