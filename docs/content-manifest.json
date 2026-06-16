@@ -98,6 +98,207 @@
     ],
     "visualPuzzleCount": 485
   },
+  "characterCoaches": [
+    {
+      "id": "brainy",
+      "displayName": "Brainy",
+      "role": "Main BrainUp guide for mixed logic quests and big moments.",
+      "shortRole": "Logic guide",
+      "skillTags": [
+        "attention",
+        "memory",
+        "pattern",
+        "classification",
+        "arithmetic",
+        "spatial",
+        "reasoning"
+      ],
+      "worldIds": [
+        "space_station",
+        "riddle_castle",
+        "toy_shop",
+        "shape_garden"
+      ],
+      "preferredInteractionTypes": [
+        "tapChoice",
+        "matchPairs",
+        "multiStepBoss"
+      ],
+      "accentHex": 4282578130,
+      "avatarAssetKey": "character.brainy.neutral",
+      "lines": {
+        "neutral": "Ready for a short brain quest?",
+        "hint": "Start with the easiest clue.",
+        "correct": "Yes. You found the idea.",
+        "retry": "Good try. Look one step closer.",
+        "streak": "Your brain route is warming up.",
+        "boss": "Use every clue. Boss puzzles need teamwork.",
+        "celebrate": "Mission progress unlocked. Nice thinking."
+      }
+    },
+    {
+      "id": "lumi",
+      "displayName": "Lumi",
+      "role": "Memory guide for order, pairs, and recall puzzles.",
+      "shortRole": "Memory coach",
+      "skillTags": [
+        "memory",
+        "attention"
+      ],
+      "worldIds": [
+        "space_station",
+        "underwater_city",
+        "toy_shop",
+        "train_expedition"
+      ],
+      "preferredInteractionTypes": [
+        "matchPairs",
+        "memoryReveal",
+        "reorderCards"
+      ],
+      "accentHex": 4284255991,
+      "avatarAssetKey": "character.lumi.neutral",
+      "lines": {
+        "neutral": "Let us keep the order in mind.",
+        "hint": "Remember the first and last object first.",
+        "correct": "Great memory. That stayed in place.",
+        "retry": "Almost. Picture where it was before.",
+        "streak": "Your memory light is getting brighter.",
+        "boss": "Hold the clues in order before you choose.",
+        "celebrate": "You remembered the route beautifully."
+      }
+    },
+    {
+      "id": "quadra",
+      "displayName": "Quadra",
+      "role": "Shape and space guide for turns, paths, and outlines.",
+      "shortRole": "Shape coach",
+      "skillTags": [
+        "spatial",
+        "attention"
+      ],
+      "worldIds": [
+        "shape_garden",
+        "space_station",
+        "dinosaur_island",
+        "robot_town"
+      ],
+      "preferredInteractionTypes": [
+        "rotateObject",
+        "tracePath",
+        "dragToTarget"
+      ],
+      "accentHex": 4288441074,
+      "avatarAssetKey": "character.quadra.neutral",
+      "lines": {
+        "neutral": "Shapes can turn, but they stay themselves.",
+        "hint": "Look at the outline first.",
+        "correct": "Nice. The shape still matches.",
+        "retry": "Check the direction of the point.",
+        "streak": "Your shape sense is getting sharper.",
+        "boss": "Turn the shape in your mind first.",
+        "celebrate": "The path fits. Quadra is impressed."
+      }
+    },
+    {
+      "id": "numba",
+      "displayName": "Numba",
+      "role": "Math guide for counting, comparing, and number bridges.",
+      "shortRole": "Math coach",
+      "skillTags": [
+        "arithmetic"
+      ],
+      "worldIds": [
+        "toy_shop",
+        "robot_town",
+        "dinosaur_island",
+        "underwater_city"
+      ],
+      "preferredInteractionTypes": [
+        "tapChoice",
+        "dragToTarget",
+        "sortObjects"
+      ],
+      "accentHex": 4294955356,
+      "avatarAssetKey": "character.numba.neutral",
+      "lines": {
+        "neutral": "Let us count carefully.",
+        "hint": "Count the left side, then the right side.",
+        "correct": "Yes. The numbers balance.",
+        "retry": "Almost. Touch each object once as you count.",
+        "streak": "Those numbers are lining up.",
+        "boss": "Check each number before the final answer.",
+        "celebrate": "Count badge energy unlocked."
+      }
+    },
+    {
+      "id": "rulo",
+      "displayName": "Rulo",
+      "role": "Logic guide for rules, codes, patterns, and clues.",
+      "shortRole": "Rule coach",
+      "skillTags": [
+        "pattern",
+        "classification",
+        "reasoning"
+      ],
+      "worldIds": [
+        "robot_town",
+        "riddle_castle",
+        "detective_academy",
+        "forest_lab"
+      ],
+      "preferredInteractionTypes": [
+        "tapChoice",
+        "reorderCards",
+        "tracePath",
+        "multiStepBoss"
+      ],
+      "accentHex": 4294941998,
+      "avatarAssetKey": "character.rulo.neutral",
+      "lines": {
+        "neutral": "Every puzzle has a clue.",
+        "hint": "Compare what changed from left to right.",
+        "correct": "Exactly. You found the rule.",
+        "retry": "Close. Check the first clue again.",
+        "streak": "Your clue trail is getting longer.",
+        "boss": "Solve one rule, then the next.",
+        "celebrate": "Rule found. Gate unlocked."
+      }
+    },
+    {
+      "id": "mira",
+      "displayName": "Mira",
+      "role": "Attention guide for details, sorting, and visual clues.",
+      "shortRole": "Focus coach",
+      "skillTags": [
+        "attention",
+        "classification",
+        "memory"
+      ],
+      "worldIds": [
+        "forest_lab",
+        "underwater_city",
+        "shape_garden",
+        "detective_academy"
+      ],
+      "preferredInteractionTypes": [
+        "tapChoice",
+        "sortObjects",
+        "memoryReveal"
+      ],
+      "accentHex": 4289197162,
+      "avatarAssetKey": "character.mira.neutral",
+      "lines": {
+        "neutral": "Small details can help.",
+        "hint": "Check color, size, and position.",
+        "correct": "Great focus. You spotted it.",
+        "retry": "Almost. Look at the outline again.",
+        "streak": "Your focus trail is clear.",
+        "boss": "Scan every detail before the final choice.",
+        "celebrate": "The details are sorted and shining."
+      }
+    }
+  ],
   "storyWorlds": [
     {
       "id": "space_station",

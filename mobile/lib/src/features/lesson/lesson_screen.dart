@@ -31,6 +31,54 @@ IconData _worldIcon(String worldId) {
   };
 }
 
+IconData _coachIcon(String characterId) {
+  return switch (characterId) {
+    'brainy' => Icons.auto_awesome_rounded,
+    'lumi' => Icons.lightbulb_rounded,
+    'quadra' => Icons.category_rounded,
+    'numba' => Icons.calculate_rounded,
+    'rulo' => Icons.psychology_rounded,
+    'mira' => Icons.travel_explore_rounded,
+    _ => Icons.emoji_objects_rounded,
+  };
+}
+
+CharacterCoachDefinition _coachForChallenge(DailyChallenge challenge) {
+  final characterId = challenge.characterId;
+  if (characterId != null) {
+    return FoundationCatalog.coachForCharacterId(characterId);
+  }
+
+  final skillTag = challenge.skillTag;
+  if (skillTag != null) {
+    return FoundationCatalog.coachForSkill(skillTag);
+  }
+
+  return FoundationCatalog.coachForCharacterId('brainy');
+}
+
+CharacterCoachMoment _coachMomentFor({
+  required DailyChallenge challenge,
+  required bool showHint,
+  required bool hasSubmitted,
+  required bool isCorrect,
+}) {
+  if (hasSubmitted && isCorrect) {
+    return CharacterCoachMoment.correct;
+  }
+  if (hasSubmitted && !isCorrect) {
+    return CharacterCoachMoment.retry;
+  }
+  if (showHint) {
+    return CharacterCoachMoment.hint;
+  }
+  if (challenge.feedbackStyle == PuzzleFeedbackStyle.bossMilestone ||
+      challenge.difficulty == PuzzleDifficulty.boss) {
+    return CharacterCoachMoment.boss;
+  }
+  return CharacterCoachMoment.neutral;
+}
+
 class LessonScreen extends StatefulWidget {
   const LessonScreen({
     required this.profile,
@@ -496,6 +544,105 @@ class _HeartPill extends StatelessWidget {
   }
 }
 
+class _CoachAvatar extends StatelessWidget {
+  const _CoachAvatar({
+    required this.coach,
+    this.size = 46,
+  });
+
+  final CharacterCoachDefinition coach;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(coach.accentHex);
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            accent,
+            _LessonPalette.aqua,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(size * 0.34),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withValues(alpha: 0.26),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Icon(
+        _coachIcon(coach.id),
+        color: _LessonPalette.background,
+        size: size * 0.56,
+      ),
+    );
+  }
+}
+
+class _CoachSpeechCard extends StatelessWidget {
+  const _CoachSpeechCard({
+    required this.coach,
+    required this.moment,
+  });
+
+  final CharacterCoachDefinition coach;
+  final CharacterCoachMoment moment;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(coach.accentHex);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent.withValues(alpha: 0.34)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CoachAvatar(coach: coach, size: 42),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${coach.displayName} - ${coach.shortRole}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: accent,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  coach.lineFor(moment),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _LessonQuestionCard extends StatelessWidget {
   const _LessonQuestionCard({
     required this.challenge,
@@ -518,6 +665,13 @@ class _LessonQuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final coach = _coachForChallenge(challenge);
+    final coachMoment = _coachMomentFor(
+      challenge: challenge,
+      showHint: showHint,
+      hasSubmitted: hasSubmitted,
+      isCorrect: isCorrect,
+    );
 
     return DecoratedBox(
       decoration: _panelDecoration(),
@@ -582,6 +736,11 @@ class _LessonQuestionCard extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 18),
+            _CoachSpeechCard(
+              coach: coach,
+              moment: coachMoment,
             ),
             const SizedBox(height: 18),
             _PuzzleVisual(challenge: challenge),
@@ -1488,22 +1647,21 @@ class _HintPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final coach = _coachForChallenge(challenge);
+    final accent = Color(coach.accentHex);
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: _LessonPalette.star.withValues(alpha: 0.13),
+        color: accent.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: _LessonPalette.star.withValues(alpha: 0.38)),
+        border: Border.all(color: accent.withValues(alpha: 0.38)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.lightbulb_rounded,
-            color: _LessonPalette.star,
-          ),
+          _CoachAvatar(coach: coach, size: 38),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -1512,11 +1670,27 @@ class _HintPanel extends StatelessWidget {
                 Text(
                   l10n.lessonHintTitle,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: _LessonPalette.star,
+                        color: accent,
                         fontWeight: FontWeight.w900,
                       ),
                 ),
                 const SizedBox(height: 3),
+                Text(
+                  '${coach.displayName} - ${coach.shortRole}',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: _LessonPalette.muted,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  coach.lineFor(CharacterCoachMoment.hint),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 4),
                 Text(
                   l10n.hintForChallenge(challenge),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -2608,37 +2782,67 @@ class _LessonFeedback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final coach = _coachForChallenge(challenge);
+    final accent = isCorrect ? Color(coach.accentHex) : _LessonPalette.coral;
+    final coachMoment =
+        isCorrect ? CharacterCoachMoment.correct : CharacterCoachMoment.retry;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isCorrect
-            ? _LessonPalette.aqua.withValues(alpha: 0.14)
-            : _LessonPalette.coral.withValues(alpha: 0.13),
+        color: accent.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isCorrect
-              ? _LessonPalette.aqua.withValues(alpha: 0.34)
-              : _LessonPalette.coral.withValues(alpha: 0.32),
+          color: accent.withValues(alpha: 0.34),
         ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            isCorrect ? Icons.emoji_events_rounded : Icons.tips_and_updates,
-            color: isCorrect ? _LessonPalette.aqua : _LessonPalette.coral,
-          ),
+          _CoachAvatar(coach: coach, size: 42),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              isCorrect
-                  ? l10n.answerCorrect(l10n.explanationForChallenge(challenge))
-                  : l10n.lessonRetryFeedback,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: _LessonPalette.text,
-                    fontWeight: FontWeight.w700,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${coach.displayName} - ${coach.shortRole}',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Color(coach.accentHex),
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  coach.lineFor(coachMoment),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  isCorrect
+                      ? l10n.answerCorrect(
+                          l10n.explanationForChallenge(challenge),
+                        )
+                      : l10n.lessonRetryFeedback,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                if (!isCorrect) ...[
+                  const SizedBox(height: 5),
+                  Text(
+                    l10n.hintForChallenge(challenge),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: _LessonPalette.muted,
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
+                ],
+              ],
             ),
           ),
         ],
@@ -2673,6 +2877,11 @@ class _LessonCompleteView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final completionCoach = isReviewLesson
+        ? FoundationCatalog.coachForCharacterId('brainy')
+        : FoundationCatalog.coachForCharacterId(
+            storyWorldProgress?.world.helperCharacterId,
+          );
 
     return Scaffold(
       backgroundColor: _LessonPalette.background,
@@ -2717,6 +2926,11 @@ class _LessonCompleteView extends StatelessWidget {
                                     color: _LessonPalette.muted,
                                     fontWeight: FontWeight.w700,
                                   ),
+                        ),
+                        const SizedBox(height: 18),
+                        _CoachCelebrationCard(
+                          coach: completionCoach,
+                          isReviewLesson: isReviewLesson,
                         ),
                         const SizedBox(height: 18),
                         if (!isReviewLesson) ...[
@@ -2869,6 +3083,63 @@ class _StickerReward extends StatelessWidget {
             left: 12,
             bottom: 22,
             child: Icon(Icons.star_rounded, color: Color(0xFFFFC739), size: 24),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CoachCelebrationCard extends StatelessWidget {
+  const _CoachCelebrationCard({
+    required this.coach,
+    required this.isReviewLesson,
+  });
+
+  final CharacterCoachDefinition coach;
+  final bool isReviewLesson;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(coach.accentHex);
+    final moment = isReviewLesson
+        ? CharacterCoachMoment.streak
+        : CharacterCoachMoment.celebrate;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent.withValues(alpha: 0.36)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CoachAvatar(coach: coach, size: 46),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${coach.displayName} - ${coach.shortRole}',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: accent,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  coach.lineFor(moment),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

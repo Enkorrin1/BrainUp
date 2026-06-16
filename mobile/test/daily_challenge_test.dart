@@ -99,6 +99,20 @@ void main() {
       expect(challenge.choices.map((choice) => choice.label).toSet().length, 3);
     });
 
+    test('carries character coach context from puzzle metadata', () {
+      final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+        (puzzle) => puzzle.visualMetadata?.characterId == 'lumi',
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+
+      expect(challenge.skillTag, puzzle.skillTag);
+      expect(challenge.puzzleType, puzzle.type);
+      expect(challenge.difficulty, puzzle.difficulty);
+      expect(challenge.worldId, puzzle.visualMetadata?.worldId);
+      expect(challenge.characterId, 'lumi');
+      expect(challenge.feedbackStyle, puzzle.visualMetadata?.feedbackStyle);
+    });
+
     test('generated variants produce different questions in one family', () {
       final variants = FoundationCatalog.puzzlesFor(
         skillTag: SkillTag.pattern,

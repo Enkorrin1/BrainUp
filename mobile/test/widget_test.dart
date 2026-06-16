@@ -69,6 +69,8 @@ void main() {
 
     expect(find.text('Step 1 of 5'), findsOneWidget);
     expect(find.text('Space Station: Repair the rocket route'), findsOneWidget);
+    expect(find.text('Rulo - Rule coach'), findsOneWidget);
+    expect(find.text('Every puzzle has a clue.'), findsOneWidget);
   });
 
   testWidgets('opens current lesson from path node', (tester) async {
@@ -216,6 +218,8 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('Hint'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Hint'));
     await tester.pumpAndSettle();
 

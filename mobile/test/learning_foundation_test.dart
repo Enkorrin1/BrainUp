@@ -74,6 +74,39 @@ void main() {
       );
     });
 
+    test('character coaches cover skills worlds and feedback lines', () {
+      expect(FoundationCatalog.characterCoaches.length, 6);
+      expect(
+        FoundationCatalog.characterCoaches.map((coach) => coach.id).toSet(),
+        FoundationCatalog.knownCharacterIds,
+      );
+
+      for (final coach in FoundationCatalog.characterCoaches) {
+        expect(coach.displayName, isNotEmpty);
+        expect(coach.shortRole, isNotEmpty);
+        expect(coach.avatarAssetKey, startsWith('character.${coach.id}.'));
+        expect(coach.skillTags, isNotEmpty, reason: coach.id);
+        expect(coach.worldIds, isNotEmpty, reason: coach.id);
+        expect(coach.neutralLine, isNotEmpty, reason: coach.id);
+        expect(coach.hintLine, isNotEmpty, reason: coach.id);
+        expect(coach.correctLine, isNotEmpty, reason: coach.id);
+        expect(coach.retryLine, isNotEmpty, reason: coach.id);
+
+        for (final worldId in coach.worldIds) {
+          expect(
+            FoundationCatalog.knownWorldIds.contains(worldId),
+            isTrue,
+            reason: '${coach.id} -> $worldId',
+          );
+        }
+      }
+
+      for (final skillTag in SkillTag.values) {
+        final coach = FoundationCatalog.coachForSkill(skillTag);
+        expect(coach.supportsSkill(skillTag), isTrue, reason: skillTag.name);
+      }
+    });
+
     test('content bank exposes a large multi-skill puzzle pool', () {
       expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(500));
 

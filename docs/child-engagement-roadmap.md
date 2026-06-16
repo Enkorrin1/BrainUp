@@ -62,6 +62,10 @@ Delivered:
 
 Make helper characters feel alive and useful.
 
+Status: implemented as the first in-lesson coach layer. BrainUp now has a
+runtime character coach catalog, puzzle-to-coach context, coach speech in
+lessons, useful retry hints, and coach celebration cards.
+
 Scope:
 
 - give each helper a skill role;
@@ -85,6 +89,17 @@ Definition of done:
 - lesson feedback uses helper-specific copy;
 - wrong answers give a useful hint, not just a failure state;
 - character copy is short and warm.
+
+Delivered:
+
+- `CharacterCoachDefinition` and `CharacterCoachMoment`;
+- 6 runtime coaches: Brainy, Lumi, Quadra, Numba, Rulo, Mira;
+- default coach lookup for every skill;
+- puzzle metadata carried into `DailyChallenge`;
+- coach avatar and speech on the lesson question card;
+- helper-specific hint, retry, correct, boss, streak, and celebration lines;
+- coach celebration card on lesson completion;
+- coach catalog exported in `content-manifest.json`.
 
 ## Stage 28. True Interactive Puzzle Mechanics
 

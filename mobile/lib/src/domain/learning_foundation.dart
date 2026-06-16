@@ -129,6 +129,16 @@ enum StoryWorldState {
   completed,
 }
 
+enum CharacterCoachMoment {
+  neutral,
+  hint,
+  correct,
+  retry,
+  streak,
+  boss,
+  celebrate,
+}
+
 enum CourseTrack {
   logic,
   math,
@@ -304,6 +314,92 @@ class StoryWorldProgress {
       'completedLessonCount': completedLessonCount,
       'totalLessonCount': totalLessonCount,
       'progress': progress,
+    };
+  }
+}
+
+class CharacterCoachDefinition {
+  const CharacterCoachDefinition({
+    required this.id,
+    required this.displayName,
+    required this.role,
+    required this.shortRole,
+    required this.skillTags,
+    required this.worldIds,
+    required this.preferredInteractionTypes,
+    required this.accentHex,
+    required this.avatarAssetKey,
+    required this.neutralLine,
+    required this.hintLine,
+    required this.correctLine,
+    required this.retryLine,
+    required this.streakLine,
+    required this.bossLine,
+    required this.celebrateLine,
+  });
+
+  final String id;
+  final String displayName;
+  final String role;
+  final String shortRole;
+  final List<SkillTag> skillTags;
+  final List<String> worldIds;
+  final List<PuzzleInteractionType> preferredInteractionTypes;
+  final int accentHex;
+  final String avatarAssetKey;
+  final String neutralLine;
+  final String hintLine;
+  final String correctLine;
+  final String retryLine;
+  final String streakLine;
+  final String bossLine;
+  final String celebrateLine;
+
+  bool supportsSkill(SkillTag skillTag) {
+    return skillTags.contains(skillTag);
+  }
+
+  bool supportsWorld(String worldId) {
+    return worldIds.contains(worldId);
+  }
+
+  String lineFor(CharacterCoachMoment moment) {
+    return switch (moment) {
+      CharacterCoachMoment.neutral => neutralLine,
+      CharacterCoachMoment.hint => hintLine,
+      CharacterCoachMoment.correct => correctLine,
+      CharacterCoachMoment.retry => retryLine,
+      CharacterCoachMoment.streak => streakLine,
+      CharacterCoachMoment.boss => bossLine,
+      CharacterCoachMoment.celebrate => celebrateLine,
+    };
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'displayName': displayName,
+      'role': role,
+      'shortRole': shortRole,
+      'skillTags': [
+        for (final skillTag in skillTags) skillTag.name,
+      ],
+      'worldIds': worldIds,
+      'preferredInteractionTypes': [
+        for (final interactionType in preferredInteractionTypes)
+          interactionType.name,
+      ],
+      'accentHex': accentHex,
+      'avatarAssetKey': avatarAssetKey,
+      'lines': {
+        'neutral': neutralLine,
+        'hint': hintLine,
+        'correct': correctLine,
+        'retry': retryLine,
+        'streak': streakLine,
+        'boss': bossLine,
+        'celebrate': celebrateLine,
+      },
     };
   }
 }
@@ -940,6 +1036,196 @@ class FoundationCatalog {
     'rulo',
     'mira',
   };
+
+  static const List<CharacterCoachDefinition> characterCoaches = [
+    CharacterCoachDefinition(
+      id: 'brainy',
+      displayName: 'Brainy',
+      role: 'Main BrainUp guide for mixed logic quests and big moments.',
+      shortRole: 'Logic guide',
+      skillTags: [
+        SkillTag.attention,
+        SkillTag.memory,
+        SkillTag.pattern,
+        SkillTag.classification,
+        SkillTag.arithmetic,
+        SkillTag.spatial,
+        SkillTag.reasoning,
+      ],
+      worldIds: [
+        'space_station',
+        'riddle_castle',
+        'toy_shop',
+        'shape_garden',
+      ],
+      preferredInteractionTypes: [
+        PuzzleInteractionType.tapChoice,
+        PuzzleInteractionType.matchPairs,
+        PuzzleInteractionType.multiStepBoss,
+      ],
+      accentHex: 0xFF42F4D2,
+      avatarAssetKey: 'character.brainy.neutral',
+      neutralLine: 'Ready for a short brain quest?',
+      hintLine: 'Start with the easiest clue.',
+      correctLine: 'Yes. You found the idea.',
+      retryLine: 'Good try. Look one step closer.',
+      streakLine: 'Your brain route is warming up.',
+      bossLine: 'Use every clue. Boss puzzles need teamwork.',
+      celebrateLine: 'Mission progress unlocked. Nice thinking.',
+    ),
+    CharacterCoachDefinition(
+      id: 'lumi',
+      displayName: 'Lumi',
+      role: 'Memory guide for order, pairs, and recall puzzles.',
+      shortRole: 'Memory coach',
+      skillTags: [
+        SkillTag.memory,
+        SkillTag.attention,
+      ],
+      worldIds: [
+        'space_station',
+        'underwater_city',
+        'toy_shop',
+        'train_expedition',
+      ],
+      preferredInteractionTypes: [
+        PuzzleInteractionType.matchPairs,
+        PuzzleInteractionType.memoryReveal,
+        PuzzleInteractionType.reorderCards,
+      ],
+      accentHex: 0xFF5C8EF7,
+      avatarAssetKey: 'character.lumi.neutral',
+      neutralLine: 'Let us keep the order in mind.',
+      hintLine: 'Remember the first and last object first.',
+      correctLine: 'Great memory. That stayed in place.',
+      retryLine: 'Almost. Picture where it was before.',
+      streakLine: 'Your memory light is getting brighter.',
+      bossLine: 'Hold the clues in order before you choose.',
+      celebrateLine: 'You remembered the route beautifully.',
+    ),
+    CharacterCoachDefinition(
+      id: 'quadra',
+      displayName: 'Quadra',
+      role: 'Shape and space guide for turns, paths, and outlines.',
+      shortRole: 'Shape coach',
+      skillTags: [
+        SkillTag.spatial,
+        SkillTag.attention,
+      ],
+      worldIds: [
+        'shape_garden',
+        'space_station',
+        'dinosaur_island',
+        'robot_town',
+      ],
+      preferredInteractionTypes: [
+        PuzzleInteractionType.rotateObject,
+        PuzzleInteractionType.tracePath,
+        PuzzleInteractionType.dragToTarget,
+      ],
+      accentHex: 0xFF9C6AF2,
+      avatarAssetKey: 'character.quadra.neutral',
+      neutralLine: 'Shapes can turn, but they stay themselves.',
+      hintLine: 'Look at the outline first.',
+      correctLine: 'Nice. The shape still matches.',
+      retryLine: 'Check the direction of the point.',
+      streakLine: 'Your shape sense is getting sharper.',
+      bossLine: 'Turn the shape in your mind first.',
+      celebrateLine: 'The path fits. Quadra is impressed.',
+    ),
+    CharacterCoachDefinition(
+      id: 'numba',
+      displayName: 'Numba',
+      role: 'Math guide for counting, comparing, and number bridges.',
+      shortRole: 'Math coach',
+      skillTags: [
+        SkillTag.arithmetic,
+      ],
+      worldIds: [
+        'toy_shop',
+        'robot_town',
+        'dinosaur_island',
+        'underwater_city',
+      ],
+      preferredInteractionTypes: [
+        PuzzleInteractionType.tapChoice,
+        PuzzleInteractionType.dragToTarget,
+        PuzzleInteractionType.sortObjects,
+      ],
+      accentHex: 0xFFFFD15C,
+      avatarAssetKey: 'character.numba.neutral',
+      neutralLine: 'Let us count carefully.',
+      hintLine: 'Count the left side, then the right side.',
+      correctLine: 'Yes. The numbers balance.',
+      retryLine: 'Almost. Touch each object once as you count.',
+      streakLine: 'Those numbers are lining up.',
+      bossLine: 'Check each number before the final answer.',
+      celebrateLine: 'Count badge energy unlocked.',
+    ),
+    CharacterCoachDefinition(
+      id: 'rulo',
+      displayName: 'Rulo',
+      role: 'Logic guide for rules, codes, patterns, and clues.',
+      shortRole: 'Rule coach',
+      skillTags: [
+        SkillTag.pattern,
+        SkillTag.classification,
+        SkillTag.reasoning,
+      ],
+      worldIds: [
+        'robot_town',
+        'riddle_castle',
+        'detective_academy',
+        'forest_lab',
+      ],
+      preferredInteractionTypes: [
+        PuzzleInteractionType.tapChoice,
+        PuzzleInteractionType.reorderCards,
+        PuzzleInteractionType.tracePath,
+        PuzzleInteractionType.multiStepBoss,
+      ],
+      accentHex: 0xFFFF9D2E,
+      avatarAssetKey: 'character.rulo.neutral',
+      neutralLine: 'Every puzzle has a clue.',
+      hintLine: 'Compare what changed from left to right.',
+      correctLine: 'Exactly. You found the rule.',
+      retryLine: 'Close. Check the first clue again.',
+      streakLine: 'Your clue trail is getting longer.',
+      bossLine: 'Solve one rule, then the next.',
+      celebrateLine: 'Rule found. Gate unlocked.',
+    ),
+    CharacterCoachDefinition(
+      id: 'mira',
+      displayName: 'Mira',
+      role: 'Attention guide for details, sorting, and visual clues.',
+      shortRole: 'Focus coach',
+      skillTags: [
+        SkillTag.attention,
+        SkillTag.classification,
+        SkillTag.memory,
+      ],
+      worldIds: [
+        'forest_lab',
+        'underwater_city',
+        'shape_garden',
+        'detective_academy',
+      ],
+      preferredInteractionTypes: [
+        PuzzleInteractionType.tapChoice,
+        PuzzleInteractionType.sortObjects,
+        PuzzleInteractionType.memoryReveal,
+      ],
+      accentHex: 0xFFA7F46A,
+      avatarAssetKey: 'character.mira.neutral',
+      neutralLine: 'Small details can help.',
+      hintLine: 'Check color, size, and position.',
+      correctLine: 'Great focus. You spotted it.',
+      retryLine: 'Almost. Look at the outline again.',
+      streakLine: 'Your focus trail is clear.',
+      bossLine: 'Scan every detail before the final choice.',
+      celebrateLine: 'The details are sorted and shining.',
+    ),
+  ];
 
   static const List<StoryWorldDefinition> storyWorlds = [
     StoryWorldDefinition(
@@ -2376,6 +2662,9 @@ class FoundationCatalog {
         'visualPuzzleCount':
             allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
       },
+      'characterCoaches': [
+        for (final coach in characterCoaches) coach.toJson(),
+      ],
       'storyWorlds': [
         for (final world in storyWorlds) world.toJson(),
       ],
@@ -2583,6 +2872,34 @@ class FoundationCatalog {
           item.state == StoryWorldState.repaired,
       orElse: () => progress.last,
     );
+  }
+
+  static CharacterCoachDefinition coachForCharacterId(String? characterId) {
+    return characterCoaches.firstWhere(
+      (coach) => coach.id == characterId,
+      orElse: () => characterCoaches.first,
+    );
+  }
+
+  static CharacterCoachDefinition coachForSkill(SkillTag skillTag) {
+    final coachId = switch (skillTag) {
+      SkillTag.attention => 'mira',
+      SkillTag.memory => 'lumi',
+      SkillTag.pattern => 'rulo',
+      SkillTag.classification => 'mira',
+      SkillTag.arithmetic => 'numba',
+      SkillTag.spatial => 'quadra',
+      SkillTag.reasoning => 'rulo',
+    };
+    return coachForCharacterId(coachId);
+  }
+
+  static CharacterCoachDefinition coachForPuzzle(PuzzleDefinition puzzle) {
+    final metadata = puzzle.visualMetadata;
+    if (metadata != null) {
+      return coachForCharacterId(metadata.characterId);
+    }
+    return coachForSkill(puzzle.skillTag);
   }
 
   static ContentQaReport contentQaReport({

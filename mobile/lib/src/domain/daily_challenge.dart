@@ -16,6 +16,12 @@ class DailyChallenge {
     required this.hint,
     required this.explanation,
     this.interaction,
+    this.skillTag,
+    this.puzzleType,
+    this.difficulty,
+    this.worldId,
+    this.characterId,
+    this.feedbackStyle,
   });
 
   final String id;
@@ -30,6 +36,12 @@ class DailyChallenge {
   final String hint;
   final String explanation;
   final ChallengeInteractionSpec? interaction;
+  final SkillTag? skillTag;
+  final PuzzleType? puzzleType;
+  final PuzzleDifficulty? difficulty;
+  final String? worldId;
+  final String? characterId;
+  final PuzzleFeedbackStyle? feedbackStyle;
 
   bool isCorrectChoice(String choiceId) {
     return choiceId == correctChoiceId;
@@ -37,6 +49,40 @@ class DailyChallenge {
 
   ChallengeChoice get correctChoice {
     return choices.firstWhere((choice) => choice.id == correctChoiceId);
+  }
+
+  DailyChallenge withPuzzleContext(PuzzleDefinition puzzle) {
+    final metadata = puzzle.visualMetadata;
+    final coach = FoundationCatalog.coachForPuzzle(puzzle);
+    final generated = _GeneratedPuzzleData(
+      prompt: prompt,
+      question: question,
+      correctChoiceId: correctChoiceId,
+      hint: hint,
+      explanation: explanation,
+      choices: choices,
+    );
+
+    return DailyChallenge(
+      id: id,
+      title: title,
+      prompt: prompt,
+      question: question,
+      skill: skill,
+      goal: goal,
+      minutes: minutes,
+      choices: choices,
+      correctChoiceId: correctChoiceId,
+      hint: hint,
+      explanation: explanation,
+      interaction: interaction ?? _interactionForPuzzle(puzzle, generated),
+      skillTag: puzzle.skillTag,
+      puzzleType: puzzle.type,
+      difficulty: puzzle.difficulty,
+      worldId: metadata?.worldId,
+      characterId: coach.id,
+      feedbackStyle: metadata?.feedbackStyle ?? PuzzleFeedbackStyle.standard,
+    );
   }
 }
 
@@ -171,7 +217,7 @@ DailyChallenge dailyChallengeForPuzzle(
 ) {
   final manualChallenge = dailyChallengeByIdOrNull(puzzle.payloadRef, age: age);
   if (manualChallenge != null) {
-    return manualChallenge;
+    return manualChallenge.withPuzzleContext(puzzle);
   }
 
   final skill = _skillTitleForPuzzle(puzzle.skillTag);
@@ -192,6 +238,13 @@ DailyChallenge dailyChallengeForPuzzle(
     explanation: generated.explanation,
     choices: generated.choices,
     interaction: _interactionForPuzzle(puzzle, generated),
+    skillTag: puzzle.skillTag,
+    puzzleType: puzzle.type,
+    difficulty: puzzle.difficulty,
+    worldId: puzzle.visualMetadata?.worldId,
+    characterId: FoundationCatalog.coachForPuzzle(puzzle).id,
+    feedbackStyle:
+        puzzle.visualMetadata?.feedbackStyle ?? PuzzleFeedbackStyle.standard,
   );
 }
 
