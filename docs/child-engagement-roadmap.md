@@ -105,6 +105,10 @@ Delivered:
 
 Upgrade tap-simulated interactions into real mechanics.
 
+Status: implemented for the first production layer. BrainUp now uses real
+Flutter gesture widgets for drag targets, match drops, memory flips, and shape
+rotation while keeping the tap-choice fallback stable.
+
 Priority mechanics:
 
 - drag cards into targets;
@@ -122,6 +126,17 @@ Definition of done:
 - every mechanic has success, retry, and hint states;
 - mechanics work on mobile screen sizes;
 - existing tap-choice fallback remains stable.
+
+Delivered:
+
+- drag cards into answer targets with `Draggable` and `DragTarget`;
+- connect matching pairs by dragging an answer onto the clue;
+- flip memory cards before choosing an answer;
+- rotate spatial puzzles with horizontal drag;
+- success and retry state banners inside interaction stages;
+- stable widget keys for gesture QA;
+- adaptive review widget test covering flip cards;
+- content tests covering drag, match, memory, rotate, and sort mechanics.
 
 ## Stage 29. Collection And Customization
 

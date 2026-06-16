@@ -137,6 +137,7 @@ void main() {
     expect(find.text('Step 1 of 5'), findsOneWidget);
     expect(find.textContaining('Remember:'), findsOneWidget);
     expect(find.text('Reveal'), findsOneWidget);
+    expect(find.byKey(const ValueKey('stage-flip-0')), findsOneWidget);
     expect(
       find.text('Reveal the cards, remember the order, then answer.'),
       findsOneWidget,

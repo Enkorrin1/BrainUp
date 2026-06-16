@@ -200,6 +200,25 @@ void main() {
       );
     });
 
+    test('curated puzzles cover true gesture interaction types', () {
+      final interactionTypes = {
+        for (final puzzle in CuratedRichPuzzlePack.puzzles)
+          if (puzzle.visualMetadata != null)
+            puzzle.visualMetadata!.interactionType,
+      };
+
+      expect(
+        interactionTypes,
+        containsAll({
+          PuzzleInteractionType.dragToTarget,
+          PuzzleInteractionType.matchPairs,
+          PuzzleInteractionType.memoryReveal,
+          PuzzleInteractionType.rotateObject,
+          PuzzleInteractionType.sortObjects,
+        }),
+      );
+    });
+
     test('curated memory puzzles expose reveal order checks', () {
       final puzzle = CuratedRichPuzzlePack.puzzles.firstWhere(
         (puzzle) =>
