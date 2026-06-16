@@ -40,11 +40,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Start'), findsOneWidget);
-    expect(find.text('Shapes'), findsAtLeastNWidgets(1));
-    expect(find.text('Working memory'), findsAtLeastNWidgets(1));
-    expect(find.text('Math thinking'), findsAtLeastNWidgets(1));
-    expect(find.text('Focus'), findsAtLeastNWidgets(1));
+    expect(find.text('Continue'), findsOneWidget);
+    expect(find.text('Space Station: Repair the rocket route'), findsOneWidget);
+    expect(
+      find.text('Help Brainy collect star parts and open the launch path.'),
+      findsOneWidget,
+    );
+    expect(find.text('Forest Lab'), findsOneWidget);
     expect(find.text('locked'), findsAtLeastNWidgets(1));
     expect(find.text('Courses and puzzles'), findsNothing);
   });
@@ -66,6 +68,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Step 1 of 5'), findsOneWidget);
+    expect(find.text('Space Station: Repair the rocket route'), findsOneWidget);
   });
 
   testWidgets('opens current lesson from path node', (tester) async {
@@ -79,9 +82,19 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Start'), findsOneWidget);
+    final listView = find.byType(ListView).first;
+    for (var attempt = 0; attempt < 4; attempt += 1) {
+      if (tester.any(find.text('Start'))) {
+        break;
+      }
+      await tester.drag(listView, const Offset(0, -260));
+      await tester.pumpAndSettle();
+    }
 
-    await tester.tap(find.text('Start'));
+    final startFinder = find.text('Start').last;
+    expect(startFinder, findsOneWidget);
+
+    await tester.tap(startFinder);
     await tester.pumpAndSettle();
 
     expect(find.text('Step 1 of 5'), findsOneWidget);
@@ -288,6 +301,8 @@ void main() {
     }
 
     expect(find.text('New sticker!'), findsOneWidget);
+    expect(find.text('Space Station mission'), findsOneWidget);
+    expect(find.text('1/3 lessons repaired'), findsOneWidget);
     expect(find.text('Lesson summary'), findsOneWidget);
     expect(find.text('Questions'), findsOneWidget);
     expect(find.text('+1 sticker'), findsOneWidget);

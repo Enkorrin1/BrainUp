@@ -17,6 +17,20 @@ class _LessonPalette {
   static const violet = Color(0xFF9C6AF2);
 }
 
+IconData _worldIcon(String worldId) {
+  return switch (worldId) {
+    'space_station' => Icons.rocket_launch_rounded,
+    'forest_lab' => Icons.biotech_rounded,
+    'robot_town' => Icons.smart_toy_rounded,
+    'shape_garden' => Icons.category_rounded,
+    'toy_shop' => Icons.toys_rounded,
+    'underwater_city' => Icons.water_rounded,
+    'dinosaur_island' => Icons.park_rounded,
+    'riddle_castle' => Icons.castle_rounded,
+    _ => Icons.auto_awesome_rounded,
+  };
+}
+
 class LessonScreen extends StatefulWidget {
   const LessonScreen({
     required this.profile,
@@ -64,6 +78,15 @@ class _LessonScreenState extends State<LessonScreen> {
     final lesson = widget.lessonId == null
         ? FoundationCatalog.lessonForNode(_currentNode(child))
         : FoundationCatalog.lessonForId(widget.lessonId!);
+    final storyWorld = FoundationCatalog.storyWorldForLessonId(lesson.id);
+    final storyWorldProgressAfterLesson = storyWorld == null
+        ? null
+        : FoundationCatalog.storyWorldProgressFor(
+            {
+              ...child.completedLessonIds,
+              lesson.id,
+            }.toList(growable: false),
+          ).firstWhere((progress) => progress.world.id == storyWorld.id);
     final challenges = _lessonChallenges(child, lesson);
     final challenge = challenges[_stepIndex];
 
@@ -74,6 +97,7 @@ class _LessonScreenState extends State<LessonScreen> {
         totalQuestions: challenges.length,
         usedHints: _hintedStepIndexes.length,
         wrongAttempts: _wrongAttempts,
+        storyWorldProgress: storyWorldProgressAfterLesson,
         nextLessonId: lesson.id == FoundationCatalog.adaptiveReviewLesson.id
             ? null
             : _nextLessonIdAfter(lesson.id, child),
@@ -98,6 +122,7 @@ class _LessonScreenState extends State<LessonScreen> {
                     currentStep: _stepIndex + 1,
                     totalSteps: challenges.length,
                     hearts: child.hearts,
+                    storyWorld: storyWorld,
                   ),
                   const SizedBox(height: 16),
                   _LessonQuestionCard(
@@ -369,11 +394,13 @@ class _LessonHeader extends StatelessWidget {
     required this.currentStep,
     required this.totalSteps,
     required this.hearts,
+    required this.storyWorld,
   });
 
   final int currentStep;
   final int totalSteps;
   final int hearts;
+  final StoryWorldDefinition? storyWorld;
 
   @override
   Widget build(BuildContext context) {
@@ -389,6 +416,18 @@ class _LessonHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (storyWorld != null) ...[
+                    Text(
+                      '${storyWorld!.title}: ${storyWorld!.missionTitle}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: _LessonPalette.star,
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(height: 5),
+                  ],
                   Text(
                     l10n.lessonProgress(currentStep, totalSteps),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -2615,6 +2654,7 @@ class _LessonCompleteView extends StatelessWidget {
     required this.totalQuestions,
     required this.usedHints,
     required this.wrongAttempts,
+    required this.storyWorldProgress,
     required this.nextLessonId,
     required this.onNextLessonSelected,
     required this.onBackToMap,
@@ -2625,6 +2665,7 @@ class _LessonCompleteView extends StatelessWidget {
   final int totalQuestions;
   final int usedHints;
   final int wrongAttempts;
+  final StoryWorldProgress? storyWorldProgress;
   final String? nextLessonId;
   final ValueChanged<String> onNextLessonSelected;
   final VoidCallback onBackToMap;
@@ -2682,6 +2723,12 @@ class _LessonCompleteView extends StatelessWidget {
                           _StickerUnlockCard(
                             title: l10n.lessonStickerUnlockedTitle,
                             body: l10n.lessonStickerUnlockedBody,
+                          ),
+                          const SizedBox(height: 18),
+                        ],
+                        if (storyWorldProgress != null) ...[
+                          _WorldMissionCompleteCard(
+                            progress: storyWorldProgress!,
                           ),
                           const SizedBox(height: 18),
                         ],
@@ -2822,6 +2869,82 @@ class _StickerReward extends StatelessWidget {
             left: 12,
             bottom: 22,
             child: Icon(Icons.star_rounded, color: Color(0xFFFFC739), size: 24),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorldMissionCompleteCard extends StatelessWidget {
+  const _WorldMissionCompleteCard({required this.progress});
+
+  final StoryWorldProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final world = progress.world;
+    final accent = Color(world.accentHex);
+    final completed = progress.state == StoryWorldState.completed;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent.withValues(alpha: 0.38)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            _worldIcon(world.id),
+            color: accent,
+            size: 30,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  completed
+                      ? '${world.title} completed'
+                      : '${world.title} mission',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  completed ? world.completionSummary : world.missionSummary,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.muted,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    minHeight: 9,
+                    value: progress.progress,
+                    color: accent,
+                    backgroundColor: Colors.white.withValues(alpha: 0.12),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  '${progress.completedLessonCount}/${progress.totalLessonCount} lessons repaired',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: _LessonPalette.muted,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -122,6 +122,13 @@ enum MapNodeState {
   locked,
 }
 
+enum StoryWorldState {
+  locked,
+  active,
+  repaired,
+  completed,
+}
+
 enum CourseTrack {
   logic,
   math,
@@ -231,6 +238,74 @@ class Lesson {
   final List<String> stepIds;
   final int xpReward;
   final int maxHearts;
+}
+
+class StoryWorldDefinition {
+  const StoryWorldDefinition({
+    required this.id,
+    required this.title,
+    required this.missionTitle,
+    required this.missionSummary,
+    required this.completionSummary,
+    required this.helperCharacterId,
+    required this.lessonIds,
+    required this.accentHex,
+  });
+
+  final String id;
+  final String title;
+  final String missionTitle;
+  final String missionSummary;
+  final String completionSummary;
+  final String helperCharacterId;
+  final List<String> lessonIds;
+  final int accentHex;
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'missionTitle': missionTitle,
+      'missionSummary': missionSummary,
+      'completionSummary': completionSummary,
+      'helperCharacterId': helperCharacterId,
+      'lessonIds': lessonIds,
+      'accentHex': accentHex,
+    };
+  }
+}
+
+class StoryWorldProgress {
+  const StoryWorldProgress({
+    required this.world,
+    required this.state,
+    required this.completedLessonCount,
+  });
+
+  final StoryWorldDefinition world;
+  final StoryWorldState state;
+  final int completedLessonCount;
+
+  int get totalLessonCount {
+    return world.lessonIds.length;
+  }
+
+  double get progress {
+    if (totalLessonCount == 0) {
+      return 0;
+    }
+    return completedLessonCount / totalLessonCount;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'worldId': world.id,
+      'state': state.name,
+      'completedLessonCount': completedLessonCount,
+      'totalLessonCount': totalLessonCount,
+      'progress': progress,
+    };
+  }
 }
 
 class ContentPlacementRule {
@@ -865,6 +940,92 @@ class FoundationCatalog {
     'rulo',
     'mira',
   };
+
+  static const List<StoryWorldDefinition> storyWorlds = [
+    StoryWorldDefinition(
+      id: 'space_station',
+      title: 'Space Station',
+      missionTitle: 'Repair the rocket route',
+      missionSummary:
+          'Help Brainy collect star parts and open the launch path.',
+      completionSummary: 'The rocket route is repaired and ready to fly.',
+      helperCharacterId: 'brainy',
+      lessonIds: ['lesson.001', 'lesson.002', 'lesson.003'],
+      accentHex: 0xFF42F4D2,
+    ),
+    StoryWorldDefinition(
+      id: 'forest_lab',
+      title: 'Forest Lab',
+      missionTitle: 'Sort the living clues',
+      missionSummary: 'Help Mira spot details and organize forest samples.',
+      completionSummary: 'The forest lab is tidy and full of discoveries.',
+      helperCharacterId: 'mira',
+      lessonIds: ['lesson.004', 'lesson.005', 'lesson.006'],
+      accentHex: 0xFFA7F46A,
+    ),
+    StoryWorldDefinition(
+      id: 'robot_town',
+      title: 'Robot Town',
+      missionTitle: 'Restart the circuit parade',
+      missionSummary: 'Help Rulo decode rules so the robots can march again.',
+      completionSummary: 'Robot Town is buzzing with working circuits.',
+      helperCharacterId: 'rulo',
+      lessonIds: ['lesson.007', 'lesson.008', 'lesson.009'],
+      accentHex: 0xFFFFD15C,
+    ),
+    StoryWorldDefinition(
+      id: 'shape_garden',
+      title: 'Shape Garden',
+      missionTitle: 'Grow the pattern flowers',
+      missionSummary: 'Help Quadra turn shapes and complete garden paths.',
+      completionSummary: 'The Shape Garden blooms in perfect patterns.',
+      helperCharacterId: 'quadra',
+      lessonIds: ['lesson.010', 'lesson.011', 'lesson.012'],
+      accentHex: 0xFF9C6AF2,
+    ),
+    StoryWorldDefinition(
+      id: 'toy_shop',
+      title: 'Toy Shop',
+      missionTitle: 'Pack the clever toy orders',
+      missionSummary: 'Help Numba count, compare, and match playful objects.',
+      completionSummary: 'Every toy order is packed and ready.',
+      helperCharacterId: 'numba',
+      lessonIds: ['lesson.013', 'lesson.014', 'lesson.015'],
+      accentHex: 0xFFFF9D2E,
+    ),
+    StoryWorldDefinition(
+      id: 'underwater_city',
+      title: 'Underwater City',
+      missionTitle: 'Light the coral signals',
+      missionSummary: 'Help Lumi remember signal patterns under the waves.',
+      completionSummary: 'The coral signals shine across the city.',
+      helperCharacterId: 'lumi',
+      lessonIds: ['lesson.016', 'lesson.017', 'lesson.018'],
+      accentHex: 0xFF5C8EF7,
+    ),
+    StoryWorldDefinition(
+      id: 'dinosaur_island',
+      title: 'Dinosaur Island',
+      missionTitle: 'Find the fossil trail',
+      missionSummary:
+          'Follow clues, compare tracks, and uncover the hidden trail.',
+      completionSummary: 'The fossil trail is mapped for the explorers.',
+      helperCharacterId: 'mira',
+      lessonIds: ['lesson.019', 'lesson.020', 'lesson.021'],
+      accentHex: 0xFFFF6F7D,
+    ),
+    StoryWorldDefinition(
+      id: 'riddle_castle',
+      title: 'Riddle Castle',
+      missionTitle: 'Open the final logic gate',
+      missionSummary:
+          'Combine memory, math, patterns, and reasoning to unlock the castle.',
+      completionSummary: 'The final logic gate opens for the BrainUp team.',
+      helperCharacterId: 'brainy',
+      lessonIds: ['lesson.022', 'lesson.023', 'lesson.024'],
+      accentHex: 0xFFE9C46A,
+    ),
+  ];
 
   static const List<ContentPlacementRule> placementRules = [
     ContentPlacementRule(
@@ -2215,6 +2376,9 @@ class FoundationCatalog {
         'visualPuzzleCount':
             allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
       },
+      'storyWorlds': [
+        for (final world in storyWorlds) world.toJson(),
+      ],
       'placementRules': [
         for (final rule in placementRules) rule.toJson(),
       ],
@@ -2364,6 +2528,60 @@ class FoundationCatalog {
           unit: 'feature',
         ),
       ],
+    );
+  }
+
+  static StoryWorldDefinition? storyWorldForLessonId(String lessonId) {
+    for (final world in storyWorlds) {
+      if (world.lessonIds.contains(lessonId)) {
+        return world;
+      }
+    }
+    return null;
+  }
+
+  static List<StoryWorldProgress> storyWorldProgressFor(
+    List<String> completedLessonIds,
+  ) {
+    final completed = completedLessonIds.toSet();
+    var previousWorldCompleted = true;
+    final progress = <StoryWorldProgress>[];
+
+    for (final world in storyWorlds) {
+      final completedCount = world.lessonIds
+          .where((lessonId) => completed.contains(lessonId))
+          .length;
+      final worldCompleted = completedCount >= world.lessonIds.length;
+      final state = worldCompleted
+          ? StoryWorldState.completed
+          : completedCount > 0
+              ? StoryWorldState.repaired
+              : previousWorldCompleted
+                  ? StoryWorldState.active
+                  : StoryWorldState.locked;
+
+      progress.add(
+        StoryWorldProgress(
+          world: world,
+          state: state,
+          completedLessonCount: completedCount,
+        ),
+      );
+      previousWorldCompleted = worldCompleted;
+    }
+
+    return progress;
+  }
+
+  static StoryWorldProgress currentStoryWorldProgress(
+    List<String> completedLessonIds,
+  ) {
+    final progress = storyWorldProgressFor(completedLessonIds);
+    return progress.firstWhere(
+      (item) =>
+          item.state == StoryWorldState.active ||
+          item.state == StoryWorldState.repaired,
+      orElse: () => progress.last,
     );
   }
 

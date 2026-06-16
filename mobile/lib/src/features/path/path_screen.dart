@@ -27,6 +27,12 @@ class PathScreen extends StatelessWidget {
     final currentNode = path.nextNode(completedNodeIds);
     final reviewProfile =
         PracticeReviewProfile.fromSessions(child.practiceSessions);
+    final worldProgress = FoundationCatalog.storyWorldProgressFor(
+      child.completedLessonIds,
+    );
+    final currentWorldProgress = FoundationCatalog.currentStoryWorldProgress(
+      child.completedLessonIds,
+    );
 
     return Scaffold(
       backgroundColor: _PathPalette.voidBlue,
@@ -47,6 +53,7 @@ class PathScreen extends StatelessWidget {
                 _LaunchPanel(
                   childName: child.name,
                   currentNode: currentNode,
+                  worldProgress: currentWorldProgress,
                   onStart: currentNode == null
                       ? null
                       : () => onLessonSelected(currentNode.lessonId),
@@ -60,6 +67,8 @@ class PathScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+                const SizedBox(height: 14),
+                _StoryWorldStrip(progress: worldProgress),
                 const SizedBox(height: 26),
                 _StarRoute(
                   path: path,
@@ -182,6 +191,29 @@ class _PathPalette {
   static const lime = Color(0xFFA7F46A);
   static const lavender = Color(0xFFBFCBFF);
   static const ink = Color(0xFF10172F);
+}
+
+IconData _iconForWorld(String worldId) {
+  return switch (worldId) {
+    'space_station' => Icons.rocket_launch_rounded,
+    'forest_lab' => Icons.biotech_rounded,
+    'robot_town' => Icons.smart_toy_rounded,
+    'shape_garden' => Icons.category_rounded,
+    'toy_shop' => Icons.toys_rounded,
+    'underwater_city' => Icons.water_rounded,
+    'dinosaur_island' => Icons.park_rounded,
+    'riddle_castle' => Icons.castle_rounded,
+    _ => Icons.auto_awesome_rounded,
+  };
+}
+
+String _stateLabel(StoryWorldState state) {
+  return switch (state) {
+    StoryWorldState.locked => 'locked',
+    StoryWorldState.active => 'active',
+    StoryWorldState.repaired => 'repairing',
+    StoryWorldState.completed => 'completed',
+  };
 }
 
 class _MissionBackdrop extends StatelessWidget {
@@ -347,22 +379,25 @@ class _LaunchPanel extends StatelessWidget {
   const _LaunchPanel({
     required this.childName,
     required this.currentNode,
+    required this.worldProgress,
     required this.onStart,
   });
 
   final String childName;
   final PathNode? currentNode;
+  final StoryWorldProgress worldProgress;
   final VoidCallback? onStart;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final world = worldProgress.world;
     final title = currentNode == null
         ? l10n.homeRecommendedLessonCompleted
         : l10n.homeGreeting(childName);
     final body = currentNode == null
         ? l10n.homeRecommendedLessonCompleted
-        : l10n.mapLessonSubtitle;
+        : world.missionSummary;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -383,6 +418,8 @@ class _LaunchPanel extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _WorldMissionTag(world: world),
+                      const SizedBox(height: 8),
                       Text(
                         title,
                         maxLines: 2,
@@ -397,7 +434,7 @@ class _LaunchPanel extends StatelessWidget {
                       const SizedBox(height: 7),
                       Text(
                         body,
-                        maxLines: 2,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: _PathPalette.lavender,
@@ -409,6 +446,8 @@ class _LaunchPanel extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            _WorldMissionProgress(progress: worldProgress),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onStart,
@@ -425,6 +464,189 @@ class _LaunchPanel extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _WorldMissionTag extends StatelessWidget {
+  const _WorldMissionTag({required this.world});
+
+  final StoryWorldDefinition world;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Color(world.accentHex);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.45)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 1),
+            child: Icon(_iconForWorld(world.id), color: color, size: 18),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              '${world.title}: ${world.missionTitle}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    height: 1.1,
+                  ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorldMissionProgress extends StatelessWidget {
+  const _WorldMissionProgress({required this.progress});
+
+  final StoryWorldProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Color(progress.world.accentHex);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                _stateLabel(progress.state),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: _PathPalette.lavender,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            Text(
+              '${progress.completedLessonCount}/${progress.totalLessonCount}',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            minHeight: 10,
+            value: progress.progress,
+            color: color,
+            backgroundColor: Colors.white.withValues(alpha: 0.12),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StoryWorldStrip extends StatelessWidget {
+  const _StoryWorldStrip({required this.progress});
+
+  final List<StoryWorldProgress> progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 132,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: progress.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          return _StoryWorldCard(progress: progress[index]);
+        },
+      ),
+    );
+  }
+}
+
+class _StoryWorldCard extends StatelessWidget {
+  const _StoryWorldCard({required this.progress});
+
+  final StoryWorldProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final world = progress.world;
+    final accent = Color(world.accentHex);
+    final locked = progress.state == StoryWorldState.locked;
+
+    return Container(
+      width: 178,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: locked
+            ? Colors.white.withValues(alpha: 0.06)
+            : accent.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: locked
+              ? Colors.white.withValues(alpha: 0.12)
+              : accent.withValues(alpha: 0.42),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                locked ? Icons.lock_rounded : _iconForWorld(world.id),
+                color: locked ? _PathPalette.lavender : accent,
+                size: 22,
+              ),
+              const Spacer(),
+              Text(
+                _stateLabel(progress.state),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _PathPalette.lavender,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            world.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            world.missionTitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: _PathPalette.lavender,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        ],
       ),
     );
   }

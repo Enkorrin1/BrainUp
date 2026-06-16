@@ -27,6 +27,53 @@ void main() {
       }
     });
 
+    test('story worlds assign every starter lesson to a mission arc', () {
+      final assignedLessonIds = {
+        for (final world in FoundationCatalog.storyWorlds) ...world.lessonIds,
+      };
+      final starterLessonIds = {
+        for (final lesson in FoundationCatalog.starterLessons) lesson.id,
+      };
+
+      expect(FoundationCatalog.storyWorlds.length, greaterThanOrEqualTo(8));
+      expect(assignedLessonIds, starterLessonIds);
+      for (final world in FoundationCatalog.storyWorlds) {
+        expect(
+          FoundationCatalog.knownWorldIds.contains(world.id),
+          isTrue,
+          reason: world.id,
+        );
+        expect(
+          FoundationCatalog.knownCharacterIds.contains(world.helperCharacterId),
+          isTrue,
+          reason: world.id,
+        );
+        expect(world.missionTitle, isNotEmpty);
+        expect(world.missionSummary, isNotEmpty);
+      }
+    });
+
+    test('story world progress reports active repaired and completed states',
+        () {
+      final initialProgress = FoundationCatalog.storyWorldProgressFor(const []);
+      final afterFirstWorld = FoundationCatalog.storyWorldProgressFor(
+        const ['lesson.001', 'lesson.002', 'lesson.003'],
+      );
+      final partialSecondWorld = FoundationCatalog.storyWorldProgressFor(
+        const ['lesson.001', 'lesson.002', 'lesson.003', 'lesson.004'],
+      );
+
+      expect(initialProgress.first.state, StoryWorldState.active);
+      expect(initialProgress[1].state, StoryWorldState.locked);
+      expect(afterFirstWorld.first.state, StoryWorldState.completed);
+      expect(afterFirstWorld[1].state, StoryWorldState.active);
+      expect(partialSecondWorld[1].state, StoryWorldState.repaired);
+      expect(
+        FoundationCatalog.storyWorldForLessonId('lesson.001')?.title,
+        'Space Station',
+      );
+    });
+
     test('content bank exposes a large multi-skill puzzle pool', () {
       expect(FoundationCatalog.allPuzzles.length, greaterThanOrEqualTo(500));
 
