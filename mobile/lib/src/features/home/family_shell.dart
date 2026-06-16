@@ -2,6 +2,7 @@
 
 import '../../app/app_controller.dart';
 import '../../l10n/l10n.dart';
+import '../collection/collection_screen.dart';
 import '../lesson/lesson_screen.dart';
 import '../parent/parent_screen.dart';
 import '../path/path_screen.dart';
@@ -58,6 +59,15 @@ class _FamilyShellState extends State<FamilyShell> {
               });
             },
             onBackToMap: () {
+              setState(() {
+                _selectedIndex = 0;
+              });
+            },
+          ),
+          CollectionScreen(
+            profile: profile,
+            onRewardEquipped: widget.controller.equipCollectionReward,
+            onBackHome: () {
               setState(() {
                 _selectedIndex = 0;
               });
@@ -142,10 +152,18 @@ class _PlayfulNavigationBar extends StatelessWidget {
             ),
             Expanded(
               child: _DockItem(
-                icon: Icons.shield_moon_rounded,
-                label: l10n.parentTab,
+                icon: Icons.collections_bookmark_rounded,
+                label: l10n.myCollectionTitle,
                 selected: selectedIndex == 2,
                 onTap: () => onDestinationSelected(2),
+              ),
+            ),
+            Expanded(
+              child: _DockItem(
+                icon: Icons.shield_moon_rounded,
+                label: l10n.parentTab,
+                selected: selectedIndex == 3,
+                onTap: () => onDestinationSelected(3),
               ),
             ),
           ],

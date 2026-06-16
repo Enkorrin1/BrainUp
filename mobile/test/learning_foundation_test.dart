@@ -220,6 +220,34 @@ void main() {
       expect(focusTrackerVisual['interactionType'], 'tapChoice');
     });
 
+    test('collection rewards expose unlock progress and manifest metadata', () {
+      const rewards = FoundationCatalog.collectionRewards;
+      final unlocked = FoundationCatalog.collectionRewardsForStars(8);
+      final nextReward = FoundationCatalog.nextCollectionRewardForStars(8);
+      final manifest = FoundationCatalog.contentManifest();
+      final manifestRewards = manifest['collectionRewards'] as List<Object?>;
+
+      expect(rewards.length, greaterThanOrEqualTo(20));
+      expect(
+        rewards.map((reward) => reward.type).toSet(),
+        containsAll([
+          RewardType.sticker,
+          RewardType.avatarItem,
+          RewardType.decoration,
+          RewardType.badge,
+        ]),
+      );
+      expect(
+        unlocked.map((reward) => reward.id),
+        contains('reward.outfit.mira_explorer'),
+      );
+      expect(nextReward?.id, 'reward.badge.focus_lens');
+      expect(
+        manifestRewards.cast<Map<String, Object?>>().first,
+        containsPair('canEquip', isA<bool>()),
+      );
+    });
+
     test('content dashboard report exposes quality and saturation signals', () {
       final dashboard = FoundationCatalog.contentDashboardReport();
       final json =

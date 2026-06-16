@@ -1,4 +1,4 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/app/app_controller.dart';
 import 'package:brain_up/src/data/family_profile_store.dart';
 import 'package:brain_up/src/domain/daily_challenge.dart';
@@ -106,6 +106,41 @@ void main() {
         FamilySubscriptionPlan.annual,
       );
       expect(controller.familyProfile?.subscriptionUpdatedAt, isNotNull);
+      expect(store.savedProfile, controller.familyProfile);
+    });
+
+    test('equips only unlocked collection rewards', () async {
+      final child = ChildProfile(
+        id: 'collector',
+        name: 'Mira',
+        age: ChildAge.six,
+        createdAt: DateTime(2026, 6, 8),
+        mapStars: 8,
+      );
+      final profile = FamilyProfile(
+        childName: child.name,
+        childAge: child.age,
+        createdAt: child.createdAt,
+        childProfiles: [child],
+        activeChildId: child.id,
+      );
+      final store = _InMemoryFamilyProfileStore(profile);
+      final controller = AppController(store);
+
+      await controller.load();
+      await controller.equipCollectionReward('reward.outfit.rulo_circuit');
+
+      expect(
+          controller.familyProfile?.activeChild.selectedOutfitRewardId, isNull);
+
+      await controller.equipCollectionReward('reward.outfit.mira_explorer');
+
+      final equippedChild = controller.familyProfile?.activeChild;
+      expect(equippedChild?.selectedCharacterId, 'mira');
+      expect(
+        equippedChild?.selectedOutfitRewardId,
+        'reward.outfit.mira_explorer',
+      );
       expect(store.savedProfile, controller.familyProfile);
     });
 

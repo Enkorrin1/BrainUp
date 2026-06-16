@@ -114,6 +114,13 @@ enum RewardType {
   badge,
   booster,
   avatarItem,
+  decoration,
+}
+
+enum RewardRarity {
+  common,
+  rare,
+  epic,
 }
 
 enum MapNodeState {
@@ -909,6 +916,10 @@ class RewardDefinition {
     required this.visualKey,
     required this.xpCost,
     required this.unlockedAfterStars,
+    required this.accentHex,
+    this.worldId,
+    this.characterId,
+    this.rarity = RewardRarity.common,
   });
 
   final String id;
@@ -918,6 +929,41 @@ class RewardDefinition {
   final String visualKey;
   final int xpCost;
   final int unlockedAfterStars;
+  final int accentHex;
+  final String? worldId;
+  final String? characterId;
+  final RewardRarity rarity;
+
+  bool isUnlockedForStars(int stars) {
+    return stars >= unlockedAfterStars;
+  }
+
+  bool get canEquip {
+    return switch (type) {
+      RewardType.avatarItem ||
+      RewardType.decoration ||
+      RewardType.badge =>
+        true,
+      RewardType.sticker || RewardType.booster => false,
+    };
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'type': type.name,
+      'titleKey': titleKey,
+      'descriptionKey': descriptionKey,
+      'visualKey': visualKey,
+      'xpCost': xpCost,
+      'unlockedAfterStars': unlockedAfterStars,
+      'accentHex': accentHex,
+      'rarity': rarity.name,
+      if (worldId != null) 'worldId': worldId,
+      if (characterId != null) 'characterId': characterId,
+      'canEquip': canEquip,
+    };
+  }
 }
 
 class ChildProgress {
@@ -1310,6 +1356,314 @@ class FoundationCatalog {
       helperCharacterId: 'brainy',
       lessonIds: ['lesson.022', 'lesson.023', 'lesson.024'],
       accentHex: 0xFFE9C46A,
+    ),
+  ];
+
+  static const List<RewardDefinition> collectionRewards = [
+    RewardDefinition(
+      id: 'reward.sticker.star_helper',
+      type: RewardType.sticker,
+      titleKey: 'Star helper',
+      descriptionKey: 'A first bright sticker for starting the route.',
+      visualKey: 'assets/images/generated/astronaut.png',
+      xpCost: 0,
+      unlockedAfterStars: 0,
+      accentHex: 0xFF42F4D2,
+      worldId: 'space_station',
+      characterId: 'brainy',
+    ),
+    RewardDefinition(
+      id: 'reward.sticker.brave_rocket',
+      type: RewardType.sticker,
+      titleKey: 'Brave rocket',
+      descriptionKey: 'Unlocked after the first completed lesson.',
+      visualKey: 'assets/images/generated/rocket.png',
+      xpCost: 0,
+      unlockedAfterStars: 1,
+      accentHex: 0xFFFF6F7D,
+      worldId: 'space_station',
+      characterId: 'brainy',
+    ),
+    RewardDefinition(
+      id: 'reward.decoration.star_window',
+      type: RewardType.decoration,
+      titleKey: 'Star window',
+      descriptionKey: 'A glowing window for the collection room.',
+      visualKey: 'icon.window',
+      xpCost: 0,
+      unlockedAfterStars: 2,
+      accentHex: 0xFF5C8EF7,
+      worldId: 'space_station',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.outfit.brainy_nova',
+      type: RewardType.avatarItem,
+      titleKey: 'Brainy Nova suit',
+      descriptionKey: 'A launch suit for the main guide.',
+      visualKey: 'character.brainy.outfit.nova',
+      xpCost: 0,
+      unlockedAfterStars: 3,
+      accentHex: 0xFF42F4D2,
+      worldId: 'space_station',
+      characterId: 'brainy',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.badge.memory_spark',
+      type: RewardType.badge,
+      titleKey: 'Memory spark',
+      descriptionKey: 'A badge for keeping clues in mind.',
+      visualKey: 'icon.psychology',
+      xpCost: 0,
+      unlockedAfterStars: 4,
+      accentHex: 0xFF5C8EF7,
+      characterId: 'lumi',
+    ),
+    RewardDefinition(
+      id: 'reward.sticker.forest_sprout',
+      type: RewardType.sticker,
+      titleKey: 'Forest sprout',
+      descriptionKey: 'A detail-hunting sticker from Forest Lab.',
+      visualKey: 'assets/images/generated/planet.png',
+      xpCost: 0,
+      unlockedAfterStars: 5,
+      accentHex: 0xFFA7F46A,
+      worldId: 'forest_lab',
+      characterId: 'mira',
+    ),
+    RewardDefinition(
+      id: 'reward.decoration.lab_shelf',
+      type: RewardType.decoration,
+      titleKey: 'Lab shelf',
+      descriptionKey: 'A tidy shelf for curious discoveries.',
+      visualKey: 'icon.science',
+      xpCost: 0,
+      unlockedAfterStars: 6,
+      accentHex: 0xFFA7F46A,
+      worldId: 'forest_lab',
+    ),
+    RewardDefinition(
+      id: 'reward.outfit.mira_explorer',
+      type: RewardType.avatarItem,
+      titleKey: 'Mira explorer cloak',
+      descriptionKey: 'A focus cloak for spotting small details.',
+      visualKey: 'character.mira.outfit.explorer',
+      xpCost: 0,
+      unlockedAfterStars: 8,
+      accentHex: 0xFFA7F46A,
+      worldId: 'forest_lab',
+      characterId: 'mira',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.badge.focus_lens',
+      type: RewardType.badge,
+      titleKey: 'Focus lens',
+      descriptionKey: 'A badge for careful attention puzzles.',
+      visualKey: 'icon.center_focus',
+      xpCost: 0,
+      unlockedAfterStars: 10,
+      accentHex: 0xFFA7F46A,
+      worldId: 'forest_lab',
+      characterId: 'mira',
+    ),
+    RewardDefinition(
+      id: 'reward.sticker.circuit_bot',
+      type: RewardType.sticker,
+      titleKey: 'Circuit bot',
+      descriptionKey: 'A robot sticker for rule detectives.',
+      visualKey: 'assets/images/generated/sticker.png',
+      xpCost: 0,
+      unlockedAfterStars: 12,
+      accentHex: 0xFFFFD15C,
+      worldId: 'robot_town',
+      characterId: 'rulo',
+    ),
+    RewardDefinition(
+      id: 'reward.outfit.rulo_circuit',
+      type: RewardType.avatarItem,
+      titleKey: 'Rulo circuit cape',
+      descriptionKey: 'A cape for finding hidden rules.',
+      visualKey: 'character.rulo.outfit.circuit',
+      xpCost: 0,
+      unlockedAfterStars: 15,
+      accentHex: 0xFFFF9D2E,
+      worldId: 'robot_town',
+      characterId: 'rulo',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.decoration.parade_lights',
+      type: RewardType.decoration,
+      titleKey: 'Parade lights',
+      descriptionKey: 'Robot Town lights for the collection room.',
+      visualKey: 'icon.lightbulb',
+      xpCost: 0,
+      unlockedAfterStars: 18,
+      accentHex: 0xFFFFD15C,
+      worldId: 'robot_town',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.badge.rule_finder',
+      type: RewardType.badge,
+      titleKey: 'Rule finder',
+      descriptionKey: 'A badge for solving pattern rules.',
+      visualKey: 'icon.schema',
+      xpCost: 0,
+      unlockedAfterStars: 21,
+      accentHex: 0xFFFF9D2E,
+      worldId: 'robot_town',
+      characterId: 'rulo',
+    ),
+    RewardDefinition(
+      id: 'reward.sticker.shape_flower',
+      type: RewardType.sticker,
+      titleKey: 'Shape flower',
+      descriptionKey: 'A garden sticker for spatial thinking.',
+      visualKey: 'assets/images/generated/planet.png',
+      xpCost: 0,
+      unlockedAfterStars: 24,
+      accentHex: 0xFF9C6AF2,
+      worldId: 'shape_garden',
+      characterId: 'quadra',
+    ),
+    RewardDefinition(
+      id: 'reward.outfit.quadra_prism',
+      type: RewardType.avatarItem,
+      titleKey: 'Quadra prism suit',
+      descriptionKey: 'A suit for turning shapes in your mind.',
+      visualKey: 'character.quadra.outfit.prism',
+      xpCost: 0,
+      unlockedAfterStars: 28,
+      accentHex: 0xFF9C6AF2,
+      worldId: 'shape_garden',
+      characterId: 'quadra',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.decoration.garden_gate',
+      type: RewardType.decoration,
+      titleKey: 'Garden gate',
+      descriptionKey: 'A patterned gate for the collection room.',
+      visualKey: 'icon.category',
+      xpCost: 0,
+      unlockedAfterStars: 32,
+      accentHex: 0xFF9C6AF2,
+      worldId: 'shape_garden',
+    ),
+    RewardDefinition(
+      id: 'reward.badge.shape_master',
+      type: RewardType.badge,
+      titleKey: 'Shape master',
+      descriptionKey: 'A badge for rotation and path puzzles.',
+      visualKey: 'icon.change_circle',
+      xpCost: 0,
+      unlockedAfterStars: 36,
+      accentHex: 0xFF9C6AF2,
+      worldId: 'shape_garden',
+      characterId: 'quadra',
+      rarity: RewardRarity.epic,
+    ),
+    RewardDefinition(
+      id: 'reward.sticker.toy_crate',
+      type: RewardType.sticker,
+      titleKey: 'Toy crate',
+      descriptionKey: 'A sticker for counting playful objects.',
+      visualKey: 'assets/images/generated/lion.png',
+      xpCost: 0,
+      unlockedAfterStars: 40,
+      accentHex: 0xFFFF9D2E,
+      worldId: 'toy_shop',
+      characterId: 'numba',
+    ),
+    RewardDefinition(
+      id: 'reward.outfit.numba_count',
+      type: RewardType.avatarItem,
+      titleKey: 'Numba count vest',
+      descriptionKey: 'A vest for careful number builders.',
+      visualKey: 'character.numba.outfit.count',
+      xpCost: 0,
+      unlockedAfterStars: 45,
+      accentHex: 0xFFFFD15C,
+      worldId: 'toy_shop',
+      characterId: 'numba',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.decoration.toy_shelf',
+      type: RewardType.decoration,
+      titleKey: 'Toy shelf',
+      descriptionKey: 'A shelf full of sorted toy clues.',
+      visualKey: 'icon.toys',
+      xpCost: 0,
+      unlockedAfterStars: 50,
+      accentHex: 0xFFFF9D2E,
+      worldId: 'toy_shop',
+    ),
+    RewardDefinition(
+      id: 'reward.badge.number_bridge',
+      type: RewardType.badge,
+      titleKey: 'Number bridge',
+      descriptionKey: 'A badge for building sums and comparisons.',
+      visualKey: 'icon.functions',
+      xpCost: 0,
+      unlockedAfterStars: 56,
+      accentHex: 0xFFFFD15C,
+      worldId: 'toy_shop',
+      characterId: 'numba',
+      rarity: RewardRarity.epic,
+    ),
+    RewardDefinition(
+      id: 'reward.sticker.coral_signal',
+      type: RewardType.sticker,
+      titleKey: 'Coral signal',
+      descriptionKey: 'A sticker for remembering hidden signals.',
+      visualKey: 'assets/images/generated/planet.png',
+      xpCost: 0,
+      unlockedAfterStars: 62,
+      accentHex: 0xFF5C8EF7,
+      worldId: 'underwater_city',
+      characterId: 'lumi',
+    ),
+    RewardDefinition(
+      id: 'reward.outfit.lumi_wave',
+      type: RewardType.avatarItem,
+      titleKey: 'Lumi wave scarf',
+      descriptionKey: 'A scarf for memory missions under the waves.',
+      visualKey: 'character.lumi.outfit.wave',
+      xpCost: 0,
+      unlockedAfterStars: 70,
+      accentHex: 0xFF5C8EF7,
+      worldId: 'underwater_city',
+      characterId: 'lumi',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.decoration.coral_lamp',
+      type: RewardType.decoration,
+      titleKey: 'Coral lamp',
+      descriptionKey: 'A soft memory light for the collection room.',
+      visualKey: 'icon.water',
+      xpCost: 0,
+      unlockedAfterStars: 80,
+      accentHex: 0xFF5C8EF7,
+      worldId: 'underwater_city',
+      rarity: RewardRarity.rare,
+    ),
+    RewardDefinition(
+      id: 'reward.badge.memory_captain',
+      type: RewardType.badge,
+      titleKey: 'Memory captain',
+      descriptionKey: 'A rare badge for long memory streaks.',
+      visualKey: 'icon.military_tech',
+      xpCost: 0,
+      unlockedAfterStars: 90,
+      accentHex: 0xFF5C8EF7,
+      worldId: 'underwater_city',
+      characterId: 'lumi',
+      rarity: RewardRarity.epic,
     ),
   ];
 
@@ -2601,6 +2955,33 @@ class FoundationCatalog {
     ];
   }
 
+  static List<RewardDefinition> collectionRewardsForStars(int stars) {
+    return [
+      for (final reward in collectionRewards)
+        if (reward.isUnlockedForStars(stars)) reward,
+    ];
+  }
+
+  static RewardDefinition? nextCollectionRewardForStars(int stars) {
+    for (final reward in collectionRewards) {
+      if (!reward.isUnlockedForStars(stars)) {
+        return reward;
+      }
+    }
+
+    return null;
+  }
+
+  static RewardDefinition? rewardForId(String rewardId) {
+    for (final reward in collectionRewards) {
+      if (reward.id == rewardId) {
+        return reward;
+      }
+    }
+
+    return null;
+  }
+
   static Map<SkillTag, int> puzzleCountBySkill() {
     return {
       for (final skill in SkillTag.values)
@@ -2667,6 +3048,9 @@ class FoundationCatalog {
       ],
       'storyWorlds': [
         for (final world in storyWorlds) world.toJson(),
+      ],
+      'collectionRewards': [
+        for (final reward in collectionRewards) reward.toJson(),
       ],
       'placementRules': [
         for (final rule in placementRules) rule.toJson(),

@@ -277,6 +277,43 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> equipCollectionReward(String rewardId) async {
+    final currentProfile = _familyProfile;
+    final reward = FoundationCatalog.rewardForId(rewardId);
+    if (currentProfile == null || reward == null || !reward.canEquip) {
+      return;
+    }
+
+    final activeChild = currentProfile.activeChild;
+    if (!reward.isUnlockedForStars(activeChild.mapStars)) {
+      return;
+    }
+
+    final nextChild = switch (reward.type) {
+      RewardType.avatarItem => activeChild.copyWith(
+          selectedCharacterId: reward.characterId,
+          selectedOutfitRewardId: reward.id,
+        ),
+      RewardType.decoration => activeChild.copyWith(
+          selectedDecorationRewardId: reward.id,
+        ),
+      RewardType.badge => activeChild.copyWith(
+          selectedBadgeRewardId: reward.id,
+        ),
+      RewardType.sticker || RewardType.booster => activeChild,
+    };
+
+    if (nextChild == activeChild) {
+      return;
+    }
+
+    final nextProfile = currentProfile.withActiveChild(nextChild);
+
+    await _familyProfileStore.save(nextProfile);
+    _familyProfile = nextProfile;
+    notifyListeners();
+  }
+
   Future<void> resetFamilyProfile() async {
     await _familyProfileStore.clear();
     _familyProfile = null;

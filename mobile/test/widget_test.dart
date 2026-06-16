@@ -102,6 +102,47 @@ void main() {
     expect(find.text('Step 1 of 5'), findsOneWidget);
   });
 
+  testWidgets('opens collection tab and equips an unlocked outfit',
+      (tester) async {
+    final store = _MemoryFamilyProfileStore(_testProfileWithStars(8));
+
+    await tester.pumpWidget(
+      BrainUpApp(
+        familyProfileStore: store,
+        locale: const Locale('en'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('My collection'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Collection room'), findsOneWidget);
+    final collectionScroll = find.descendant(
+      of: find.byKey(const ValueKey('collection-scroll')),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.text('Outfits'),
+      260,
+      scrollable: collectionScroll.first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Outfits'), findsOneWidget);
+    expect(find.text('Mira explorer cloak'), findsOneWidget);
+
+    await tester.tap(find.text('Mira explorer cloak').first);
+    await tester.pumpAndSettle();
+
+    expect(store.profile?.activeChild.selectedCharacterId, 'mira');
+    expect(
+      store.profile?.activeChild.selectedOutfitRewardId,
+      'reward.outfit.mira_explorer',
+    );
+    expect(find.text('Equipped'), findsAtLeastNWidgets(1));
+  });
+
   testWidgets('shows adaptive review entry from practice history',
       (tester) async {
     final store = _MemoryFamilyProfileStore(
@@ -600,6 +641,25 @@ FamilyProfile _testProfileWithCompletedLessons(List<String> lessonIds) {
     completedLessonIds: lessonIds,
     completedMapNodeIds: const ['node.001'],
     mapStars: lessonIds.length,
+  );
+
+  return FamilyProfile(
+    childName: child.name,
+    childAge: child.age,
+    createdAt: createdAt,
+    childProfiles: [child],
+    activeChildId: child.id,
+  );
+}
+
+FamilyProfile _testProfileWithStars(int stars) {
+  final createdAt = DateTime(2026, 6, 8);
+  final child = ChildProfile(
+    id: 'child-collector',
+    name: 'Leo',
+    age: ChildAge.five,
+    createdAt: createdAt,
+    mapStars: stars,
   );
 
   return FamilyProfile(

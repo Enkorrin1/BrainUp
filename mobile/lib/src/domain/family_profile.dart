@@ -264,6 +264,10 @@ class ChildProfile {
     this.mapStars = 0,
     this.mapXp = 0,
     this.hearts = 5,
+    this.selectedCharacterId = 'brainy',
+    this.selectedOutfitRewardId,
+    this.selectedDecorationRewardId,
+    this.selectedBadgeRewardId,
   });
 
   final String id;
@@ -284,6 +288,10 @@ class ChildProfile {
   final int mapStars;
   final int mapXp;
   final int hearts;
+  final String selectedCharacterId;
+  final String? selectedOutfitRewardId;
+  final String? selectedDecorationRewardId;
+  final String? selectedBadgeRewardId;
 
   PracticeSession? get lastSession {
     return practiceSessions.isEmpty ? null : practiceSessions.last;
@@ -379,6 +387,10 @@ class ChildProfile {
     int? mapStars,
     int? mapXp,
     int? hearts,
+    String? selectedCharacterId,
+    String? selectedOutfitRewardId,
+    String? selectedDecorationRewardId,
+    String? selectedBadgeRewardId,
   }) {
     return ChildProfile(
       id: id ?? this.id,
@@ -399,6 +411,13 @@ class ChildProfile {
       mapStars: mapStars ?? this.mapStars,
       mapXp: mapXp ?? this.mapXp,
       hearts: hearts ?? this.hearts,
+      selectedCharacterId: selectedCharacterId ?? this.selectedCharacterId,
+      selectedOutfitRewardId:
+          selectedOutfitRewardId ?? this.selectedOutfitRewardId,
+      selectedDecorationRewardId:
+          selectedDecorationRewardId ?? this.selectedDecorationRewardId,
+      selectedBadgeRewardId:
+          selectedBadgeRewardId ?? this.selectedBadgeRewardId,
     );
   }
 
@@ -424,6 +443,10 @@ class ChildProfile {
       'mapStars': mapStars,
       'mapXp': mapXp,
       'hearts': hearts,
+      'selectedCharacterId': selectedCharacterId,
+      'selectedOutfitRewardId': selectedOutfitRewardId,
+      'selectedDecorationRewardId': selectedDecorationRewardId,
+      'selectedBadgeRewardId': selectedBadgeRewardId,
     };
   }
 
@@ -472,6 +495,10 @@ class ChildProfile {
       mapStars: mapStars == 0 ? completedChallenges : mapStars,
       mapXp: _intFromJson(json['mapXp']),
       hearts: hearts == 0 ? 5 : hearts,
+      selectedCharacterId: json['selectedCharacterId'] as String? ?? 'brainy',
+      selectedOutfitRewardId: json['selectedOutfitRewardId'] as String?,
+      selectedDecorationRewardId: json['selectedDecorationRewardId'] as String?,
+      selectedBadgeRewardId: json['selectedBadgeRewardId'] as String?,
     );
   }
 
@@ -497,12 +524,16 @@ class ChildProfile {
             _listEquals(completedLessonIds, other.completedLessonIds) &&
             mapStars == other.mapStars &&
             mapXp == other.mapXp &&
-            hearts == other.hearts;
+            hearts == other.hearts &&
+            selectedCharacterId == other.selectedCharacterId &&
+            selectedOutfitRewardId == other.selectedOutfitRewardId &&
+            selectedDecorationRewardId == other.selectedDecorationRewardId &&
+            selectedBadgeRewardId == other.selectedBadgeRewardId;
   }
 
   @override
   int get hashCode {
-    return Object.hash(
+    return Object.hashAll([
       id,
       name,
       age,
@@ -521,7 +552,11 @@ class ChildProfile {
       mapStars,
       mapXp,
       hearts,
-    );
+      selectedCharacterId,
+      selectedOutfitRewardId,
+      selectedDecorationRewardId,
+      selectedBadgeRewardId,
+    ]);
   }
 }
 
@@ -816,6 +851,7 @@ class FamilyProfile {
       mapStars: completedChallenges,
       mapXp: completedChallenges * 20,
       hearts: 5,
+      selectedCharacterId: 'brainy',
     );
   }
 

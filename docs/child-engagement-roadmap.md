@@ -165,6 +165,17 @@ Definition of done:
 - collection progress is persistent;
 - rewards do not block learning.
 
+Implemented in Stage 29:
+
+- added a shared collection reward catalog with stickers, outfits, room decor,
+  and puzzle badges;
+- exported collection rewards in `docs/content-manifest.json`;
+- added persistent child customization fields for selected helper, outfit,
+  decor, and badge;
+- added a collection tab with progress, reward sections, equipped room preview,
+  lock states, and card reveal animation;
+- added controller and tests for equipping only unlocked rewards.
+
 ## Stage 30. Weekly Events
 
 Make existing content feel fresh through limited-time themes.

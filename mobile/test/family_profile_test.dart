@@ -1,4 +1,4 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/domain/family_profile.dart';
 
 void main() {
@@ -63,8 +63,42 @@ void main() {
       expect(restored.practiceSessions, isEmpty);
       expect(restored.children, hasLength(1));
       expect(restored.activeChild.name, 'Мира');
+      expect(restored.activeChild.selectedCharacterId, 'brainy');
+      expect(restored.activeChild.selectedOutfitRewardId, isNull);
       expect(restored.subscriptionPlan, FamilySubscriptionPlan.starter);
       expect(restored.subscriptionUpdatedAt, isNull);
+    });
+
+    test('persists child collection customization', () {
+      final child = ChildProfile(
+        id: 'child-custom',
+        name: 'Mira',
+        age: ChildAge.six,
+        createdAt: DateTime(2026, 6, 8),
+        selectedCharacterId: 'mira',
+        selectedOutfitRewardId: 'reward.outfit.mira_explorer',
+        selectedDecorationRewardId: 'reward.decoration.lab_shelf',
+        selectedBadgeRewardId: 'reward.badge.focus_lens',
+      );
+      final profile = FamilyProfile(
+        childName: child.name,
+        childAge: child.age,
+        createdAt: child.createdAt,
+        childProfiles: [child],
+        activeChildId: child.id,
+      );
+
+      final restored = FamilyProfile.fromJson(profile.toJson());
+      final restoredChild = restored.activeChild;
+
+      expect(restoredChild.selectedCharacterId, 'mira');
+      expect(
+        restoredChild.selectedOutfitRewardId,
+        'reward.outfit.mira_explorer',
+      );
+      expect(restoredChild.selectedDecorationRewardId,
+          'reward.decoration.lab_shelf');
+      expect(restoredChild.selectedBadgeRewardId, 'reward.badge.focus_lens');
     });
 
     test('restores old practice session with default quality metrics', () {
