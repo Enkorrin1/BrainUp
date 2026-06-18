@@ -1,10 +1,14 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../domain/daily_challenge.dart';
+import '../core/mini_game_audio.dart';
+import '../core/mini_game_character_reaction.dart';
 import '../core/mini_game_controller.dart';
 import '../core/mini_game_definition.dart';
 import '../core/mini_game_result.dart';
+import '../games/boss_mix_game/boss_mix_game.dart';
 import '../games/logic_path_game/logic_path_game.dart';
 import '../games/memory_grid_game/memory_grid_game.dart';
 import '../games/shape_builder_game/shape_builder_game.dart';
@@ -48,15 +52,20 @@ class MiniGameHostScreen extends StatefulWidget {
 
 class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
   late final MiniGameController _controller;
+  late final MiniGameAudioController _audioController;
   String? _selectedChoiceId;
   bool _showHint = false;
   bool _showTutorial = true;
+  MiniGameAudioSettings _audioSettings = MiniGameAudioSettings.muted;
+  MiniGameCharacterState _characterState = MiniGameCharacterState.idle;
   _MiniGameFeedbackState _feedbackState = _MiniGameFeedbackState.idle;
+  int _feedbackTick = 0;
 
   @override
   void initState() {
     super.initState();
     _controller = MiniGameController(definition: widget.definition);
+    _audioController = MiniGameAudioController(settings: _audioSettings);
   }
 
   @override
@@ -97,37 +106,64 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
                     title: widget.definition.title,
                     subtitle: widget.challenge.skill,
                     accent: accent,
+                    soundEnabled: _audioSettings.enabled,
+                    onSoundToggled: _toggleSound,
                     onExit: _exit,
+                  ),
+                  const SizedBox(height: 10),
+                  _MiniGameProgressMeter(
+                    definition: widget.definition,
+                    accent: accent,
                   ),
                   const SizedBox(height: 10),
                   if (_showTutorial)
                     _MiniGameTutorialStrip(
                       accent: accent,
                       onDismissed: () {
+                        _playAudioCue('mini.tap');
                         setState(() {
                           _showTutorial = false;
+                          _characterState = MiniGameCharacterState.thinking;
                         });
                       },
                     ),
+                  const SizedBox(height: 10),
+                  _MiniGameCharacterBadge(
+                    profile: widget.definition.characterReactionProfile,
+                    state: _characterState,
+                    accent: accent,
+                  ),
                   const Spacer(),
+                  if (_feedbackState == _MiniGameFeedbackState.success)
+                    _MiniGameSparkleBurst(
+                      accent: accent,
+                      tick: _feedbackTick,
+                    ),
                   _MiniGameFeedbackBanner(
                     state: _feedbackState,
                     accent: accent,
                   ),
-                  _MiniGameControlPanel(
-                    challenge: widget.challenge,
-                    definition: widget.definition,
-                    accent: accent,
-                    selectedChoiceId: _selectedChoiceId,
-                    showHint: _showHint,
-                    onHint: _showMiniGameHint,
-                    onChoiceSelected: (choiceId) {
-                      setState(() {
-                        _selectedChoiceId = choiceId;
-                        _feedbackState = _MiniGameFeedbackState.idle;
-                      });
-                    },
-                    onSubmit: _selectedChoiceId == null ? null : _submit,
+                  _MiniGameShakeWrapper(
+                    active: _feedbackState == _MiniGameFeedbackState.retry,
+                    tick: _feedbackTick,
+                    child: _MiniGameControlPanel(
+                      challenge: widget.challenge,
+                      definition: widget.definition,
+                      accent: accent,
+                      selectedChoiceId: _selectedChoiceId,
+                      showHint: _showHint,
+                      onHint: _showMiniGameHint,
+                      onChoiceSelected: (choiceId) {
+                        HapticFeedback.selectionClick();
+                        _playAudioCue('mini.tap');
+                        setState(() {
+                          _selectedChoiceId = choiceId;
+                          _feedbackState = _MiniGameFeedbackState.idle;
+                          _characterState = MiniGameCharacterState.thinking;
+                        });
+                      },
+                      onSubmit: _selectedChoiceId == null ? null : _submit,
+                    ),
                   ),
                 ],
               ),
@@ -139,8 +175,11 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
   }
 
   void _showMiniGameHint() {
+    HapticFeedback.selectionClick();
+    _playAudioCue('mini.hint');
     setState(() {
       _showHint = true;
+      _characterState = MiniGameCharacterState.hint;
     });
     _controller.recordHint();
   }
@@ -153,16 +192,29 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
 
     final result = _controller.answer(choiceId);
     if (!result.isCorrect) {
+      HapticFeedback.mediumImpact();
+      _playAudioCue('mini.retry');
       setState(() {
         _selectedChoiceId = null;
         _showHint = true;
         _feedbackState = _MiniGameFeedbackState.retry;
+        _characterState = MiniGameCharacterState.retry;
+        _feedbackTick += 1;
       });
       return;
     }
 
+    HapticFeedback.heavyImpact();
+    _playAudioCue('mini.correct');
+    if (widget.definition.isBoss) {
+      _playAudioCue(widget.definition.audioProfile.rewardCueId);
+    }
     setState(() {
       _feedbackState = _MiniGameFeedbackState.success;
+      _characterState = widget.definition.isBoss
+          ? MiniGameCharacterState.celebration
+          : MiniGameCharacterState.correct;
+      _feedbackTick += 1;
     });
     await Future<void>.delayed(const Duration(milliseconds: 520));
     if (!mounted) {
@@ -174,6 +226,27 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
 
   void _exit() {
     Navigator.of(context).pop(_controller.exit());
+  }
+
+  void _toggleSound() {
+    final nextSettings = _audioSettings.copyWith(
+      enabled: !_audioSettings.enabled,
+      worldAmbienceEnabled: !_audioSettings.enabled,
+    );
+    setState(() {
+      _audioSettings = nextSettings;
+    });
+    _audioController.updateSettings(nextSettings);
+    _playAudioCue('mini.tap');
+  }
+
+  void _playAudioCue(String cueId) {
+    final knownCue = widget.definition.audioProfile.cueIds.contains(cueId) ||
+        widget.definition.audioProfile.rewardCueId == cueId;
+    final fallbackCue = widget.definition.audioProfile.cueIds.isEmpty
+        ? ''
+        : widget.definition.audioProfile.cueIds.first;
+    _audioController.playCue(knownCue ? cueId : fallbackCue);
   }
 
   Color _accentFor(MiniGameType type) {
@@ -194,13 +267,219 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       MiniGameType.memoryGrid => MemoryGridGame(definition: definition),
       MiniGameType.logicPath => LogicPathGame(definition: definition),
       MiniGameType.shapeBuilder => ShapeBuilderGame(definition: definition),
+      MiniGameType.bossMix => BossMixGame(definition: definition),
       MiniGameType.mathBubbles ||
       MiniGameType.attentionScan ||
       MiniGameType.patternMachine ||
-      MiniGameType.sortLab ||
-      MiniGameType.bossMix =>
+      MiniGameType.sortLab =>
         MemoryGridGame(definition: definition),
     };
+  }
+}
+
+class _MiniGameProgressMeter extends StatelessWidget {
+  const _MiniGameProgressMeter({
+    required this.definition,
+    required this.accent,
+  });
+
+  final MiniGameDefinition definition;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final roundCount = definition.rounds.length;
+    final progress = roundCount <= 1 ? 1.0 : 1 / roundCount;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xCC101D46),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accent.withValues(alpha: 0.28)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                minHeight: 9,
+                value: progress,
+                backgroundColor: Colors.white.withValues(alpha: 0.10),
+                valueColor: AlwaysStoppedAnimation<Color>(accent),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            roundCount == 1
+                ? '${definition.estimatedSeconds}s'
+                : '1/$roundCount',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          if (definition.timePressure) ...[
+            const SizedBox(width: 8),
+            Icon(
+              Icons.bolt_rounded,
+              color: accent,
+              size: 18,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniGameCharacterBadge extends StatelessWidget {
+  const _MiniGameCharacterBadge({
+    required this.profile,
+    required this.state,
+    required this.accent,
+  });
+
+  final MiniGameCharacterReactionProfile profile;
+  final MiniGameCharacterState state;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xDD101D46),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: accent.withValues(alpha: 0.34)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  accent.withValues(alpha: 0.92),
+                  const Color(0xFFFFD15C),
+                ],
+              ),
+            ),
+            child: Icon(
+              _iconFor(profile.characterId),
+              color: const Color(0xFF07132F),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 180),
+              child: Text(
+                profile.lineFor(state),
+                key: ValueKey(state),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _iconFor(String characterId) {
+    return switch (characterId) {
+      'lumi' => Icons.auto_awesome_rounded,
+      'quadra' => Icons.category_rounded,
+      'numba' => Icons.calculate_rounded,
+      'mira' => Icons.visibility_rounded,
+      'rulo' => Icons.memory_rounded,
+      _ => Icons.psychology_rounded,
+    };
+  }
+}
+
+class _MiniGameSparkleBurst extends StatelessWidget {
+  const _MiniGameSparkleBurst({
+    required this.accent,
+    required this.tick,
+  });
+
+  final Color accent;
+  final int tick;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(tick),
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 520),
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: 1 - value,
+          child: Transform.scale(
+            scale: 0.72 + value * 0.42,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              height: 76,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: accent.withValues(alpha: 0.54),
+                    blurRadius: 42,
+                    spreadRadius: 18,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.auto_awesome_rounded,
+                color: accent,
+                size: 46,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MiniGameShakeWrapper extends StatelessWidget {
+  const _MiniGameShakeWrapper({
+    required this.active,
+    required this.tick,
+    required this.child,
+  });
+
+  final bool active;
+  final int tick;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey('$active.$tick'),
+      tween: Tween<double>(begin: active ? -1 : 0, end: 0),
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(value * 10, 0),
+          child: child,
+        );
+      },
+      child: child,
+    );
   }
 }
 
@@ -321,12 +600,16 @@ class _MiniGameTopBar extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.accent,
+    required this.soundEnabled,
+    required this.onSoundToggled,
     required this.onExit,
   });
 
   final String title;
   final String subtitle;
   final Color accent;
+  final bool soundEnabled;
+  final VoidCallback onSoundToggled;
   final VoidCallback onExit;
 
   @override
@@ -371,6 +654,14 @@ class _MiniGameTopBar extends StatelessWidget {
           ),
         ),
         IconButton.filledTonal(
+          tooltip: soundEnabled ? 'Mute mini-game' : 'Sound off',
+          onPressed: onSoundToggled,
+          icon: Icon(
+            soundEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+          ),
+        ),
+        const SizedBox(width: 8),
+        IconButton.filledTonal(
           tooltip: 'Exit mini-game',
           onPressed: onExit,
           icon: const Icon(Icons.close_rounded),
@@ -403,13 +694,18 @@ class _MiniGameControlPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xEE1A2858),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: accent.withValues(alpha: 0.36)),
+        border: Border.all(
+          color: showHint
+              ? accent.withValues(alpha: 0.62)
+              : accent.withValues(alpha: 0.36),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.28),

@@ -22,6 +22,7 @@ class DailyChallenge {
     this.worldId,
     this.characterId,
     this.feedbackStyle,
+    this.miniGameConfig,
   });
 
   final String id;
@@ -42,6 +43,7 @@ class DailyChallenge {
   final String? worldId;
   final String? characterId;
   final PuzzleFeedbackStyle? feedbackStyle;
+  final MiniGameContentConfig? miniGameConfig;
 
   bool isCorrectChoice(String choiceId) {
     return choiceId == correctChoiceId;
@@ -82,6 +84,7 @@ class DailyChallenge {
       worldId: metadata?.worldId,
       characterId: coach.id,
       feedbackStyle: metadata?.feedbackStyle ?? PuzzleFeedbackStyle.standard,
+      miniGameConfig: metadata?.miniGameConfig,
     );
   }
 }
@@ -245,6 +248,7 @@ DailyChallenge dailyChallengeForPuzzle(
     characterId: FoundationCatalog.coachForPuzzle(puzzle).id,
     feedbackStyle:
         puzzle.visualMetadata?.feedbackStyle ?? PuzzleFeedbackStyle.standard,
+    miniGameConfig: puzzle.visualMetadata?.miniGameConfig,
   );
 }
 

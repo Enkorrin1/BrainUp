@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "bossMix",
+  "templateId": "template.boss_mix.three_step_gate",
+  "tutorialKey": "tutorial.boss_mix.solve_three_steps",
+  "thinkingSkill": "mixed_reasoning",
+  "rounds": [
+    {
+      "roundId": "boss-mix.round.1",
+      "goal": "Remember the clue and prepare the boss gate.",
+      "correctChoiceRole": "memory_clue"
+    },
+    {
+      "roundId": "boss-mix.round.2",
+      "goal": "Trace the logic path without losing the rule.",
+      "correctChoiceRole": "logic_path"
+    },
+    {
+      "roundId": "boss-mix.round.3",
+      "goal": "Choose the final answer and reveal the reward.",
+      "correctChoiceRole": "final_unlock"
+    }
+  ],
+  "assetSlots": {
+    "background": "world.space_station.background.repair_module",
+    "primaryObject": "world.space_station.object.rocket",
+    "secondaryObject": "world.space_station.object.fuel_cell",
+    "rewardObject": "world.space_station.object.control_button",
+    "character": "character.brainy.avatar"
+  },
+  "effectCueIds": [
+    "tap_pulse",
+    "card_flip",
+    "path_trace",
+    "rotate_turn",
+    "hint_pulse",
+    "sparkle_success",
+    "reward_burst",
+    "soft_retry"
+  ],
+  "audioCueIds": [
+    "mini.tap",
+    "mini.hint",
+    "mini.correct",
+    "mini.retry",
+    "mini.boss_reward"
+  ],
+  "limits": {
+    "minRounds": 3,
+    "maxDistractors": 4,
+    "reducedMotionSafe": true
+  }
+}

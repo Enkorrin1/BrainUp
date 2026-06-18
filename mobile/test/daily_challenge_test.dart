@@ -111,6 +111,7 @@ void main() {
       expect(challenge.worldId, puzzle.visualMetadata?.worldId);
       expect(challenge.characterId, 'lumi');
       expect(challenge.feedbackStyle, puzzle.visualMetadata?.feedbackStyle);
+      expect(challenge.miniGameConfig, puzzle.visualMetadata?.miniGameConfig);
     });
 
     test('generated variants produce different questions in one family', () {

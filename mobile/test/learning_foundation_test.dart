@@ -352,13 +352,33 @@ void main() {
           PuzzleInteractionType.memoryReveal.name,
           PuzzleInteractionType.tracePath.name,
           PuzzleInteractionType.rotateObject.name,
+          PuzzleInteractionType.multiStepBoss.name,
         ]),
       );
       expect(readiness['readyPuzzleCount'], greaterThan(0));
       expect(countsByType[PuzzleType.memoryGrid.name], greaterThan(0));
       expect(countsByType[PuzzleType.pathPuzzle.name], greaterThan(0));
       expect(countsByType[PuzzleType.spatialRotation.name], greaterThan(0));
+      expect(countsByType[PuzzleType.mixedBoss.name], greaterThan(0));
       expect(readyPuzzleIds, isNotEmpty);
+    });
+
+    test('mini-game content wave manifest tracks scalable playable content',
+        () {
+      final manifest = FoundationCatalog.contentManifest();
+      final wave = manifest['miniGameContentWave'] as Map<String, Object?>;
+      final familyCounts = wave['readyFamilyCounts'] as Map<String, Object?>;
+      final bossWorldIds = wave['bossVariantWorldIds'] as List<Object?>;
+      final editorTemplatePaths = wave['editorTemplatePaths'] as List<Object?>;
+
+      expect(wave['passes'], isTrue);
+      expect(familyCounts['memory.order_recall'], greaterThanOrEqualTo(10));
+      expect(familyCounts['spatial.route_build'], greaterThanOrEqualTo(10));
+      expect(familyCounts['spatial.shape_rotation'], greaterThanOrEqualTo(10));
+      expect(familyCounts['boss.mixed_challenge'], greaterThanOrEqualTo(10));
+      expect(wave['bossVariantWorldCount'], greaterThanOrEqualTo(4));
+      expect(bossWorldIds, contains('space_station'));
+      expect(editorTemplatePaths.length, greaterThanOrEqualTo(4));
     });
 
     test('content dashboard report exposes quality and saturation signals', () {

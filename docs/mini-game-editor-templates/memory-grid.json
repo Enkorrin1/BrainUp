@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "memoryGrid",
+  "templateId": "template.memory_grid.reveal_cards",
+  "tutorialKey": "tutorial.memory_grid.watch_choose",
+  "thinkingSkill": "working_memory",
+  "rounds": [
+    {
+      "roundId": "memory-grid.round.1",
+      "goal": "Reveal the cards, remember the order, then choose the match.",
+      "correctChoiceRole": "remembered_object"
+    }
+  ],
+  "assetSlots": {
+    "background": "world.space_station.background.mission_control_desk",
+    "primaryObject": "world.space_station.object.key_card",
+    "secondaryObject": "world.space_station.object.satellite",
+    "rewardObject": "world.space_station.object.star",
+    "character": "character.lumi.avatar"
+  },
+  "effectCueIds": [
+    "tap_pulse",
+    "card_flip",
+    "hint_pulse",
+    "sparkle_success",
+    "soft_retry"
+  ],
+  "audioCueIds": [
+    "mini.tap",
+    "mini.hint",
+    "mini.correct",
+    "mini.retry"
+  ],
+  "limits": {
+    "minRounds": 1,
+    "maxDistractors": 2,
+    "reducedMotionSafe": true
+  }
+}

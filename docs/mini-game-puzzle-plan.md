@@ -262,6 +262,10 @@ Definition of done:
 
 ## Stage 34. Visual Feedback And Game Feel
 
+Status: implemented. Mini-game host now has immediate haptic hooks, success
+sparkle, soft retry shake, hint highlighting, a progress meter, and safer
+small-screen overlay controls.
+
 Make every action feel responsive and rewarding.
 
 Scope:
@@ -282,6 +286,10 @@ Definition of done:
 
 ## Stage 35. Character Animation Layer
 
+Status: implemented as a Rive-ready reaction layer. BrainUp now maps character
+states for idle, thinking, hint, correct, retry, streak, boss, and celebration,
+with safe static avatar fallback until production `.riv` assets are bundled.
+
 Make helper characters feel alive inside mini-games.
 
 Scope:
@@ -300,6 +308,10 @@ Definition of done:
 
 ## Stage 36. Content-Driven Mini-Game Definitions
 
+Status: implemented. Playable puzzle metadata now carries
+`MiniGameContentConfig`, registry creation requires a valid config, and content
+QA blocks invalid mini-game-ready puzzles.
+
 Make mini-games scalable through content data.
 
 Scope:
@@ -317,6 +329,10 @@ Definition of done:
 - manifest shows which puzzles are mini-game ready.
 
 ## Stage 37. Boss Mini-Game Upgrade
+
+Status: implemented as the first boss runtime slice. `BossMixGame` renders a
+distinct three-step boss gate scene, registry routes mixed boss puzzles to it,
+and boss definitions expose stronger reward and parent summary signals.
 
 Turn boss lessons into special multi-step mini-games.
 
@@ -337,6 +353,11 @@ Definition of done:
 
 ## Stage 38. Adaptive Difficulty For Mini-Games
 
+Status: implemented as adaptive profiles and review selection. Mini-game
+definitions now carry clutter, hint delay, time pressure, review priority, and
+safe support limits; registry can prioritize review mini-games from mistake
+signals.
+
 Make mini-games adjust to the child.
 
 Scope:
@@ -355,6 +376,10 @@ Definition of done:
 
 ## Stage 39. Sound, Music, And Reward Moments
 
+Status: implemented as safe audio hooks. Definitions expose audio cue ids,
+the host includes a mute toggle, and the audio controller is a no-crash no-op
+until bundled production sounds are added.
+
 Add audio polish without overwhelming the child.
 
 Scope:
@@ -372,6 +397,10 @@ Definition of done:
 - audio does not overlap badly between screens.
 
 ## Stage 40. Mini-Game QA And Performance Pass
+
+Status: implemented for automated checks and pending device evidence. A
+mini-game quality audit validates generated definitions; Android emulator smoke
+test remains part of the release checklist for each build.
 
 Make the system stable before scaling content.
 
@@ -393,6 +422,10 @@ Definition of done:
 
 ## Stage 41. Large Mini-Game Content Wave
 
+Status: implemented for the first scalable wave. The content manifest now
+exports playable family counts, world coverage, weekly-event variants, boss
+variant worlds, and editor template paths.
+
 Scale from first playable games to a rich content library.
 
 Scope:
@@ -410,6 +443,9 @@ Definition of done:
 - content QA validates every mini-game level.
 
 ## Stage 42. Mini-Game Editor Workflow
+
+Status: implemented. JSON templates, preview fixtures, documentation, and
+`tool/validate_mini_game_content.dart` provide the first authoring workflow.
 
 Prepare for faster content production.
 

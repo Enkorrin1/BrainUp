@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "source": "tool/validate_mini_game_content.dart --write-preview",
+  "fixtures": [
+    {
+      "id": "mini.shapeBuilder.space.turn.easy.001",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.easy.002",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.normal.003",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.normal.004",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.normal.005",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.hard.006",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.hard.007",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.hard.008",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.boss.009",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.hard.010",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.hard.011",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    },
+    {
+      "id": "mini.shapeBuilder.space.turn.hard.012",
+      "type": "shapeBuilder",
+      "worldId": "shape_garden",
+      "characterId": "quadra",
+      "templateId": "template.shape_builder.rotate_fit",
+      "editorTemplatePath": "docs/mini-game-editor-templates/shape-builder.json",
+      "roundCount": 1
+    }
+  ]
+}

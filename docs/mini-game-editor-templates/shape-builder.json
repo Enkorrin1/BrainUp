@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "shapeBuilder",
+  "templateId": "template.shape_builder.rotate_fit",
+  "tutorialKey": "tutorial.shape_builder.rotate_match",
+  "thinkingSkill": "spatial_rotation",
+  "rounds": [
+    {
+      "roundId": "shape-builder.round.1",
+      "goal": "Rotate the object in your head before choosing.",
+      "correctChoiceRole": "same_shape"
+    }
+  ],
+  "assetSlots": {
+    "background": "world.shape_garden.background.shape_flower_bed",
+    "primaryObject": "world.shape_garden.object.shape_flower",
+    "secondaryObject": "world.shape_garden.object.butterfly",
+    "rewardObject": "world.shape_garden.object.garden_sign",
+    "character": "character.quadra.avatar"
+  },
+  "effectCueIds": [
+    "tap_pulse",
+    "rotate_turn",
+    "shape_snap",
+    "hint_pulse",
+    "sparkle_success",
+    "soft_retry"
+  ],
+  "audioCueIds": [
+    "mini.tap",
+    "mini.rotate",
+    "mini.hint",
+    "mini.correct",
+    "mini.retry"
+  ],
+  "limits": {
+    "minRounds": 1,
+    "maxDistractors": 2,
+    "reducedMotionSafe": true
+  }
+}

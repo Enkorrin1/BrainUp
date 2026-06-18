@@ -1,4 +1,8 @@
 import '../../domain/learning_foundation.dart';
+import 'mini_game_adaptive.dart';
+import 'mini_game_audio.dart';
+import 'mini_game_character_reaction.dart';
+import 'mini_game_feedback.dart';
 
 enum MiniGameType {
   memoryGrid,
@@ -52,6 +56,12 @@ class MiniGameDefinition {
     required this.sourceInteractionType,
     required this.rounds,
     required this.estimatedSeconds,
+    required this.feedbackProfile,
+    required this.characterReactionProfile,
+    required this.adaptiveProfile,
+    required this.audioProfile,
+    required this.parentSummaryLabel,
+    this.contentConfig,
     this.timePressure = false,
     this.assetKeys = const [],
   });
@@ -69,6 +79,12 @@ class MiniGameDefinition {
   final PuzzleInteractionType sourceInteractionType;
   final List<MiniGameRoundDefinition> rounds;
   final int estimatedSeconds;
+  final MiniGameContentConfig? contentConfig;
+  final MiniGameFeedbackProfile feedbackProfile;
+  final MiniGameCharacterReactionProfile characterReactionProfile;
+  final MiniGameAdaptiveProfile adaptiveProfile;
+  final MiniGameAudioProfile audioProfile;
+  final String parentSummaryLabel;
   final bool timePressure;
   final List<String> assetKeys;
 
@@ -95,6 +111,12 @@ class MiniGameDefinition {
       'sourceInteractionType': sourceInteractionType.name,
       'roundCount': rounds.length,
       'estimatedSeconds': estimatedSeconds,
+      if (contentConfig != null) 'contentConfig': contentConfig!.toJson(),
+      'feedbackProfile': feedbackProfile.toJson(),
+      'characterReactionProfile': characterReactionProfile.toJson(),
+      'adaptiveProfile': adaptiveProfile.toJson(),
+      'audioProfile': audioProfile.toJson(),
+      'parentSummaryLabel': parentSummaryLabel,
       'timePressure': timePressure,
       'assetKeys': assetKeys,
       'rounds': [

@@ -98,6 +98,7 @@ enum ContentQaIssueType {
   invalidVisualCharacter,
   missingChoiceAssets,
   invalidEstimatedSeconds,
+  invalidMiniGameConfig,
   bossAgeMismatch,
   excessiveFamilyRepetition,
 }
@@ -767,6 +768,63 @@ class LessonStep {
   final SkillTag internalSkillTag;
 }
 
+class MiniGameContentConfig {
+  const MiniGameContentConfig({
+    required this.gameKey,
+    required this.templateId,
+    required this.tutorialKey,
+    required this.assetSlots,
+    required this.effectCueIds,
+    required this.audioCueIds,
+    required this.minRounds,
+    required this.maxDistractors,
+    required this.reducedMotionSafe,
+    this.authoringVersion = 1,
+    this.editorTemplatePath,
+  });
+
+  final String gameKey;
+  final String templateId;
+  final String tutorialKey;
+  final Map<String, String> assetSlots;
+  final List<String> effectCueIds;
+  final List<String> audioCueIds;
+  final int minRounds;
+  final int maxDistractors;
+  final bool reducedMotionSafe;
+  final int authoringVersion;
+  final String? editorTemplatePath;
+
+  bool get isValid {
+    return gameKey.trim().isNotEmpty &&
+        templateId.trim().isNotEmpty &&
+        tutorialKey.trim().isNotEmpty &&
+        assetSlots.containsKey('background') &&
+        assetSlots.containsKey('primaryObject') &&
+        effectCueIds.isNotEmpty &&
+        audioCueIds.isNotEmpty &&
+        minRounds > 0 &&
+        maxDistractors >= 0 &&
+        authoringVersion > 0;
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'gameKey': gameKey,
+      'templateId': templateId,
+      'tutorialKey': tutorialKey,
+      'assetSlots': assetSlots,
+      'effectCueIds': effectCueIds,
+      'audioCueIds': audioCueIds,
+      'minRounds': minRounds,
+      'maxDistractors': maxDistractors,
+      'reducedMotionSafe': reducedMotionSafe,
+      'authoringVersion': authoringVersion,
+      if (editorTemplatePath != null) 'editorTemplatePath': editorTemplatePath,
+    };
+  }
+}
+
 class VisualPuzzleMetadata {
   const VisualPuzzleMetadata({
     required this.familyId,
@@ -780,6 +838,7 @@ class VisualPuzzleMetadata {
     required this.estimatedSeconds,
     required this.cognitiveLoad,
     this.bossMixTags = const [],
+    this.miniGameConfig,
   });
 
   final String familyId;
@@ -793,6 +852,7 @@ class VisualPuzzleMetadata {
   final int estimatedSeconds;
   final PuzzleCognitiveLoad cognitiveLoad;
   final List<String> bossMixTags;
+  final MiniGameContentConfig? miniGameConfig;
 
   Map<String, Object?> toJson() {
     return {
@@ -807,6 +867,7 @@ class VisualPuzzleMetadata {
       'estimatedSeconds': estimatedSeconds,
       'cognitiveLoad': cognitiveLoad.name,
       'bossMixTags': bossMixTags,
+      if (miniGameConfig != null) 'miniGameConfig': miniGameConfig!.toJson(),
     };
   }
 }
@@ -3652,7 +3713,145 @@ class FoundationCatalog {
     PuzzleInteractionType.memoryReveal,
     PuzzleInteractionType.tracePath,
     PuzzleInteractionType.rotateObject,
+    PuzzleInteractionType.multiStepBoss,
   };
+
+  static MiniGameContentConfig? _miniGameConfigFor({
+    required PuzzleType puzzleType,
+    required PuzzleInteractionType interactionType,
+    required PuzzleDifficulty difficulty,
+    required String familyId,
+    required String sceneAsset,
+    required List<String> choiceAssets,
+    required String characterId,
+  }) {
+    final primaryObject =
+        choiceAssets.isEmpty ? sceneAsset : choiceAssets.first;
+    final assetSlots = <String, String>{
+      'background': sceneAsset,
+      'primaryObject': primaryObject,
+      'character': 'character.$characterId.avatar',
+      if (choiceAssets.length > 1) 'secondaryObject': choiceAssets[1],
+      if (choiceAssets.length > 2) 'rewardObject': choiceAssets[2],
+      'familySkin': 'family.$familyId.skin',
+    };
+    final maxDistractors = switch (difficulty) {
+      PuzzleDifficulty.easy => 1,
+      PuzzleDifficulty.normal => 2,
+      PuzzleDifficulty.hard => 3,
+      PuzzleDifficulty.boss => 4,
+    };
+
+    return switch ((puzzleType, interactionType)) {
+      (PuzzleType.memoryGrid, PuzzleInteractionType.memoryReveal) =>
+        MiniGameContentConfig(
+          gameKey: 'memoryGrid',
+          templateId: 'template.memory_grid.reveal_cards',
+          tutorialKey: 'tutorial.memory_grid.watch_choose',
+          assetSlots: assetSlots,
+          effectCueIds: const [
+            'tap_pulse',
+            'card_flip',
+            'hint_pulse',
+            'sparkle_success',
+            'soft_retry',
+          ],
+          audioCueIds: const [
+            'mini.tap',
+            'mini.hint',
+            'mini.correct',
+            'mini.retry',
+          ],
+          minRounds: 1,
+          maxDistractors: maxDistractors,
+          reducedMotionSafe: true,
+          editorTemplatePath:
+              'docs/mini-game-editor-templates/memory-grid.json',
+        ),
+      (PuzzleType.pathPuzzle, PuzzleInteractionType.tracePath) =>
+        MiniGameContentConfig(
+          gameKey: 'logicPath',
+          templateId: 'template.logic_path.trace_route',
+          tutorialKey: 'tutorial.logic_path.trace_endpoint',
+          assetSlots: assetSlots,
+          effectCueIds: const [
+            'tap_pulse',
+            'path_trace',
+            'node_snap',
+            'hint_pulse',
+            'sparkle_success',
+            'soft_retry',
+          ],
+          audioCueIds: const [
+            'mini.tap',
+            'mini.path_snap',
+            'mini.hint',
+            'mini.correct',
+            'mini.retry',
+          ],
+          minRounds: 1,
+          maxDistractors: maxDistractors,
+          reducedMotionSafe: true,
+          editorTemplatePath: 'docs/mini-game-editor-templates/logic-path.json',
+        ),
+      (PuzzleType.spatialRotation, PuzzleInteractionType.rotateObject) =>
+        MiniGameContentConfig(
+          gameKey: 'shapeBuilder',
+          templateId: 'template.shape_builder.rotate_fit',
+          tutorialKey: 'tutorial.shape_builder.rotate_match',
+          assetSlots: assetSlots,
+          effectCueIds: const [
+            'tap_pulse',
+            'rotate_turn',
+            'shape_snap',
+            'hint_pulse',
+            'sparkle_success',
+            'soft_retry',
+          ],
+          audioCueIds: const [
+            'mini.tap',
+            'mini.rotate',
+            'mini.hint',
+            'mini.correct',
+            'mini.retry',
+          ],
+          minRounds: 1,
+          maxDistractors: maxDistractors,
+          reducedMotionSafe: true,
+          editorTemplatePath:
+              'docs/mini-game-editor-templates/shape-builder.json',
+        ),
+      (PuzzleType.mixedBoss, PuzzleInteractionType.multiStepBoss) =>
+        MiniGameContentConfig(
+          gameKey: 'bossMix',
+          templateId: 'template.boss_mix.three_step_gate',
+          tutorialKey: 'tutorial.boss_mix.solve_three_steps',
+          assetSlots: assetSlots,
+          effectCueIds: const [
+            'tap_pulse',
+            'card_flip',
+            'path_trace',
+            'rotate_turn',
+            'hint_pulse',
+            'sparkle_success',
+            'reward_burst',
+            'soft_retry',
+          ],
+          audioCueIds: const [
+            'mini.tap',
+            'mini.hint',
+            'mini.correct',
+            'mini.retry',
+            'mini.boss_reward',
+          ],
+          minRounds: 3,
+          maxDistractors: maxDistractors,
+          reducedMotionSafe: true,
+          editorTemplatePath: 'docs/mini-game-editor-templates/boss-mix.json',
+        ),
+      _ => null,
+    };
+  }
 
   static bool isMiniGameReadyPuzzle(PuzzleDefinition puzzle) {
     final metadata = puzzle.visualMetadata;
@@ -3661,9 +3860,14 @@ class FoundationCatalog {
     }
 
     return switch ((puzzle.type, metadata.interactionType)) {
-      (PuzzleType.memoryGrid, PuzzleInteractionType.memoryReveal) => true,
-      (PuzzleType.pathPuzzle, PuzzleInteractionType.tracePath) => true,
-      (PuzzleType.spatialRotation, PuzzleInteractionType.rotateObject) => true,
+      (PuzzleType.memoryGrid, PuzzleInteractionType.memoryReveal) =>
+        metadata.miniGameConfig?.isValid == true,
+      (PuzzleType.pathPuzzle, PuzzleInteractionType.tracePath) =>
+        metadata.miniGameConfig?.isValid == true,
+      (PuzzleType.spatialRotation, PuzzleInteractionType.rotateObject) =>
+        metadata.miniGameConfig?.isValid == true,
+      (PuzzleType.mixedBoss, PuzzleInteractionType.multiStepBoss) =>
+        metadata.miniGameConfig?.isValid == true,
       _ => false,
     };
   }
@@ -3687,12 +3891,74 @@ class FoundationCatalog {
           PuzzleType.memoryGrid,
           PuzzleType.pathPuzzle,
           PuzzleType.spatialRotation,
+          PuzzleType.mixedBoss,
         ])
           type.name: readyPuzzles.where((puzzle) => puzzle.type == type).length,
       },
       'readyPuzzleIds': [
         for (final puzzle in readyPuzzles) puzzle.id,
       ],
+    };
+  }
+
+  static Map<String, Object?> miniGameContentWaveManifest() {
+    final readyPuzzles = [
+      for (final puzzle in allPuzzles)
+        if (isMiniGameReadyPuzzle(puzzle)) puzzle,
+    ];
+    final readyFamilyCounts = <String, int>{};
+    final readyWorldIds = <String>{};
+    final editorTemplatePaths = <String>{};
+
+    for (final puzzle in readyPuzzles) {
+      final metadata = puzzle.visualMetadata!;
+      readyFamilyCounts.update(
+        metadata.familyId,
+        (count) => count + 1,
+        ifAbsent: () => 1,
+      );
+      readyWorldIds.add(metadata.worldId);
+      final templatePath = metadata.miniGameConfig?.editorTemplatePath;
+      if (templatePath != null) {
+        editorTemplatePaths.add(templatePath);
+      }
+    }
+
+    final bossVariantWorldIds = <String>{
+      for (final miniGame in bossMiniGames) miniGame.worldId,
+      for (final puzzle in readyPuzzles)
+        if (puzzle.type == PuzzleType.mixedBoss) puzzle.visualMetadata!.worldId,
+    };
+    final weeklyEventVariantCount = readyPuzzles.where((puzzle) {
+      final metadata = puzzle.visualMetadata;
+      if (metadata == null) {
+        return false;
+      }
+      return weeklyEvents.any(
+        (event) =>
+            event.skillTags.contains(puzzle.skillTag) &&
+            event.worldIds.contains(metadata.worldId),
+      );
+    }).length;
+
+    return {
+      'targetLevelsPerFamily': 10,
+      'readyFamilyCounts': readyFamilyCounts,
+      'readyFamilyCount': readyFamilyCounts.length,
+      'familiesMeetingTarget': [
+        for (final entry in readyFamilyCounts.entries)
+          if (entry.value >= 10) entry.key,
+      ],
+      'readyWorldIds': readyWorldIds.toList(growable: false)..sort(),
+      'weeklyEventVariantCount': weeklyEventVariantCount,
+      'bossVariantWorldIds': bossVariantWorldIds.toList(growable: false)
+        ..sort(),
+      'bossVariantWorldCount': bossVariantWorldIds.length,
+      'editorTemplatePaths': editorTemplatePaths.toList(growable: false)
+        ..sort(),
+      'passes': readyFamilyCounts.values.every((count) => count >= 10) &&
+          bossVariantWorldIds.length >= 4 &&
+          editorTemplatePaths.length >= 4,
     };
   }
 
@@ -3758,6 +4024,7 @@ class FoundationCatalog {
             allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
       },
       'miniGameReadiness': miniGameReadinessManifest(),
+      'miniGameContentWave': miniGameContentWaveManifest(),
       'characterCoaches': [
         for (final coach in characterCoaches) coach.toJson(),
       ],
@@ -4092,6 +4359,17 @@ class FoundationCatalog {
               severity: ContentQaSeverity.blocker,
               puzzleId: puzzle.id,
               message: 'Puzzle estimated seconds must be positive.',
+            ),
+          );
+        }
+        if (miniGameReadyInteractionTypes.contains(metadata.interactionType) &&
+            metadata.miniGameConfig?.isValid != true) {
+          issues.add(
+            ContentQaIssue(
+              type: ContentQaIssueType.invalidMiniGameConfig,
+              severity: ContentQaSeverity.blocker,
+              puzzleId: puzzle.id,
+              message: 'Mini-game-ready puzzle has invalid mini-game config.',
             ),
           );
         }
@@ -4855,6 +5133,19 @@ class ContentBank {
           estimatedSeconds: seconds,
           cognitiveLoad: load,
           bossMixTags: bossTags,
+          miniGameConfig: FoundationCatalog._miniGameConfigFor(
+            puzzleType: PuzzleType.spatialRotation,
+            interactionType: PuzzleInteractionType.rotateObject,
+            difficulty: difficulty,
+            familyId: 'spatial.shape_rotation',
+            sceneAsset: 'world.shape_garden.background.shape_flower_bed',
+            choiceAssets: const [
+              'world.shape_garden.object.shape_flower',
+              'world.shape_garden.object.butterfly',
+              'world.shape_garden.object.garden_sign',
+            ],
+            characterId: 'quadra',
+          ),
         ),
       'sort.odd' || 'category.groups' => VisualPuzzleMetadata(
           familyId: 'classification.object_sort',
@@ -4889,6 +5180,19 @@ class ContentBank {
           estimatedSeconds: seconds,
           cognitiveLoad: load,
           bossMixTags: bossTags,
+          miniGameConfig: FoundationCatalog._miniGameConfigFor(
+            puzzleType: PuzzleType.pathPuzzle,
+            interactionType: PuzzleInteractionType.tracePath,
+            difficulty: difficulty,
+            familyId: 'spatial.route_build',
+            sceneAsset: 'world.space_station.background.planet_map',
+            choiceAssets: const [
+              'world.space_station.object.path_tile',
+              'world.space_station.object.fuel_cell',
+              'world.space_station.object.control_button',
+            ],
+            characterId: 'quadra',
+          ),
         ),
       'compare.weight' => VisualPuzzleMetadata(
           familyId: 'math.logic_scales',
@@ -4923,6 +5227,19 @@ class ContentBank {
           estimatedSeconds: seconds,
           cognitiveLoad: load,
           bossMixTags: bossTags,
+          miniGameConfig: FoundationCatalog._miniGameConfigFor(
+            puzzleType: PuzzleType.memoryGrid,
+            interactionType: PuzzleInteractionType.memoryReveal,
+            difficulty: difficulty,
+            familyId: 'memory.order_recall',
+            sceneAsset: 'world.space_station.background.mission_control_desk',
+            choiceAssets: const [
+              'world.space_station.object.key_card',
+              'world.space_station.object.satellite',
+              'world.space_station.object.star',
+            ],
+            characterId: 'lumi',
+          ),
         ),
       'mixed.boss' => VisualPuzzleMetadata(
           familyId: 'boss.mixed_challenge',
@@ -4940,6 +5257,19 @@ class ContentBank {
           estimatedSeconds: seconds,
           cognitiveLoad: load,
           bossMixTags: bossTags.isEmpty ? const ['mixed', 'boss'] : bossTags,
+          miniGameConfig: FoundationCatalog._miniGameConfigFor(
+            puzzleType: PuzzleType.mixedBoss,
+            interactionType: PuzzleInteractionType.multiStepBoss,
+            difficulty: difficulty,
+            familyId: 'boss.mixed_challenge',
+            sceneAsset: 'world.space_station.background.repair_module',
+            choiceAssets: const [
+              'world.space_station.object.rocket',
+              'world.space_station.object.fuel_cell',
+              'world.space_station.object.control_button',
+            ],
+            characterId: 'brainy',
+          ),
         ),
       _ => VisualPuzzleMetadata(
           familyId: family.slug.replaceAll('.', '_'),
@@ -5255,6 +5585,15 @@ class CuratedRichPuzzlePack {
         bossMixTags: seed.type == PuzzleType.mixedBoss
             ? const ['mixed', 'boss', 'first_pack']
             : const [],
+        miniGameConfig: FoundationCatalog._miniGameConfigFor(
+          puzzleType: seed.type,
+          interactionType: seed.interactionType,
+          difficulty: difficulty,
+          familyId: seed.familyId,
+          sceneAsset: seed.sceneAsset,
+          choiceAssets: seed.choiceAssets,
+          characterId: seed.characterId,
+        ),
       ),
     );
   }

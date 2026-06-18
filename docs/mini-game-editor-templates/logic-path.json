@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "logicPath",
+  "templateId": "template.logic_path.trace_route",
+  "tutorialKey": "tutorial.logic_path.trace_endpoint",
+  "thinkingSkill": "spatial_reasoning",
+  "rounds": [
+    {
+      "roundId": "logic-path.round.1",
+      "goal": "Trace the route and land on the correct endpoint.",
+      "correctChoiceRole": "endpoint"
+    }
+  ],
+  "assetSlots": {
+    "background": "world.space_station.background.planet_map",
+    "primaryObject": "world.space_station.object.path_tile",
+    "secondaryObject": "world.space_station.object.fuel_cell",
+    "rewardObject": "world.space_station.object.control_button",
+    "character": "character.quadra.avatar"
+  },
+  "effectCueIds": [
+    "tap_pulse",
+    "path_trace",
+    "node_snap",
+    "hint_pulse",
+    "sparkle_success",
+    "soft_retry"
+  ],
+  "audioCueIds": [
+    "mini.tap",
+    "mini.path_snap",
+    "mini.hint",
+    "mini.correct",
+    "mini.retry"
+  ],
+  "limits": {
+    "minRounds": 1,
+    "maxDistractors": 2,
+    "reducedMotionSafe": true
+  }
+}
