@@ -2,6 +2,7 @@ import 'package:brain_up/src/domain/daily_challenge.dart';
 import 'package:brain_up/src/domain/family_profile.dart';
 import 'package:brain_up/src/domain/learning_foundation.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_controller.dart';
+import 'package:brain_up/src/mini_games/core/mini_game_canvas_interaction.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_definition.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_quality.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_registry.dart';
@@ -130,6 +131,37 @@ void main() {
     expect(reviews, hasLength(3));
     expect(reviews.first.puzzleId, mistakePuzzle.payloadRef);
     expect(reviews.first.adaptiveProfile.reviewPriority, greaterThan(0));
+  });
+
+  test('canvas hotspot mapper cycles tap targets into challenge choices', () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      FoundationCatalog.isMiniGameReadyPuzzle,
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final choices = definition.firstRound.choiceIds;
+
+    expect(
+      MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: 0,
+      ),
+      choices.first,
+    );
+    expect(
+      MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: choices.length,
+      ),
+      choices.first,
+    );
+    expect(
+      MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: -1,
+      ),
+      isNull,
+    );
   });
 
   test('quality audit passes for mini-game-ready content definitions', () {

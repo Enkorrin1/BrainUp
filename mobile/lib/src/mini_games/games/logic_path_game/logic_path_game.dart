@@ -1,15 +1,25 @@
 import 'dart:math' as math;
 
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
 
-class LogicPathGame extends FlameGame {
-  LogicPathGame({required this.definition});
+class LogicPathGame extends FlameGame with TapCallbacks {
+  LogicPathGame({
+    required this.definition,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
 
   final MiniGameDefinition definition;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
   double _elapsed = 0;
+  int? _selectedNodeIndex;
+  double _tapPulse = 0;
 
   @override
   Color backgroundColor() {
@@ -20,6 +30,7 @@ class LogicPathGame extends FlameGame {
   void update(double dt) {
     super.update(dt);
     _elapsed += dt;
+    _tapPulse = math.max(0, _tapPulse - dt * 3.2);
   }
 
   @override
@@ -31,6 +42,27 @@ class LogicPathGame extends FlameGame {
     _drawCircuitBackdrop(canvas, canvasSize, center);
     _drawPath(canvas, canvasSize);
     _drawLabel(canvas, canvasSize);
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    final point = Offset(event.canvasPosition.x, event.canvasPosition.y);
+    final nodes = _pathPointsFor(Size(size.x, size.y));
+    for (var index = 0; index < nodes.length; index += 1) {
+      if ((point - nodes[index]).distance <= 34) {
+        final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+          definition: definition,
+          hotspotIndex: index,
+        );
+        if (choiceId == null) {
+          return;
+        }
+        _selectedNodeIndex = index;
+        _tapPulse = 1;
+        onChoiceSelected(choiceId);
+        return;
+      }
+    }
   }
 
   void _drawCircuitBackdrop(Canvas canvas, Size canvasSize, Offset center) {
@@ -61,13 +93,7 @@ class LogicPathGame extends FlameGame {
   }
 
   void _drawPath(Canvas canvas, Size canvasSize) {
-    final points = [
-      Offset(canvasSize.width * 0.18, canvasSize.height * 0.46),
-      Offset(canvasSize.width * 0.36, canvasSize.height * 0.36),
-      Offset(canvasSize.width * 0.54, canvasSize.height * 0.48),
-      Offset(canvasSize.width * 0.72, canvasSize.height * 0.38),
-      Offset(canvasSize.width * 0.84, canvasSize.height * 0.50),
-    ];
+    final points = _pathPointsFor(canvasSize);
     final path = Path()..moveTo(points.first.dx, points.first.dy);
     for (var index = 1; index < points.length; index += 1) {
       path.lineTo(points[index].dx, points[index].dy);
@@ -87,7 +113,12 @@ class LogicPathGame extends FlameGame {
     canvas.drawPath(path, pathPaint);
 
     for (var index = 0; index < points.length; index += 1) {
-      _drawNode(canvas, points[index], index);
+      final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: index,
+      );
+      final selected = choiceId != null && choiceId == selectedChoiceId;
+      _drawNode(canvas, points[index], index, selected);
     }
 
     final progress = (_elapsed * 0.34) % 1;
@@ -103,18 +134,42 @@ class LogicPathGame extends FlameGame {
       22,
       Paint()..color = const Color(0x3342F4D2),
     );
+
+    if (_selectedNodeIndex != null) {
+      final selectedPoint =
+          points[_selectedNodeIndex!.clamp(0, points.length - 1)];
+      canvas.drawCircle(
+        selectedPoint,
+        32 + _tapPulse * 18,
+        Paint()..color = const Color(0x3342F4D2),
+      );
+    }
   }
 
-  void _drawNode(Canvas canvas, Offset center, int index) {
-    final active = math.sin(_elapsed * 2 + index) > 0.15;
+  List<Offset> _pathPointsFor(Size canvasSize) {
+    return [
+      Offset(canvasSize.width * 0.18, canvasSize.height * 0.46),
+      Offset(canvasSize.width * 0.36, canvasSize.height * 0.36),
+      Offset(canvasSize.width * 0.54, canvasSize.height * 0.48),
+      Offset(canvasSize.width * 0.72, canvasSize.height * 0.38),
+      Offset(canvasSize.width * 0.84, canvasSize.height * 0.50),
+    ];
+  }
+
+  void _drawNode(Canvas canvas, Offset center, int index, bool selected) {
+    final active = selected || math.sin(_elapsed * 2 + index) > 0.15;
     final fillPaint = Paint()
-      ..color = active ? const Color(0xFF42F4D2) : const Color(0xFF273B78);
+      ..color = selected
+          ? const Color(0xFFFFD15C)
+          : active
+              ? const Color(0xFF42F4D2)
+              : const Color(0xFF273B78);
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..color = const Color(0xFFFFD15C);
-    canvas.drawCircle(center, 18, fillPaint);
-    canvas.drawCircle(center, 18, borderPaint);
+      ..strokeWidth = selected ? 5 : 3
+      ..color = selected ? Colors.white : const Color(0xFFFFD15C);
+    canvas.drawCircle(center, selected ? 24 : 18, fillPaint);
+    canvas.drawCircle(center, selected ? 24 : 18, borderPaint);
 
     final textPainter = TextPainter(
       text: TextSpan(

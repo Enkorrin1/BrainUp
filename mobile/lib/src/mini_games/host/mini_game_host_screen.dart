@@ -78,7 +78,11 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
         children: [
           Positioned.fill(
             child: GameWidget(
-              game: _gameFor(widget.definition),
+              game: _gameFor(
+                widget.definition,
+                selectedChoiceId: _selectedChoiceId,
+                onChoiceSelected: _selectChoice,
+              ),
             ),
           ),
           Positioned.fill(
@@ -153,15 +157,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
                       selectedChoiceId: _selectedChoiceId,
                       showHint: _showHint,
                       onHint: _showMiniGameHint,
-                      onChoiceSelected: (choiceId) {
-                        HapticFeedback.selectionClick();
-                        _playAudioCue('mini.tap');
-                        setState(() {
-                          _selectedChoiceId = choiceId;
-                          _feedbackState = _MiniGameFeedbackState.idle;
-                          _characterState = MiniGameCharacterState.thinking;
-                        });
-                      },
+                      onChoiceSelected: _selectChoice,
                       onSubmit: _selectedChoiceId == null ? null : _submit,
                     ),
                   ),
@@ -182,6 +178,16 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       _characterState = MiniGameCharacterState.hint;
     });
     _controller.recordHint();
+  }
+
+  void _selectChoice(String choiceId) {
+    HapticFeedback.selectionClick();
+    _playAudioCue('mini.tap');
+    setState(() {
+      _selectedChoiceId = choiceId;
+      _feedbackState = _MiniGameFeedbackState.idle;
+      _characterState = MiniGameCharacterState.thinking;
+    });
   }
 
   Future<void> _submit() async {
@@ -262,17 +268,41 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
     };
   }
 
-  FlameGame _gameFor(MiniGameDefinition definition) {
+  FlameGame _gameFor(
+    MiniGameDefinition definition, {
+    required String? selectedChoiceId,
+    required ValueChanged<String> onChoiceSelected,
+  }) {
     return switch (definition.type) {
-      MiniGameType.memoryGrid => MemoryGridGame(definition: definition),
-      MiniGameType.logicPath => LogicPathGame(definition: definition),
-      MiniGameType.shapeBuilder => ShapeBuilderGame(definition: definition),
-      MiniGameType.bossMix => BossMixGame(definition: definition),
+      MiniGameType.memoryGrid => MemoryGridGame(
+          definition: definition,
+          selectedChoiceId: selectedChoiceId,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      MiniGameType.logicPath => LogicPathGame(
+          definition: definition,
+          selectedChoiceId: selectedChoiceId,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      MiniGameType.shapeBuilder => ShapeBuilderGame(
+          definition: definition,
+          selectedChoiceId: selectedChoiceId,
+          onChoiceSelected: onChoiceSelected,
+        ),
+      MiniGameType.bossMix => BossMixGame(
+          definition: definition,
+          selectedChoiceId: selectedChoiceId,
+          onChoiceSelected: onChoiceSelected,
+        ),
       MiniGameType.mathBubbles ||
       MiniGameType.attentionScan ||
       MiniGameType.patternMachine ||
       MiniGameType.sortLab =>
-        MemoryGridGame(definition: definition),
+        MemoryGridGame(
+          definition: definition,
+          selectedChoiceId: selectedChoiceId,
+          onChoiceSelected: onChoiceSelected,
+        ),
     };
   }
 }

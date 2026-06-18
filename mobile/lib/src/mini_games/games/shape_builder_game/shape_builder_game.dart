@@ -1,15 +1,24 @@
 import 'dart:math' as math;
 
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
 
-class ShapeBuilderGame extends FlameGame {
-  ShapeBuilderGame({required this.definition});
+class ShapeBuilderGame extends FlameGame with TapCallbacks {
+  ShapeBuilderGame({
+    required this.definition,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
 
   final MiniGameDefinition definition;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
   double _elapsed = 0;
+  double _snapPulse = 0;
 
   @override
   Color backgroundColor() {
@@ -20,6 +29,7 @@ class ShapeBuilderGame extends FlameGame {
   void update(double dt) {
     super.update(dt);
     _elapsed += dt;
+    _snapPulse = math.max(0, _snapPulse - dt * 2.8);
   }
 
   @override
@@ -32,6 +42,26 @@ class ShapeBuilderGame extends FlameGame {
     _drawBuilderShape(canvas, center, canvasSize.shortestSide);
     _drawPieces(canvas, canvasSize);
     _drawLabel(canvas, canvasSize);
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    final point = Offset(event.canvasPosition.x, event.canvasPosition.y);
+    final pieces = _pieceCentersFor(Size(size.x, size.y));
+    for (var index = 0; index < pieces.length; index += 1) {
+      if ((point - pieces[index]).distance <= 54) {
+        final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+          definition: definition,
+          hotspotIndex: index,
+        );
+        if (choiceId == null) {
+          return;
+        }
+        _snapPulse = 1;
+        onChoiceSelected(choiceId);
+        return;
+      }
+    }
   }
 
   void _drawShapeGarden(Canvas canvas, Size canvasSize, Offset center) {
@@ -105,15 +135,18 @@ class ShapeBuilderGame extends FlameGame {
   }
 
   void _drawPieces(Canvas canvas, Size canvasSize) {
-    final y = canvasSize.height * 0.62;
-    final pieces = [
-      Offset(canvasSize.width * 0.24, y),
-      Offset(canvasSize.width * 0.50, y + math.sin(_elapsed * 2) * 10),
-      Offset(canvasSize.width * 0.76, y),
-    ];
+    final pieces = _pieceCentersFor(canvasSize);
+    final buildTarget = Offset(canvasSize.width / 2, canvasSize.height * 0.42);
     for (var index = 0; index < pieces.length; index += 1) {
       final center = pieces[index];
-      final size = 46.0 + math.sin(_elapsed * 1.8 + index) * 4;
+      final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: index,
+      );
+      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final snap = selected ? _snapPulse : 0.0;
+      final displayCenter = Offset.lerp(center, buildTarget, snap * 0.22)!;
+      final size = 46.0 + math.sin(_elapsed * 1.8 + index) * 4 + snap * 14;
       final rect = Rect.fromCenter(center: center, width: size, height: size);
       final paint = Paint()
         ..color = [
@@ -123,11 +156,23 @@ class ShapeBuilderGame extends FlameGame {
         ][index]
             .withValues(alpha: 0.82);
 
+      if (selected) {
+        canvas.drawLine(
+          displayCenter,
+          buildTarget,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 4
+            ..strokeCap = StrokeCap.round
+            ..color = const Color(0x66FFD15C),
+        );
+      }
+
       if (index == 1) {
-        canvas.drawCircle(center, size / 2, paint);
+        canvas.drawCircle(displayCenter, size / 2, paint);
       } else {
         canvas.save();
-        canvas.translate(center.dx, center.dy);
+        canvas.translate(displayCenter.dx, displayCenter.dy);
         canvas.rotate(_elapsed * (index == 0 ? 0.8 : -0.8));
         canvas.drawRRect(
           RRect.fromRectAndRadius(
@@ -139,14 +184,30 @@ class ShapeBuilderGame extends FlameGame {
         canvas.restore();
       }
 
+      final outlineRect = Rect.fromCenter(
+        center: displayCenter,
+        width: rect.width,
+        height: rect.height,
+      ).inflate(selected ? 10 : 4);
       canvas.drawRect(
-        rect.inflate(4),
+        outlineRect,
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.5
-          ..color = Colors.white.withValues(alpha: 0.10),
+          ..strokeWidth = selected ? 4 : 1.5
+          ..color = selected
+              ? Colors.white.withValues(alpha: 0.76)
+              : Colors.white.withValues(alpha: 0.10),
       );
     }
+  }
+
+  List<Offset> _pieceCentersFor(Size canvasSize) {
+    final y = canvasSize.height * 0.62;
+    return [
+      Offset(canvasSize.width * 0.24, y),
+      Offset(canvasSize.width * 0.50, y + math.sin(_elapsed * 2) * 10),
+      Offset(canvasSize.width * 0.76, y),
+    ];
   }
 
   void _drawLabel(Canvas canvas, Size canvasSize) {

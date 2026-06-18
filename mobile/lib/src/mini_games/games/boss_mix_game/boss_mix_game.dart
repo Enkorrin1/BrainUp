@@ -1,15 +1,24 @@
 import 'dart:math' as math;
 
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
 
-class BossMixGame extends FlameGame {
-  BossMixGame({required this.definition});
+class BossMixGame extends FlameGame with TapCallbacks {
+  BossMixGame({
+    required this.definition,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
 
   final MiniGameDefinition definition;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
   double _elapsed = 0;
+  double _bossTapPulse = 0;
 
   @override
   Color backgroundColor() {
@@ -20,6 +29,7 @@ class BossMixGame extends FlameGame {
   void update(double dt) {
     super.update(dt);
     _elapsed += dt;
+    _bossTapPulse = math.max(0, _bossTapPulse - dt * 2.6);
   }
 
   @override
@@ -32,6 +42,38 @@ class BossMixGame extends FlameGame {
     _drawGate(canvas, center, canvasSize.shortestSide);
     _drawStepOrbs(canvas, canvasSize);
     _drawRewardHint(canvas, canvasSize);
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    final canvasSize = Size(size.x, size.y);
+    final point = Offset(event.canvasPosition.x, event.canvasPosition.y);
+    final center = Offset(canvasSize.width / 2, canvasSize.height * 0.42);
+    final gateRadius = math.min(142.0, canvasSize.shortestSide * 0.28);
+    if ((point - center).distance <= gateRadius * 0.58) {
+      _selectHotspot(2);
+      return;
+    }
+
+    final orbs = _stepOrbCentersFor(canvasSize);
+    for (var index = 0; index < orbs.length; index += 1) {
+      if ((point - orbs[index]).distance <= 42) {
+        _selectHotspot(index);
+        return;
+      }
+    }
+  }
+
+  void _selectHotspot(int index) {
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: index,
+    );
+    if (choiceId == null) {
+      return;
+    }
+    _bossTapPulse = 1;
+    onChoiceSelected(choiceId);
   }
 
   void _drawBossBackdrop(Canvas canvas, Size canvasSize, Offset center) {
@@ -62,18 +104,27 @@ class BossMixGame extends FlameGame {
 
   void _drawGate(Canvas canvas, Offset center, double shortestSide) {
     final gateRadius = math.min(142.0, shortestSide * 0.28);
+    final selectedGate = MiniGameCanvasInteraction.choiceIdForHotspot(
+          definition: definition,
+          hotspotIndex: 2,
+        ) ==
+        selectedChoiceId;
     for (var ring = 0; ring < 3; ring += 1) {
       final pulse = 0.5 + 0.5 * math.sin(_elapsed * 1.7 + ring);
       final paint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 9 - ring * 2
+        ..strokeWidth = (selectedGate ? 12 : 9) - ring * 2
         ..color = [
           const Color(0xFFFF6F7D),
           const Color(0xFFFFD15C),
           const Color(0xFF42F4D2),
         ][ring]
-            .withValues(alpha: 0.38 + pulse * 0.32);
-      canvas.drawCircle(center, gateRadius - ring * 26, paint);
+            .withValues(alpha: selectedGate ? 0.76 : 0.38 + pulse * 0.32);
+      canvas.drawCircle(
+        center,
+        gateRadius - ring * 26 + (selectedGate ? _bossTapPulse * 10 : 0),
+        paint,
+      );
     }
 
     final doorPath = Path();
@@ -108,12 +159,17 @@ class BossMixGame extends FlameGame {
   }
 
   void _drawStepOrbs(Canvas canvas, Size canvasSize) {
-    final y = canvasSize.height * 0.66;
+    final orbCenters = _stepOrbCentersFor(canvasSize);
     const labels = ['MEM', 'LOGIC', 'FINAL'];
     for (var index = 0; index < labels.length; index += 1) {
-      final x = canvasSize.width * (0.24 + index * 0.26);
-      final center = Offset(x, y + math.sin(_elapsed * 1.4 + index) * 6);
-      final active = index <= (_elapsed / 3).floor() % labels.length;
+      final center = orbCenters[index];
+      final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: index,
+      );
+      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final active =
+          selected || index <= (_elapsed / 3).floor() % labels.length;
       final color = [
         const Color(0xFF42F4D2),
         const Color(0xFFFFD15C),
@@ -121,7 +177,11 @@ class BossMixGame extends FlameGame {
       ][index];
       canvas.drawCircle(
         center,
-        active ? 25 : 21,
+        selected
+            ? 32 + _bossTapPulse * 10
+            : active
+                ? 25
+                : 21,
         Paint()..color = color.withValues(alpha: active ? 0.78 : 0.38),
       );
       canvas.drawCircle(
@@ -129,8 +189,8 @@ class BossMixGame extends FlameGame {
         29,
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..color = Colors.white.withValues(alpha: 0.22),
+          ..strokeWidth = selected ? 5 : 2
+          ..color = Colors.white.withValues(alpha: selected ? 0.72 : 0.22),
       );
 
       final textPainter = TextPainter(
@@ -150,6 +210,17 @@ class BossMixGame extends FlameGame {
         center - Offset(textPainter.width / 2, textPainter.height / 2),
       );
     }
+  }
+
+  List<Offset> _stepOrbCentersFor(Size canvasSize) {
+    final y = canvasSize.height * 0.66;
+    return [
+      for (var index = 0; index < 3; index += 1)
+        Offset(
+          canvasSize.width * (0.24 + index * 0.26),
+          y + math.sin(_elapsed * 1.4 + index) * 6,
+        ),
+    ];
   }
 
   void _drawRewardHint(Canvas canvas, Size canvasSize) {

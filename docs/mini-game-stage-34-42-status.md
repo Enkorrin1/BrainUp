@@ -10,12 +10,13 @@ adaptive signals, audio hooks, QA, content wave metrics, and editor templates.
 ## Implemented
 
 - Stage 34: haptics, hint highlight, retry shake, success sparkle, progress
-  meter, and responsive overlay controls.
+  meter, responsive overlay controls, and direct Flame canvas taps for game
+  objects.
 - Stage 35: Rive-ready character reaction profile with static fallback avatars.
 - Stage 36: content-driven `MiniGameContentConfig`, registry validation, and QA
   blockers for invalid playable puzzle configs.
 - Stage 37: `BossMixGame`, boss routing, three-step boss definitions, boss
-  reward cue, and parent summary label.
+  reward cue, parent summary label, and interactive boss gate/orb hotspots.
 - Stage 38: adaptive difficulty profile and review selection from mistake
   signals.
 - Stage 39: audio cue profiles, mute toggle, volume-safe settings, and safe
@@ -32,6 +33,7 @@ adaptive signals, audio hooks, QA, content wave metrics, and editor templates.
 - `mobile/lib/src/mini_games/core/`
 - `mobile/lib/src/mini_games/host/mini_game_host_screen.dart`
 - `mobile/lib/src/mini_games/games/boss_mix_game/boss_mix_game.dart`
+- `mobile/lib/src/mini_games/core/mini_game_canvas_interaction.dart`
 - `mobile/tool/validate_mini_game_content.dart`
 - `docs/mini-game-editor-workflow.md`
 - `docs/mini-game-editor-templates/`

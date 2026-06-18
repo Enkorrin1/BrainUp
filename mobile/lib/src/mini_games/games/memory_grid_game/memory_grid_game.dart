@@ -1,15 +1,25 @@
 import 'dart:math' as math;
 
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
 
-class MemoryGridGame extends FlameGame {
-  MemoryGridGame({required this.definition});
+class MemoryGridGame extends FlameGame with TapCallbacks {
+  MemoryGridGame({
+    required this.definition,
+    required this.selectedChoiceId,
+    required this.onChoiceSelected,
+  });
 
   final MiniGameDefinition definition;
+  final String? selectedChoiceId;
+  final ValueChanged<String> onChoiceSelected;
   double _elapsed = 0;
+  int? _pressedTileIndex;
+  double _pressPulse = 0;
 
   @override
   Color backgroundColor() {
@@ -20,6 +30,7 @@ class MemoryGridGame extends FlameGame {
   void update(double dt) {
     super.update(dt);
     _elapsed += dt;
+    _pressPulse = math.max(0, _pressPulse - dt * 3.8);
   }
 
   @override
@@ -45,7 +56,73 @@ class MemoryGridGame extends FlameGame {
     _drawLabel(canvas, canvasSize);
   }
 
+  @override
+  void onTapDown(TapDownEvent event) {
+    final point = Offset(event.canvasPosition.x, event.canvasPosition.y);
+    final rects = _tileRectsFor(Size(size.x, size.y));
+    for (var index = 0; index < rects.length; index += 1) {
+      if (rects[index].contains(point)) {
+        final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+          definition: definition,
+          hotspotIndex: index,
+        );
+        if (choiceId == null) {
+          return;
+        }
+        _pressedTileIndex = index;
+        _pressPulse = 1;
+        onChoiceSelected(choiceId);
+        return;
+      }
+    }
+  }
+
   void _drawGrid(Canvas canvas, Size canvasSize) {
+    final rects = _tileRectsFor(canvasSize);
+
+    for (var index = 0; index < rects.length; index += 1) {
+      final pulse = 0.5 + 0.5 * math.sin(_elapsed * 2.2 + index);
+      final rect = rects[index];
+      final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+        definition: definition,
+        hotspotIndex: index,
+      );
+      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final pop = _pressedTileIndex == index ? _pressPulse : 0.0;
+      final inflatedRect = rect.inflate(pop * 8);
+      final rounded = RRect.fromRectAndRadius(
+        inflatedRect,
+        Radius.circular(rect.width * 0.22),
+      );
+      final paint = Paint()
+        ..color = Color.lerp(
+          const Color(0x3342F4D2),
+          selected ? const Color(0xAA42F4D2) : const Color(0x669C6AF2),
+          selected ? 1 : pulse,
+        )!;
+      final borderPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = selected ? 5 : 2
+        ..color = Color.lerp(
+          const Color(0x8842F4D2),
+          selected ? Colors.white : const Color(0xFFFFD15C),
+          selected ? 1 : pulse,
+        )!;
+
+      canvas.drawRRect(rounded, paint);
+      canvas.drawRRect(rounded, borderPaint);
+      if (selected) {
+        canvas.drawCircle(
+          inflatedRect.topRight - const Offset(10, -10),
+          13,
+          Paint()..color = const Color(0xFFFFD15C),
+        );
+      }
+      _drawTileIcon(canvas, inflatedRect.center, index, pulse, selected);
+    }
+  }
+
+  List<Rect> _tileRectsFor(Size canvasSize) {
     final shortestSide = canvasSize.shortestSide;
     final tileSize = math.min(86.0, shortestSide / 4.2);
     final gap = tileSize * 0.16;
@@ -55,51 +132,33 @@ class MemoryGridGame extends FlameGame {
       (canvasSize.height - gridWidth) / 2 - 12,
     );
 
-    for (var row = 0; row < 3; row += 1) {
-      for (var column = 0; column < 3; column += 1) {
-        final index = row * 3 + column;
-        final pulse = 0.5 + 0.5 * math.sin(_elapsed * 2.2 + index);
-        final rect = Rect.fromLTWH(
-          topLeft.dx + column * (tileSize + gap),
-          topLeft.dy + row * (tileSize + gap),
-          tileSize,
-          tileSize,
-        );
-        final rounded = RRect.fromRectAndRadius(
-          rect,
-          Radius.circular(tileSize * 0.22),
-        );
-        final paint = Paint()
-          ..color = Color.lerp(
-            const Color(0x3342F4D2),
-            const Color(0x669C6AF2),
-            pulse,
-          )!;
-        final borderPaint = Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..color = Color.lerp(
-            const Color(0x8842F4D2),
-            const Color(0xFFFFD15C),
-            pulse,
-          )!;
-
-        canvas.drawRRect(rounded, paint);
-        canvas.drawRRect(rounded, borderPaint);
-        _drawTileIcon(canvas, rect.center, index, pulse);
-      }
-    }
+    return [
+      for (var row = 0; row < 3; row += 1)
+        for (var column = 0; column < 3; column += 1)
+          Rect.fromLTWH(
+            topLeft.dx + column * (tileSize + gap),
+            topLeft.dy + row * (tileSize + gap),
+            tileSize,
+            tileSize,
+          ),
+    ];
   }
 
-  void _drawTileIcon(Canvas canvas, Offset center, int index, double pulse) {
+  void _drawTileIcon(
+    Canvas canvas,
+    Offset center,
+    int index,
+    double pulse,
+    bool selected,
+  ) {
     final icons = ['+', '*', '#', '?', '='];
-    final visible = pulse > 0.34 || index.isEven;
+    final visible = selected || pulse > 0.34 || index.isEven;
     final textPainter = TextPainter(
       text: TextSpan(
         text: visible ? icons[index % icons.length] : '?',
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 24,
+          fontSize: selected ? 30 : 24,
           fontWeight: FontWeight.w900,
         ),
       ),
