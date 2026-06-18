@@ -625,3 +625,28 @@ Next:
 
 - replace canvas glyphs with final authored art packs per puzzle family;
 - add screenshot QA checks for object-to-task visual alignment.
+
+### 2026-06-19 - Stage 49, Slice 1
+
+Implemented:
+
+- Number Bridge visuals are now generated from the actual challenge answer and
+  target instead of a hardcoded `5 + 3` / template expression;
+- generated math bridge tasks such as "make 9" now render the correct selected
+  expression, for example `4 + 5 = 9`;
+- non-playable interaction tasks no longer show a separate decorative puzzle
+  visual above the interaction, preventing mismatched "key + ? + lock" art for
+  a "rain goes with..." pair task;
+- pair/drag/reveal interaction tasks now keep one primary puzzle body instead
+  of a duplicated visual block plus interaction block.
+
+Verified:
+
+- `flutter analyze`;
+- `flutter test`;
+- `flutter build apk --debug`.
+
+Next:
+
+- localize remaining interaction instructions in inline puzzle bodies;
+- add screenshot assertions for number bridge and memory-pair visual alignment.

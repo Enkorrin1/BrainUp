@@ -1086,6 +1086,8 @@ class _LessonQuestionCard extends StatelessWidget {
       isCorrect: isCorrect,
     );
     final playableDefinition = miniGameDefinition;
+    final hasInlineInteraction =
+        playableDefinition != null || challenge.interaction != null;
 
     return DecoratedBox(
       decoration: _panelDecoration(),
@@ -1157,7 +1159,7 @@ class _LessonQuestionCard extends StatelessWidget {
               moment: coachMoment,
             ),
             const SizedBox(height: 18),
-            if (playableDefinition == null) ...[
+            if (!hasInlineInteraction) ...[
               _PuzzleVisual(challenge: challenge),
               const SizedBox(height: 14),
             ],
@@ -3040,7 +3042,6 @@ class _PuzzleVisual extends StatelessWidget {
       'balance-scale' => const _BalanceScaleVisual(),
       'shape-rotation' => const _ShapeRotationVisual(),
       'code-grid' => const _CodeGridVisual(),
-      'number-bridge' => const _NumberBridgeVisual(),
       'detail-count' => const _DetailCountVisual(),
       'space-sequence' => const _SpaceSequenceVisual(),
       'shape-stack' => const _ShapeStackVisual(),
@@ -3060,6 +3061,10 @@ class _DataDrivenPuzzleVisual extends StatelessWidget {
     final itemAssetsById = {
       for (final item in interactionItems) item.id: item.assetId,
     };
+    if (_looksLikeNumberBridge(challenge)) {
+      return _NumberBridgeVisual(challenge: challenge);
+    }
+
     final displayChoices = challenge.choices.take(4).toList(growable: false);
 
     if (displayChoices.isEmpty) {
@@ -3080,6 +3085,12 @@ class _DataDrivenPuzzleVisual extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  bool _looksLikeNumberBridge(DailyChallenge challenge) {
+    return challenge.id == 'number-bridge' ||
+        challenge.id.startsWith('math.bridge.') ||
+        challenge.choices.any((choice) => choice.id.contains('+'));
   }
 }
 
@@ -3288,19 +3299,74 @@ class _CodeGridVisual extends StatelessWidget {
 }
 
 class _NumberBridgeVisual extends StatelessWidget {
-  const _NumberBridgeVisual();
+  const _NumberBridgeVisual({required this.challenge});
+
+  final DailyChallenge challenge;
 
   @override
   Widget build(BuildContext context) {
-    return const _VisualRow(
+    final parts = _partsFor(challenge.correctChoiceId);
+    final target = _targetFor(challenge) ?? _sum(parts);
+
+    return _VisualRow(
       children: [
-        _NumberBubble('4', color: Color(0xFF5C8EF7)),
-        _NumberBubble('2', color: Color(0xFF18B7AE)),
-        _NumberBubble('1', color: Color(0xFFFFB84D)),
-        _MathSign('->'),
-        _NumberBubble('7', color: Color(0xFFFF6F6B)),
+        for (var index = 0; index < parts.length; index += 1) ...[
+          if (index > 0) const _MathSign('+'),
+          _NumberBubble(parts[index], color: _numberColor(index)),
+        ],
+        const _MathSign('='),
+        _NumberBubble(
+          target?.toString() ?? '?',
+          color: const Color(0xFFFF6F6B),
+        ),
       ],
     );
+  }
+
+  List<String> _partsFor(String expression) {
+    final parts = expression
+        .split('+')
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .toList(growable: false);
+    return parts.isEmpty ? [expression] : parts;
+  }
+
+  int? _targetFor(DailyChallenge challenge) {
+    final text = '${challenge.question} ${challenge.prompt}';
+    for (final pattern in [
+      RegExp(r'Make\s+(\d+)', caseSensitive: false),
+      RegExp(r'get\s+(\d+)', caseSensitive: false),
+      RegExp(r'Собери\s+(\d+)', caseSensitive: false),
+      RegExp(r'получить\s+(\d+)', caseSensitive: false),
+    ]) {
+      final match = pattern.firstMatch(text);
+      if (match != null) {
+        return int.tryParse(match.group(1)!);
+      }
+    }
+    return null;
+  }
+
+  int? _sum(List<String> parts) {
+    var total = 0;
+    for (final part in parts) {
+      final value = int.tryParse(part);
+      if (value == null) {
+        return null;
+      }
+      total += value;
+    }
+    return total;
+  }
+
+  static Color _numberColor(int index) {
+    return const [
+      Color(0xFF5C8EF7),
+      Color(0xFF18B7AE),
+      Color(0xFFFFB84D),
+      Color(0xFF9C6AF2),
+    ][index % 4];
   }
 }
 
