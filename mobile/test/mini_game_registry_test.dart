@@ -229,6 +229,53 @@ void main() {
     expect(results.map((result) => result.isCorrect), [false, true]);
   });
 
+  test('scene controller validates traced node order before success', () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      (puzzle) =>
+          puzzle.type == PuzzleType.pathPuzzle &&
+          FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    const nodeCount = 5;
+    final endpointIndex = MiniGameCanvasInteraction.traceEndpointHotspotIndex(
+      definition: definition,
+      nodeCount: nodeCount,
+    )!;
+    final correctTrace = [
+      for (var index = 0; index <= endpointIndex; index += 1) index,
+    ];
+    final skippedTrace = [0, endpointIndex];
+    final results = <MiniGameResult>[];
+    final controller = MiniGameSceneController(
+      definition: definition,
+      onResult: results.add,
+    )..start();
+
+    final skipped = controller.submitTrace(
+      hotspotIndices: skippedTrace,
+      nodeCount: nodeCount,
+    );
+    expect(skipped?.isCorrect, isFalse);
+    expect(skipped?.selectedChoiceId, challenge.correctChoiceId);
+    expect(controller.state, MiniGameSceneState.retry);
+    expect(controller.snapshot.lastEvent?.accepted, isFalse);
+    expect(
+      controller.snapshot.lastEvent?.traceHotspotIndices,
+      skippedTrace,
+    );
+
+    final corrected = controller.submitTrace(
+      hotspotIndices: correctTrace,
+      nodeCount: nodeCount,
+    );
+    expect(corrected?.isCorrect, isTrue);
+    expect(controller.state, MiniGameSceneState.success);
+    expect(controller.traceHotspotIndices, correctTrace);
+    expect(controller.snapshot.lastEvent?.accepted, isTrue);
+    expect(results.map((result) => result.isCorrect), [false, true]);
+  });
+
   test('scene controller validates target id for drop results', () {
     final puzzle = FoundationCatalog.allPuzzles.firstWhere(
       (puzzle) =>

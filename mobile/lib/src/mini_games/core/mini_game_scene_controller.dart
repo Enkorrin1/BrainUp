@@ -32,6 +32,7 @@ class MiniGameSceneEvent {
     required this.autoSubmitted,
     this.targetId,
     this.accepted,
+    this.traceHotspotIndices = const [],
   });
 
   final MiniGameSceneAction action;
@@ -40,6 +41,7 @@ class MiniGameSceneEvent {
   final bool autoSubmitted;
   final String? targetId;
   final bool? accepted;
+  final List<int> traceHotspotIndices;
 
   Map<String, Object?> toJson() {
     return {
@@ -49,6 +51,8 @@ class MiniGameSceneEvent {
       'autoSubmitted': autoSubmitted,
       if (targetId != null) 'targetId': targetId,
       if (accepted != null) 'accepted': accepted,
+      if (traceHotspotIndices.isNotEmpty)
+        'traceHotspotIndices': traceHotspotIndices,
     };
   }
 }
@@ -62,6 +66,7 @@ class MiniGameSceneSnapshot {
     required this.usedHints,
     required this.wrongAttempts,
     required this.lastEvent,
+    required this.traceHotspotIndices,
   });
 
   final MiniGameSceneState state;
@@ -71,6 +76,7 @@ class MiniGameSceneSnapshot {
   final int usedHints;
   final int wrongAttempts;
   final MiniGameSceneEvent? lastEvent;
+  final List<int> traceHotspotIndices;
 
   Map<String, Object?> toJson() {
     return {
@@ -80,6 +86,7 @@ class MiniGameSceneSnapshot {
       'interactionCount': interactionCount,
       'usedHints': usedHints,
       'wrongAttempts': wrongAttempts,
+      'traceHotspotIndices': traceHotspotIndices,
       if (lastEvent != null) 'lastEvent': lastEvent!.toJson(),
     };
   }
@@ -106,6 +113,7 @@ class MiniGameSceneController extends ChangeNotifier {
   int? _selectedHotspotIndex;
   int _interactionCount = 0;
   MiniGameSceneEvent? _lastEvent;
+  final List<int> _traceHotspotIndices = [];
 
   MiniGameSceneState get state {
     return _state;
@@ -131,6 +139,10 @@ class MiniGameSceneController extends ChangeNotifier {
     return _resultController.wrongAttempts;
   }
 
+  List<int> get traceHotspotIndices {
+    return List.unmodifiable(_traceHotspotIndices);
+  }
+
   MiniGameSceneSnapshot get snapshot {
     return MiniGameSceneSnapshot(
       state: _state,
@@ -140,6 +152,7 @@ class MiniGameSceneController extends ChangeNotifier {
       usedHints: usedHints,
       wrongAttempts: wrongAttempts,
       lastEvent: _lastEvent,
+      traceHotspotIndices: traceHotspotIndices,
     );
   }
 
@@ -161,6 +174,7 @@ class MiniGameSceneController extends ChangeNotifier {
     bool autoSubmitted = false,
     String? targetId,
     bool? accepted,
+    List<int> traceHotspotIndices = const [],
   }) {
     _selectedChoiceId = choiceId;
     _selectedHotspotIndex = hotspotIndex;
@@ -173,6 +187,7 @@ class MiniGameSceneController extends ChangeNotifier {
       autoSubmitted: autoSubmitted,
       targetId: targetId,
       accepted: accepted,
+      traceHotspotIndices: traceHotspotIndices,
     );
     onChoiceSelected?.call(choiceId);
     notifyListeners();
@@ -191,6 +206,32 @@ class MiniGameSceneController extends ChangeNotifier {
       choiceId,
       hotspotIndex: hotspotIndex,
       action: MiniGameSceneAction.drag,
+    );
+  }
+
+  void beginTrace(int hotspotIndex) {
+    _traceHotspotIndices.clear();
+    recordTraceHotspot(hotspotIndex);
+  }
+
+  void recordTraceHotspot(int hotspotIndex) {
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: hotspotIndex,
+    );
+    if (choiceId == null) {
+      return;
+    }
+
+    if (_traceHotspotIndices.isEmpty ||
+        _traceHotspotIndices.last != hotspotIndex) {
+      _traceHotspotIndices.add(hotspotIndex);
+    }
+    selectChoice(
+      choiceId,
+      hotspotIndex: hotspotIndex,
+      action: MiniGameSceneAction.trace,
+      traceHotspotIndices: traceHotspotIndices,
     );
   }
 
@@ -213,6 +254,45 @@ class MiniGameSceneController extends ChangeNotifier {
       autoSubmitted: true,
     );
     return submitSelected();
+  }
+
+  MiniGameResult? submitTrace({
+    required List<int> hotspotIndices,
+    required int nodeCount,
+  }) {
+    final normalized = MiniGameCanvasInteraction.normalizedHotspotSequence(
+      hotspotIndices,
+    );
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    _traceHotspotIndices
+      ..clear()
+      ..addAll(normalized);
+    final endpointIndex = normalized.last;
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: endpointIndex,
+    );
+    if (choiceId == null) {
+      return null;
+    }
+
+    final accepted = MiniGameCanvasInteraction.isValidTraceRoute(
+      definition: definition,
+      hotspotIndices: normalized,
+      nodeCount: nodeCount,
+    );
+    selectChoice(
+      choiceId,
+      hotspotIndex: endpointIndex,
+      action: MiniGameSceneAction.trace,
+      autoSubmitted: true,
+      accepted: accepted,
+      traceHotspotIndices: traceHotspotIndices,
+    );
+    return submitSelected(isCorrectOverride: accepted);
   }
 
   MiniGameResult? submitDrop({
@@ -269,6 +349,7 @@ class MiniGameSceneController extends ChangeNotifier {
       _state = MiniGameSceneState.retry;
       _selectedChoiceId = null;
       _selectedHotspotIndex = null;
+      _traceHotspotIndices.clear();
     }
     notifyListeners();
     onResult?.call(result);

@@ -50,4 +50,72 @@ class MiniGameCanvasInteraction {
         targets.isNotEmpty &&
         targetId == targets.first.id;
   }
+
+  static List<int> normalizedHotspotSequence(List<int> hotspotIndices) {
+    final normalized = <int>[];
+    for (final hotspotIndex in hotspotIndices) {
+      if (hotspotIndex < 0) {
+        continue;
+      }
+      if (normalized.isEmpty || normalized.last != hotspotIndex) {
+        normalized.add(hotspotIndex);
+      }
+    }
+    return normalized;
+  }
+
+  static int? traceEndpointHotspotIndex({
+    required MiniGameDefinition definition,
+    required int nodeCount,
+    int minEndpointIndex = 2,
+  }) {
+    final choices = definition.firstRound.choiceIds;
+    if (choices.isEmpty || nodeCount <= 0) {
+      return null;
+    }
+
+    final choiceIndex = choices.indexOf(definition.firstRound.correctChoiceId);
+    if (choiceIndex < 0) {
+      return null;
+    }
+
+    final minIndex = minEndpointIndex.clamp(0, nodeCount - 1);
+    var endpointIndex = choiceIndex;
+    while (endpointIndex < minIndex) {
+      endpointIndex += choices.length;
+    }
+    while (endpointIndex >= nodeCount &&
+        endpointIndex - choices.length >= minIndex) {
+      endpointIndex -= choices.length;
+    }
+    if (endpointIndex >= nodeCount) {
+      return choiceIndex < nodeCount ? choiceIndex : null;
+    }
+    return endpointIndex;
+  }
+
+  static bool isValidTraceRoute({
+    required MiniGameDefinition definition,
+    required List<int> hotspotIndices,
+    required int nodeCount,
+  }) {
+    final endpointIndex = traceEndpointHotspotIndex(
+      definition: definition,
+      nodeCount: nodeCount,
+    );
+    if (endpointIndex == null) {
+      return false;
+    }
+
+    final normalized = normalizedHotspotSequence(hotspotIndices);
+    if (normalized.length != endpointIndex + 1) {
+      return false;
+    }
+    for (var index = 0; index <= endpointIndex; index += 1) {
+      if (normalized[index] != index) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

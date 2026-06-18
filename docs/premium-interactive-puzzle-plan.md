@@ -504,3 +504,31 @@ Next:
 
 - add more physically meaningful object states for Math Balance and Sort Lab;
 - add Android emulator screenshots once ADB can attach to a non-offline AVD.
+
+### 2026-06-19 - Stage 45, Slice 1
+
+Implemented:
+
+- trace routes now normalize hotspot sequences and compute the correct endpoint
+  from the answer choice;
+- `MiniGameSceneController` now records trace node sequences and validates
+  ordered routes before emitting `MiniGameResult`;
+- skipped nodes, backwards jumps, or over-tracing past the endpoint now produce
+  retry state instead of success;
+- `LogicPathGame` now uses Flame drag gestures for route tracing instead of
+  tap-to-submit;
+- the scene renders traced route glow, wrong-route rewind feedback, endpoint
+  highlight, and blocked path markers beyond the correct endpoint;
+- regression coverage checks that skipped traces fail and ordered traces pass.
+
+Verified:
+
+- `flutter analyze`;
+- `flutter test test\mini_game_registry_test.dart`;
+- `flutter test`;
+- `flutter build apk --debug`.
+
+Next:
+
+- expand trace content with branches and rule-specific blockers;
+- add Android screenshots once a usable ADB emulator is available.
