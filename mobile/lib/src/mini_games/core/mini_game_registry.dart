@@ -11,7 +11,9 @@ class MiniGameRegistry {
   const MiniGameRegistry._();
 
   static const enabledInteractionTypes = {
+    PuzzleInteractionType.tapChoice,
     PuzzleInteractionType.dragToTarget,
+    PuzzleInteractionType.matchPairs,
     PuzzleInteractionType.memoryReveal,
     PuzzleInteractionType.tracePath,
     PuzzleInteractionType.rotateObject,
@@ -166,6 +168,25 @@ class MiniGameRegistry {
     required PuzzleInteractionType interactionType,
     required PuzzleType puzzleType,
   }) {
+    if (interactionType == PuzzleInteractionType.tapChoice &&
+        puzzleType == PuzzleType.sequenceComplete) {
+      return MiniGameType.patternMachine;
+    }
+    if (interactionType == PuzzleInteractionType.tapChoice &&
+        puzzleType == PuzzleType.attentionScan) {
+      return MiniGameType.attentionScan;
+    }
+    if (interactionType == PuzzleInteractionType.tapChoice &&
+        (puzzleType == PuzzleType.codeBreaker ||
+            puzzleType == PuzzleType.analogy ||
+            puzzleType == PuzzleType.rebus)) {
+      return MiniGameType.patternMachine;
+    }
+    if (interactionType == PuzzleInteractionType.matchPairs &&
+        (puzzleType == PuzzleType.memoryGrid ||
+            puzzleType == PuzzleType.pairMatch)) {
+      return MiniGameType.pairLink;
+    }
     if (interactionType == PuzzleInteractionType.dragToTarget &&
         (puzzleType == PuzzleType.visualCompare ||
             puzzleType == PuzzleType.countBridge)) {
@@ -249,6 +270,7 @@ class MiniGameRegistry {
       MiniGameType.shapeBuilder => 'Shape Builder',
       MiniGameType.attentionScan => 'Attention Scan',
       MiniGameType.patternMachine => 'Pattern Machine',
+      MiniGameType.pairLink => 'Pair Link',
       MiniGameType.sortLab => 'Sort Lab',
       MiniGameType.bossMix => 'Boss Mix',
     };

@@ -86,6 +86,240 @@ CharacterCoachMoment _coachMomentFor({
   return CharacterCoachMoment.neutral;
 }
 
+bool _isRussian(BuildContext context) {
+  return Localizations.localeOf(context).languageCode == 'ru';
+}
+
+MiniGameDefinition _localizedMiniGameDefinition(
+  BuildContext context,
+  DailyChallenge challenge,
+  MiniGameDefinition definition,
+) {
+  final l10n = context.l10n;
+  final localizedChoiceLabels = {
+    for (final choice in challenge.choices)
+      choice.id: l10n.choiceLabelFor(challenge, choice),
+  };
+
+  return MiniGameDefinition(
+    id: definition.id,
+    puzzleId: definition.puzzleId,
+    type: definition.type,
+    title: _localizedMiniGameTitle(context, definition.type),
+    prompt: l10n.questionForChallenge(challenge),
+    worldId: definition.worldId,
+    characterId: definition.characterId,
+    puzzleType: definition.puzzleType,
+    skillTag: definition.skillTag,
+    difficulty: definition.difficulty,
+    sourceInteractionType: definition.sourceInteractionType,
+    rounds: [
+      for (var index = 0; index < definition.rounds.length; index += 1)
+        MiniGameRoundDefinition(
+          id: definition.rounds[index].id,
+          title: definition.rounds.length == 1
+              ? l10n.titleForChallenge(challenge)
+              : '${l10n.titleForChallenge(challenge)} ${index + 1}/${definition.rounds.length}',
+          goal: _localizedInteractionInstruction(
+            context,
+            definition.sourceInteractionType,
+          ),
+          correctChoiceId: definition.rounds[index].correctChoiceId,
+          choiceIds: definition.rounds[index].choiceIds,
+          choiceLabelsById: {
+            ...definition.rounds[index].choiceLabelsById,
+            ...localizedChoiceLabels,
+          },
+          choiceAssetKeysById: definition.rounds[index].choiceAssetKeysById,
+          dropTargets: [
+            for (final target in definition.rounds[index].dropTargets)
+              MiniGameDropTargetDefinition(
+                id: target.id,
+                label: _localizedDropTargetLabel(context, target),
+              ),
+          ],
+          correctDropTargetByChoiceId:
+              definition.rounds[index].correctDropTargetByChoiceId,
+        ),
+    ],
+    estimatedSeconds: definition.estimatedSeconds,
+    feedbackProfile: definition.feedbackProfile,
+    characterReactionProfile: definition.characterReactionProfile,
+    adaptiveProfile: definition.adaptiveProfile,
+    audioProfile: definition.audioProfile,
+    parentSummaryLabel: definition.parentSummaryLabel,
+    contentConfig: definition.contentConfig,
+    timePressure: definition.timePressure,
+    assetKeys: definition.assetKeys,
+  );
+}
+
+String _localizedMiniGameTitle(BuildContext context, MiniGameType type) {
+  if (!_isRussian(context)) {
+    return switch (type) {
+      MiniGameType.memoryGrid => 'Memory Grid',
+      MiniGameType.logicPath => 'Logic Path',
+      MiniGameType.mathBubbles => 'Number Builder',
+      MiniGameType.shapeBuilder => 'Shape Builder',
+      MiniGameType.attentionScan => 'Detail Scan',
+      MiniGameType.patternMachine => 'Pattern Machine',
+      MiniGameType.pairLink => 'Pair Link',
+      MiniGameType.sortLab => 'Sort Lab',
+      MiniGameType.bossMix => 'Boss Mix',
+    };
+  }
+
+  return switch (type) {
+    MiniGameType.memoryGrid => 'Сетка памяти',
+    MiniGameType.logicPath => 'Маршрут',
+    MiniGameType.mathBubbles => 'Числовой сборщик',
+    MiniGameType.shapeBuilder => 'Сборка фигуры',
+    MiniGameType.attentionScan => 'Скан деталей',
+    MiniGameType.patternMachine => 'Машина правила',
+    MiniGameType.pairLink => 'Связанные пары',
+    MiniGameType.sortLab => 'Сортировка',
+    MiniGameType.bossMix => 'Босс-задача',
+  };
+}
+
+String _localizedInteractionInstruction(
+  BuildContext context,
+  PuzzleInteractionType type,
+) {
+  if (!_isRussian(context)) {
+    return switch (type) {
+      PuzzleInteractionType.tapChoice => 'Choose the answer on the scene.',
+      PuzzleInteractionType.dragToTarget =>
+        'Drag the best answer into the active spot.',
+      PuzzleInteractionType.reorderCards =>
+        'Place the cards in the correct order.',
+      PuzzleInteractionType.matchPairs =>
+        'Connect the clue with its matching answer.',
+      PuzzleInteractionType.memoryReveal =>
+        'Reveal the cards, remember them, then answer.',
+      PuzzleInteractionType.tracePath =>
+        'Trace the route and land on the endpoint.',
+      PuzzleInteractionType.rotateObject =>
+        'Rotate the object before choosing.',
+      PuzzleInteractionType.sortObjects =>
+        'Move the item into the matching basket.',
+      PuzzleInteractionType.multiStepBoss =>
+        'Solve each clue, then submit the boss answer.',
+    };
+  }
+
+  return switch (type) {
+    PuzzleInteractionType.tapChoice => 'Выбери ответ прямо на сцене.',
+    PuzzleInteractionType.dragToTarget =>
+      'Перетащи лучший ответ в активную область.',
+    PuzzleInteractionType.reorderCards =>
+      'Расставь карточки в правильном порядке.',
+    PuzzleInteractionType.matchPairs =>
+      'Соедини подсказку с подходящим ответом.',
+    PuzzleInteractionType.memoryReveal =>
+      'Открой карточки, запомни их и выбери ответ.',
+    PuzzleInteractionType.tracePath => 'Проведи маршрут до правильного финиша.',
+    PuzzleInteractionType.rotateObject =>
+      'Поверни объект перед выбором ответа.',
+    PuzzleInteractionType.sortObjects =>
+      'Перемести предмет в подходящую корзину.',
+    PuzzleInteractionType.multiStepBoss =>
+      'Реши каждую подсказку и выбери финальный ответ.',
+  };
+}
+
+String _localizedDropTargetLabel(
+  BuildContext context,
+  MiniGameDropTargetDefinition target,
+) {
+  if (!_isRussian(context)) {
+    return target.label;
+  }
+  return switch (target.id) {
+    'target.answer' => 'Ответ',
+    'target.endpoint' => 'Финиш',
+    'target.shape_socket' => 'Контур',
+    'target.match' => 'Подходит',
+    'target.other' => 'Не подходит',
+    _ => target.label,
+  };
+}
+
+String _localizedShortActionLabel(
+  BuildContext context,
+  PuzzleInteractionType type,
+) {
+  if (!_isRussian(context)) {
+    return switch (type) {
+      PuzzleInteractionType.dragToTarget => 'Drag',
+      PuzzleInteractionType.reorderCards => 'Order',
+      PuzzleInteractionType.matchPairs => 'Match',
+      PuzzleInteractionType.memoryReveal => 'Reveal',
+      PuzzleInteractionType.tracePath => 'Trace',
+      PuzzleInteractionType.rotateObject => 'Rotate',
+      PuzzleInteractionType.sortObjects => 'Sort',
+      PuzzleInteractionType.multiStepBoss => 'Boss',
+      PuzzleInteractionType.tapChoice => 'Tap',
+    };
+  }
+
+  return switch (type) {
+    PuzzleInteractionType.dragToTarget => 'Тащи',
+    PuzzleInteractionType.reorderCards => 'Порядок',
+    PuzzleInteractionType.matchPairs => 'Пары',
+    PuzzleInteractionType.memoryReveal => 'Открой',
+    PuzzleInteractionType.tracePath => 'Маршрут',
+    PuzzleInteractionType.rotateObject => 'Поверни',
+    PuzzleInteractionType.sortObjects => 'Сортируй',
+    PuzzleInteractionType.multiStepBoss => 'Босс',
+    PuzzleInteractionType.tapChoice => 'Жми',
+  };
+}
+
+String _localizedSceneText(BuildContext context, String key) {
+  final ru = _isRussian(context);
+  return switch (key) {
+    'hint' => ru ? 'Подсказка' : 'Hint',
+    'hintShown' => ru ? 'Подсказка открыта' : 'Hint shown',
+    'sceneSolved' => ru ? 'Сцена решена' : 'Solved on the scene',
+    'sceneRetry' => ru ? 'Попробуй еще раз' : 'Try again on the scene',
+    'sceneIdle' => ru ? 'Решай прямо на сцене' : 'Play directly in this puzzle',
+    'dropHere' => ru ? 'Перетащи ответ сюда' : 'Drop answer here',
+    'releaseToPlace' => ru ? 'Отпусти, чтобы поставить' : 'Release to place',
+    'dragAnswer' => ru
+        ? 'Перетащи карточку ответа в цель.'
+        : 'Drag an answer card into the target.',
+    'matchHere' => ru ? 'Перетащи пару сюда' : 'Drop match here',
+    'connected' => ru ? 'Связано' : 'Connected',
+    'dragMatch' => ru
+        ? 'Перетащи подходящий ответ к подсказке.'
+        : 'Drag the matching answer onto the clue.',
+    'flipCards' => ru
+        ? 'Открой карточки, запомни их и выбери ответ.'
+        : 'Flip the cards, remember them, then choose.',
+    'flip' => ru ? 'Открыть' : 'Flip',
+    'rotateDrag' =>
+      ru ? 'Проведи вбок, чтобы повернуть' : 'Drag sideways to rotate',
+    'rotateAnswer' => ru
+        ? 'Поверни фигуру перед ответом.'
+        : 'Rotate the shape before you answer.',
+    'bossIdle' => ru
+        ? 'Реши подсказки перед финальным ответом.'
+        : 'Solve each clue before the boss answer.',
+    'gestureSolved' => ru ? 'Действие верное.' : 'Gesture solved.',
+    'gestureRetry' => ru
+        ? 'Попробуй действие еще раз с подсказкой.'
+        : 'Try the gesture again with the hint.',
+    'rule' => ru ? 'Правило' : 'Rule',
+    'findIt' => ru ? 'Найди' : 'Find it',
+    'skill' => ru ? 'Навык' : 'Skill',
+    'applyIt' => ru ? 'Примени' : 'Apply it',
+    'finalStep' => ru ? 'Финал' : 'Final',
+    'combine' => ru ? 'Соедини' : 'Combine',
+    _ => key,
+  };
+}
+
 class LessonScreen extends StatefulWidget {
   const LessonScreen({
     required this.profile,
@@ -147,8 +381,15 @@ class _LessonScreenState extends State<LessonScreen> {
           ).firstWhere((progress) => progress.world.id == storyWorld.id);
     final challenges = _lessonChallenges(child, lesson);
     final challenge = challenges[_stepIndex];
-    final miniGameDefinition =
+    final rawMiniGameDefinition =
         MiniGameRegistry.definitionForChallenge(challenge);
+    final miniGameDefinition = rawMiniGameDefinition == null
+        ? null
+        : _localizedMiniGameDefinition(
+            context,
+            challenge,
+            rawMiniGameDefinition,
+          );
     final bossProgress = bossMiniGame == null
         ? null
         : FoundationCatalog.bossMiniGameProgressFor(
@@ -1397,7 +1638,7 @@ class _EmbeddedInteractivePuzzleStageState
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _statusTextFor(effectiveFeedback),
+                          _statusTextFor(context, effectiveFeedback),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style:
@@ -1445,7 +1686,11 @@ class _EmbeddedInteractivePuzzleStageState
                         backgroundColor: accent.withValues(alpha: 0.08),
                       ),
                       icon: const Icon(Icons.lightbulb_rounded),
-                      label: Text(widget.showHint ? 'Hint shown' : 'Hint'),
+                      label: Text(
+                        widget.showHint
+                            ? _localizedSceneText(context, 'hintShown')
+                            : _localizedSceneText(context, 'hint'),
+                      ),
                     ),
                   ),
                   if (_selectedChoiceId != null) ...[
@@ -1534,6 +1779,7 @@ class _EmbeddedInteractivePuzzleStageState
       MiniGameType.shapeBuilder => Icons.category_rounded,
       MiniGameType.attentionScan => Icons.center_focus_strong_rounded,
       MiniGameType.patternMachine => Icons.auto_mode_rounded,
+      MiniGameType.pairLink => Icons.hub_rounded,
       MiniGameType.sortLab => Icons.inventory_2_rounded,
       MiniGameType.bossMix => Icons.auto_awesome_rounded,
     };
@@ -1555,11 +1801,17 @@ class _EmbeddedInteractivePuzzleStageState
     };
   }
 
-  String _statusTextFor(_EmbeddedPuzzleFeedbackState state) {
+  String _statusTextFor(
+    BuildContext context,
+    _EmbeddedPuzzleFeedbackState state,
+  ) {
     return switch (state) {
-      _EmbeddedPuzzleFeedbackState.success => 'Solved on the scene',
-      _EmbeddedPuzzleFeedbackState.retry => 'Try again on the scene',
-      _EmbeddedPuzzleFeedbackState.idle => 'Play directly in this puzzle',
+      _EmbeddedPuzzleFeedbackState.success =>
+        _localizedSceneText(context, 'sceneSolved'),
+      _EmbeddedPuzzleFeedbackState.retry =>
+        _localizedSceneText(context, 'sceneRetry'),
+      _EmbeddedPuzzleFeedbackState.idle =>
+        _localizedSceneText(context, 'sceneIdle'),
     };
   }
 }
@@ -1682,7 +1934,7 @@ class _LessonInteractionStage extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  interaction.instruction,
+                  _localizedInteractionInstruction(context, interaction.type),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -1775,8 +2027,10 @@ class _InteractionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final actionLabel = _localizedShortActionLabel(context, type);
+
     return Tooltip(
-      message: label,
+      message: actionLabel,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
@@ -1790,7 +2044,7 @@ class _InteractionBadge extends StatelessWidget {
             Icon(icon, color: color, size: 18),
             const SizedBox(width: 6),
             Text(
-              label,
+              actionLabel,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: _LessonPalette.text,
                     fontWeight: FontWeight.w900,
@@ -1813,20 +2067,6 @@ class _InteractionBadge extends StatelessWidget {
       PuzzleInteractionType.sortObjects => Icons.inventory_2_rounded,
       PuzzleInteractionType.multiStepBoss => Icons.auto_awesome_rounded,
       PuzzleInteractionType.tapChoice => Icons.touch_app_rounded,
-    };
-  }
-
-  String get label {
-    return switch (type) {
-      PuzzleInteractionType.dragToTarget => 'Drag',
-      PuzzleInteractionType.reorderCards => 'Order',
-      PuzzleInteractionType.matchPairs => 'Match',
-      PuzzleInteractionType.memoryReveal => 'Reveal',
-      PuzzleInteractionType.tracePath => 'Trace',
-      PuzzleInteractionType.rotateObject => 'Rotate',
-      PuzzleInteractionType.sortObjects => 'Sort',
-      PuzzleInteractionType.multiStepBoss => 'Boss',
-      PuzzleInteractionType.tapChoice => 'Tap',
     };
   }
 
@@ -1889,10 +2129,10 @@ class _MatchPairsStage extends StatelessWidget {
                         : Icons.psychology_alt_rounded,
                     title: selectedChoiceId == null
                         ? clue.label
-                        : '${clue.label} -> ${_choiceLabel(selectedChoiceId!)}',
+                        : '${clue.label} -> ${_choiceLabel(context, selectedChoiceId!)}',
                     subtitle: selectedChoiceId == null
-                        ? 'Drop match here'
-                        : 'Connected',
+                        ? _localizedSceneText(context, 'matchHere')
+                        : _localizedSceneText(context, 'connected'),
                     selected: selectedChoiceId != null || active,
                   );
                 },
@@ -1914,7 +2154,7 @@ class _MatchPairsStage extends StatelessWidget {
                       child: _DraggableInteractionOption(
                         key: ValueKey('stage-draggable-${choice.id}'),
                         choiceId: choice.id,
-                        label: choice.label,
+                        label: context.l10n.choiceLabelFor(challenge, choice),
                         selected: selectedChoiceId == choice.id,
                         icon: Icons.add_link_rounded,
                         onTap: () => onChoiceSelected(choice.id),
@@ -1928,19 +2168,18 @@ class _MatchPairsStage extends StatelessWidget {
         _GestureResultBanner(
           hasSubmitted: hasSubmitted,
           isCorrect: isCorrect,
-          idleText: 'Drag the matching answer onto the clue.',
+          idleText: _localizedSceneText(context, 'dragMatch'),
         ),
       ],
     );
   }
 
-  String _choiceLabel(String choiceId) {
-    return challenge.choices
-        .firstWhere(
-          (choice) => choice.id == choiceId,
-          orElse: () => ChallengeChoice(id: choiceId, label: choiceId),
-        )
-        .label;
+  String _choiceLabel(BuildContext context, String choiceId) {
+    final choice = challenge.choices.firstWhere(
+      (choice) => choice.id == choiceId,
+      orElse: () => ChallengeChoice(id: choiceId, label: choiceId),
+    );
+    return context.l10n.choiceLabelFor(challenge, choice);
   }
 }
 
@@ -1967,8 +2206,8 @@ class _DropTargetStage extends StatelessWidget {
         ? null
         : challenge.choices.where((choice) => choice.id == selectedChoiceId);
     final selectedLabel = selectedChoice == null || selectedChoice.isEmpty
-        ? 'Drop answer here'
-        : selectedChoice.first.label;
+        ? _localizedSceneText(context, 'dropHere')
+        : context.l10n.choiceLabelFor(challenge, selectedChoice.first);
 
     return Column(
       children: [
@@ -2010,7 +2249,9 @@ class _DropTargetStage extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      active ? 'Release to place' : selectedLabel,
+                      active
+                          ? _localizedSceneText(context, 'releaseToPlace')
+                          : selectedLabel,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: _LessonPalette.text,
                             fontWeight: FontWeight.w900,
@@ -2024,6 +2265,7 @@ class _DropTargetStage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _DraggableChoiceWrap(
+          challenge: challenge,
           choices: challenge.choices,
           selectedChoiceId: selectedChoiceId,
           icon: Icons.back_hand_rounded,
@@ -2032,7 +2274,7 @@ class _DropTargetStage extends StatelessWidget {
         _GestureResultBanner(
           hasSubmitted: hasSubmitted,
           isCorrect: isCorrect,
-          idleText: 'Drag an answer card into the target.',
+          idleText: _localizedSceneText(context, 'dragAnswer'),
         ),
       ],
     );
@@ -2092,6 +2334,7 @@ class _MemoryRevealStageState extends State<_MemoryRevealStage> {
         ),
         const SizedBox(height: 12),
         _InteractionChoiceWrap(
+          challenge: widget.challenge,
           choices: widget.challenge.choices,
           selectedChoiceId: widget.selectedChoiceId,
           icon: Icons.visibility_rounded,
@@ -2100,7 +2343,7 @@ class _MemoryRevealStageState extends State<_MemoryRevealStage> {
         _GestureResultBanner(
           hasSubmitted: widget.hasSubmitted,
           isCorrect: widget.isCorrect,
-          idleText: 'Flip the cards, remember them, then choose.',
+          idleText: _localizedSceneText(context, 'flipCards'),
         ),
       ],
     );
@@ -2172,7 +2415,7 @@ class _RotateObjectStageState extends State<_RotateObjectStage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Drag sideways to rotate',
+                  _localizedSceneText(context, 'rotateDrag'),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: _LessonPalette.text,
                         fontWeight: FontWeight.w900,
@@ -2184,6 +2427,7 @@ class _RotateObjectStageState extends State<_RotateObjectStage> {
         ),
         const SizedBox(height: 10),
         _InteractionChoiceWrap(
+          challenge: widget.challenge,
           choices: widget.challenge.choices,
           selectedChoiceId: widget.selectedChoiceId,
           icon: Icons.threesixty_rounded,
@@ -2192,7 +2436,7 @@ class _RotateObjectStageState extends State<_RotateObjectStage> {
         _GestureResultBanner(
           hasSubmitted: widget.hasSubmitted,
           isCorrect: widget.isCorrect,
-          idleText: 'Rotate the shape before you answer.',
+          idleText: _localizedSceneText(context, 'rotateAnswer'),
         ),
       ],
     );
@@ -2221,31 +2465,31 @@ class _BossInteractionStage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Row(
+        Row(
           children: [
             Expanded(
               child: _InteractionCard(
                 icon: Icons.filter_1_rounded,
-                title: 'Rule',
-                subtitle: 'Find it',
+                title: _localizedSceneText(context, 'rule'),
+                subtitle: _localizedSceneText(context, 'findIt'),
                 selected: true,
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: _InteractionCard(
                 icon: Icons.filter_2_rounded,
-                title: 'Skill',
-                subtitle: 'Apply it',
+                title: _localizedSceneText(context, 'skill'),
+                subtitle: _localizedSceneText(context, 'applyIt'),
                 selected: true,
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: _InteractionCard(
                 icon: Icons.filter_3_rounded,
-                title: 'Final',
-                subtitle: 'Combine',
+                title: _localizedSceneText(context, 'finalStep'),
+                subtitle: _localizedSceneText(context, 'combine'),
                 selected: true,
               ),
             ),
@@ -2253,6 +2497,7 @@ class _BossInteractionStage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _InteractionChoiceWrap(
+          challenge: challenge,
           choices: challenge.choices,
           selectedChoiceId: selectedChoiceId,
           icon: Icons.auto_awesome_rounded,
@@ -2261,7 +2506,7 @@ class _BossInteractionStage extends StatelessWidget {
         _GestureResultBanner(
           hasSubmitted: hasSubmitted,
           isCorrect: isCorrect,
-          idleText: 'Solve each clue before the boss answer.',
+          idleText: _localizedSceneText(context, 'bossIdle'),
         ),
       ],
     );
@@ -2270,12 +2515,14 @@ class _BossInteractionStage extends StatelessWidget {
 
 class _InteractionChoiceWrap extends StatelessWidget {
   const _InteractionChoiceWrap({
+    required this.challenge,
     required this.choices,
     required this.selectedChoiceId,
     required this.icon,
     required this.onChoiceSelected,
   });
 
+  final DailyChallenge challenge;
   final List<ChallengeChoice> choices;
   final String? selectedChoiceId;
   final IconData icon;
@@ -2289,7 +2536,7 @@ class _InteractionChoiceWrap extends StatelessWidget {
       children: [
         for (final choice in choices)
           _InteractionOptionChip(
-            label: choice.label,
+            label: context.l10n.choiceLabelFor(challenge, choice),
             selected: selectedChoiceId == choice.id,
             icon: icon,
             onTap: () => onChoiceSelected(choice.id),
@@ -2301,12 +2548,14 @@ class _InteractionChoiceWrap extends StatelessWidget {
 
 class _DraggableChoiceWrap extends StatelessWidget {
   const _DraggableChoiceWrap({
+    required this.challenge,
     required this.choices,
     required this.selectedChoiceId,
     required this.icon,
     required this.onChoiceSelected,
   });
 
+  final DailyChallenge challenge;
   final List<ChallengeChoice> choices;
   final String? selectedChoiceId;
   final IconData icon;
@@ -2322,7 +2571,7 @@ class _DraggableChoiceWrap extends StatelessWidget {
           _DraggableInteractionOption(
             key: ValueKey('stage-draggable-${choice.id}'),
             choiceId: choice.id,
-            label: choice.label,
+            label: context.l10n.choiceLabelFor(challenge, choice),
             selected: selectedChoiceId == choice.id,
             icon: icon,
             onTap: () => onChoiceSelected(choice.id),
@@ -2462,8 +2711,8 @@ class _GestureResultBanner extends StatelessWidget {
         : Icons.touch_app_rounded;
     final text = hasSubmitted
         ? isCorrect
-            ? 'Gesture solved.'
-            : 'Try the gesture again with the hint.'
+            ? _localizedSceneText(context, 'gestureSolved')
+            : _localizedSceneText(context, 'gestureRetry')
         : idleText;
 
     return Padding(
@@ -2605,7 +2854,7 @@ class _FlipMemoryToken extends StatelessWidget {
               ),
               const SizedBox(height: 1),
               Text(
-                revealed ? label : 'Flip',
+                revealed ? label : _localizedSceneText(context, 'flip'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,

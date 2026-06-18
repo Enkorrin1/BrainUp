@@ -349,6 +349,8 @@ void main() {
       expect(
         readiness['enabledInteractionTypes'],
         containsAll([
+          PuzzleInteractionType.tapChoice.name,
+          PuzzleInteractionType.matchPairs.name,
           PuzzleInteractionType.memoryReveal.name,
           PuzzleInteractionType.tracePath.name,
           PuzzleInteractionType.rotateObject.name,
@@ -356,7 +358,11 @@ void main() {
         ]),
       );
       expect(readiness['readyPuzzleCount'], greaterThan(0));
+      expect(countsByType[PuzzleType.sequenceComplete.name], greaterThan(0));
       expect(countsByType[PuzzleType.memoryGrid.name], greaterThan(0));
+      expect(countsByType[PuzzleType.attentionScan.name], greaterThan(0));
+      expect(countsByType[PuzzleType.codeBreaker.name], greaterThan(0));
+      expect(countsByType[PuzzleType.countBridge.name], greaterThan(0));
       expect(countsByType[PuzzleType.pathPuzzle.name], greaterThan(0));
       expect(countsByType[PuzzleType.spatialRotation.name], greaterThan(0));
       expect(countsByType[PuzzleType.mixedBoss.name], greaterThan(0));

@@ -266,6 +266,145 @@ class MiniGameCanvasVisuals {
       return;
     }
 
+    if (key.contains('rain') || key.contains('water')) {
+      final dropPath = Path()
+        ..moveTo(center.dx, center.dy - size * 0.42)
+        ..quadraticBezierTo(
+          center.dx + size * 0.36,
+          center.dy,
+          center.dx,
+          center.dy + size * 0.40,
+        )
+        ..quadraticBezierTo(
+          center.dx - size * 0.36,
+          center.dy,
+          center.dx,
+          center.dy - size * 0.42,
+        )
+        ..close();
+      canvas.drawPath(dropPath, paint);
+      canvas.drawCircle(
+        center.translate(size * 0.16, size * 0.08),
+        size * 0.07,
+        Paint()..color = Colors.white.withValues(alpha: 0.48),
+      );
+      return;
+    }
+
+    if (key.contains('moon')) {
+      canvas.drawCircle(center, size * 0.36, paint);
+      canvas.drawCircle(
+        center.translate(size * 0.16, -size * 0.08),
+        size * 0.34,
+        Paint()..color = const Color(0xFF07132F),
+      );
+      return;
+    }
+
+    if (key.contains('sun')) {
+      canvas.drawCircle(center, size * 0.28, paint);
+      final rayPaint = Paint()
+        ..strokeWidth = math.max(2, size * 0.07)
+        ..strokeCap = StrokeCap.round
+        ..color = paint.color;
+      for (var index = 0; index < 8; index += 1) {
+        final angle = index * math.pi / 4;
+        canvas.drawLine(
+          center.translate(
+            math.cos(angle) * size * 0.40,
+            math.sin(angle) * size * 0.40,
+          ),
+          center.translate(
+            math.cos(angle) * size * 0.54,
+            math.sin(angle) * size * 0.54,
+          ),
+          rayPaint,
+        );
+      }
+      return;
+    }
+
+    if (key.contains('flower')) {
+      for (var index = 0; index < 6; index += 1) {
+        final angle = index * math.pi / 3;
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: center.translate(
+              math.cos(angle) * size * 0.23,
+              math.sin(angle) * size * 0.23,
+            ),
+            width: size * 0.28,
+            height: size * 0.18,
+          ),
+          paint,
+        );
+      }
+      canvas.drawCircle(
+        center,
+        size * 0.14,
+        Paint()..color = const Color(0xFFFFD15C),
+      );
+      return;
+    }
+
+    if (key.contains('fish')) {
+      canvas.drawOval(
+        Rect.fromCenter(
+            center: center, width: size * 0.72, height: size * 0.42),
+        paint,
+      );
+      canvas.drawPath(
+        Path()
+          ..moveTo(center.dx + size * 0.36, center.dy)
+          ..lineTo(center.dx + size * 0.58, center.dy - size * 0.22)
+          ..lineTo(center.dx + size * 0.58, center.dy + size * 0.22)
+          ..close(),
+        paint,
+      );
+      canvas.drawCircle(
+        center.translate(-size * 0.22, -size * 0.06),
+        size * 0.04,
+        accentPaint,
+      );
+      return;
+    }
+
+    if (key.contains('foot')) {
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: center.translate(0, size * 0.10),
+          width: size * 0.42,
+          height: size * 0.68,
+        ),
+        paint,
+      );
+      for (var index = 0; index < 4; index += 1) {
+        canvas.drawCircle(
+          center.translate(-size * 0.18 + index * size * 0.12, -size * 0.30),
+          size * (0.07 - index * 0.004),
+          paint,
+        );
+      }
+      return;
+    }
+
+    if (key.contains('leaf') || key.contains('carrot')) {
+      canvas.drawOval(
+        Rect.fromCenter(
+            center: center, width: size * 0.42, height: size * 0.72),
+        paint,
+      );
+      canvas.drawLine(
+        center.translate(0, -size * 0.26),
+        center.translate(0, size * 0.30),
+        Paint()
+          ..strokeWidth = 2
+          ..strokeCap = StrokeCap.round
+          ..color = Colors.white.withValues(alpha: 0.48),
+      );
+      return;
+    }
+
     if (key.contains('same')) {
       _drawCenteredText(canvas, center, '=', size * 0.95, paint.color);
       return;
@@ -292,19 +431,34 @@ class MiniGameCanvasVisuals {
 
   static Color colorForChoice(String choiceId, int index) {
     final key = _normalizedKey(choiceId);
-    if (key.contains('apple') || key.contains('red')) {
+    if (key.contains('apple') ||
+        key.contains('red') ||
+        key.contains('flower')) {
       return const Color(0xFFFF6F7D);
     }
-    if (key.contains('pear') || key.contains('green') || key.contains('leaf')) {
+    if (key.contains('pear') ||
+        key.contains('green') ||
+        key.contains('leaf') ||
+        key.contains('carrot')) {
       return const Color(0xFF68D391);
     }
-    if (key.contains('banana') || key.contains('star') || key.contains('key')) {
+    if (key.contains('banana') ||
+        key.contains('star') ||
+        key.contains('key') ||
+        key.contains('sun')) {
       return const Color(0xFFFFD15C);
     }
-    if (key.contains('rocket') || key.contains('blue')) {
+    if (key.contains('rocket') ||
+        key.contains('blue') ||
+        key.contains('rain') ||
+        key.contains('water')) {
       return const Color(0xFF42F4D2);
     }
-    if (key.contains('planet') || key.contains('shape')) {
+    if (key.contains('planet') ||
+        key.contains('shape') ||
+        key.contains('moon') ||
+        key.contains('fish') ||
+        key.contains('foot')) {
       return const Color(0xFF9C6AF2);
     }
     const palette = [
@@ -318,7 +472,44 @@ class MiniGameCanvasVisuals {
   }
 
   static String _normalizedKey(String value) {
-    return value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+    var normalized = value.toLowerCase();
+    const aliases = {
+      'яблок': ' apple ',
+      'груш': ' pear ',
+      'банан': ' banana ',
+      'мяч': ' ball ',
+      'ракет': ' rocket ',
+      'планет': ' planet ',
+      'звезд': ' star ',
+      'звёзд': ' star ',
+      'лун': ' moon ',
+      'солн': ' sun ',
+      'дожд': ' rain ',
+      'вод': ' water ',
+      'облак': ' cloud ',
+      'туч': ' cloud ',
+      'ключ': ' key ',
+      'зам': ' lock ',
+      'ботин': ' shoe ',
+      'стоп': ' foot ',
+      'рыб': ' fish ',
+      'цвет': ' flower ',
+      'лист': ' leaf ',
+      'морков': ' carrot ',
+      'круг': ' circle ',
+      'квадрат': ' square ',
+      'треуг': ' triangle ',
+      'куб': ' cube ',
+      'лев': ' left ',
+      'прав': ' right ',
+      'одинак': ' same ',
+    };
+    for (final entry in aliases.entries) {
+      if (normalized.contains(entry.key)) {
+        normalized += entry.value;
+      }
+    }
+    return normalized.replaceAll(RegExp(r'[^a-z0-9]+'), '-');
   }
 
   static String _fallbackToken(String label) {

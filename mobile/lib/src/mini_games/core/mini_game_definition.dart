@@ -11,6 +11,7 @@ enum MiniGameType {
   shapeBuilder,
   attentionScan,
   patternMachine,
+  pairLink,
   sortLab,
   bossMix,
 }

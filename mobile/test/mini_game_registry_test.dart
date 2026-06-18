@@ -12,23 +12,36 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('registry creates the first three playable mini-game definitions', () {
-    final cases = {
-      PuzzleType.memoryGrid: MiniGameType.memoryGrid,
-      PuzzleType.pathPuzzle: MiniGameType.logicPath,
-      PuzzleType.spatialRotation: MiniGameType.shapeBuilder,
-    };
+    final cases = [
+      (
+        PuzzleType.memoryGrid,
+        PuzzleInteractionType.memoryReveal,
+        MiniGameType.memoryGrid,
+      ),
+      (
+        PuzzleType.pathPuzzle,
+        PuzzleInteractionType.tracePath,
+        MiniGameType.logicPath,
+      ),
+      (
+        PuzzleType.spatialRotation,
+        PuzzleInteractionType.rotateObject,
+        MiniGameType.shapeBuilder,
+      ),
+    ];
 
-    for (final entry in cases.entries) {
+    for (final entry in cases) {
       final puzzle = FoundationCatalog.allPuzzles.firstWhere(
         (puzzle) =>
-            puzzle.type == entry.key &&
+            puzzle.type == entry.$1 &&
+            puzzle.visualMetadata?.interactionType == entry.$2 &&
             FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
       );
       final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
       final definition = MiniGameRegistry.definitionForChallenge(challenge);
 
       expect(definition, isNotNull);
-      expect(definition?.type, entry.value);
+      expect(definition?.type, entry.$3);
       expect(definition?.puzzleId, challenge.id);
       expect(definition?.firstRound.correctChoiceId, challenge.correctChoiceId);
       expect(definition?.rounds, hasLength(1));
@@ -38,7 +51,7 @@ void main() {
       expect(definition?.characterReactionProfile.stateLines, isNotEmpty);
       expect(definition?.adaptiveProfile.reviewPriority, greaterThan(0));
       expect(definition?.audioProfile.cueIds, isNotEmpty);
-      expect(definition?.toJson(), containsPair('type', entry.value.name));
+      expect(definition?.toJson(), containsPair('type', entry.$3.name));
     }
   });
 
@@ -61,6 +74,53 @@ void main() {
       definition?.parentSummaryLabel,
       contains('multi-step planning'),
     );
+  });
+
+  test('registry expands playable definitions across puzzle families', () {
+    final cases = [
+      (
+        PuzzleType.sequenceComplete,
+        PuzzleInteractionType.tapChoice,
+        MiniGameType.patternMachine,
+      ),
+      (
+        PuzzleType.memoryGrid,
+        PuzzleInteractionType.matchPairs,
+        MiniGameType.pairLink,
+      ),
+      (
+        PuzzleType.countBridge,
+        PuzzleInteractionType.dragToTarget,
+        MiniGameType.mathBubbles,
+      ),
+      (
+        PuzzleType.attentionScan,
+        PuzzleInteractionType.tapChoice,
+        MiniGameType.attentionScan,
+      ),
+      (
+        PuzzleType.codeBreaker,
+        PuzzleInteractionType.tapChoice,
+        MiniGameType.patternMachine,
+      ),
+    ];
+
+    for (final entry in cases) {
+      final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+        (puzzle) =>
+            puzzle.type == entry.$1 &&
+            puzzle.visualMetadata?.interactionType == entry.$2 &&
+            FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+      final definition = MiniGameRegistry.definitionForChallenge(challenge);
+
+      expect(definition, isNotNull);
+      expect(definition?.type, entry.$3);
+      expect(definition?.sourceInteractionType, entry.$2);
+      expect(definition?.firstRound.choiceIds, isNotEmpty);
+      expect(definition?.contentConfig?.isValid, isTrue);
+    }
   });
 
   test('registry creates drag-drop definitions for math and sorting content',

@@ -347,13 +347,24 @@ ChallengeInteractionSpec? _interactionForPuzzle(
   _GeneratedPuzzleData generated,
 ) {
   final metadata = puzzle.visualMetadata;
-  if (metadata == null ||
-      metadata.interactionType == PuzzleInteractionType.tapChoice) {
+  if (metadata == null) {
+    return null;
+  }
+  if (metadata.interactionType == PuzzleInteractionType.tapChoice &&
+      metadata.miniGameConfig == null) {
     return null;
   }
 
   final items = _interactionItemsFor(generated, metadata);
   return switch (metadata.interactionType) {
+    PuzzleInteractionType.tapChoice => ChallengeInteractionSpec(
+        type: PuzzleInteractionType.tapChoice,
+        instruction: 'Choose the answer directly on the scene.',
+        items: items,
+        correctMatches: {
+          'tap.answer': generated.correctChoiceId,
+        },
+      ),
     PuzzleInteractionType.dragToTarget => ChallengeInteractionSpec(
         type: PuzzleInteractionType.dragToTarget,
         instruction: 'Drag the best answer into the active spot.',
@@ -446,7 +457,6 @@ ChallengeInteractionSpec? _interactionForPuzzle(
           'boss.answer': generated.correctChoiceId,
         },
       ),
-    PuzzleInteractionType.tapChoice => null,
   };
 }
 
@@ -474,6 +484,13 @@ String? _choiceAssetForChoiceId(String choiceId) {
   if (key.contains('rocket')) return 'object.rocket';
   if (key.contains('planet')) return 'object.planet';
   if (key.contains('star')) return 'object.star';
+  if (key.contains('moon')) return 'object.moon';
+  if (key.contains('sun')) return 'object.sun';
+  if (key.contains('rain') || key.contains('water')) return 'object.rain';
+  if (key.contains('flower')) return 'object.flower';
+  if (key.contains('fish')) return 'object.fish';
+  if (key.contains('foot')) return 'object.foot';
+  if (key.contains('leaf') || key.contains('carrot')) return 'object.leaf';
   if (key.contains('lock')) return 'object.lock';
   if (key.contains('key')) return 'object.key';
   if (key.contains('shoe')) return 'object.shoe';
