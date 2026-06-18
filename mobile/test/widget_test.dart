@@ -279,6 +279,53 @@ void main() {
     expect(find.text('Practice tricky bits'), findsNothing);
   });
 
+  testWidgets('opens memory puzzle as a mini-game and returns result',
+      (tester) async {
+    final store = _MemoryFamilyProfileStore(
+      _testProfileWithPracticeSessions([
+        PracticeSession(
+          completedAt: DateTime(2026, 6, 12, 18),
+          challengeId: 'lesson.009',
+          challengeTitle: 'Memory lesson',
+          skill: 'Working memory',
+          minutes: 5,
+          correctAnswers: 2,
+          totalQuestions: 5,
+          wrongAttempts: 2,
+          mistakePuzzleIds: ['memory.order.normal.003'],
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(
+      BrainUpApp(
+        familyProfileStore: store,
+        locale: const Locale('en'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Review'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Memory Grid mode'), findsOneWidget);
+    await tester.ensureVisible(find.text('Play mini-game'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Play mini-game'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Memory Grid'), findsOneWidget);
+    await tester.tap(find.text('Shoe').last);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.text('Submit mini-game'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.textContaining('Correct!'), findsOneWidget);
+    expect(find.text('Next'), findsOneWidget);
+  });
+
   testWidgets('shows a lesson hint before checking an answer', (tester) async {
     final store = _MemoryFamilyProfileStore(_testProfile());
 

@@ -240,6 +240,16 @@ Definition of done:
 - boss completion feels different from normal lessons;
 - boss mistakes feed adaptive review.
 
+Implemented in Stage 31:
+
+- added 3 boss mini-game templates for Shape Garden, Underwater City, and
+  Riddle Castle;
+- added a boss intro screen, in-lesson step tracker, and 3-step boss interaction
+  guidance;
+- exported boss mini-games in `docs/content-manifest.json`;
+- added a stronger boss reward reveal and parent summary card;
+- kept boss mistakes connected to the existing adaptive review mistake flow.
+
 ## Stage 32. Adaptive Smart Route
 
 Make practice feel personal without making children feel judged.

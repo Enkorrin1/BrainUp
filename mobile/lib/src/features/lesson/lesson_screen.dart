@@ -5,6 +5,10 @@ import '../../domain/daily_challenge.dart';
 import '../../domain/family_profile.dart';
 import '../../domain/learning_foundation.dart';
 import '../../l10n/l10n.dart';
+import '../../mini_games/core/mini_game_definition.dart';
+import '../../mini_games/core/mini_game_registry.dart';
+import '../../mini_games/core/mini_game_result.dart';
+import '../../mini_games/host/mini_game_host_screen.dart';
 
 class _LessonPalette {
   static const background = Color(0xFF07132F);
@@ -116,6 +120,7 @@ class _LessonScreenState extends State<LessonScreen> {
   bool _isComplete = false;
   bool _isSaving = false;
   bool _showHint = false;
+  bool _bossIntroDismissed = false;
   final Set<int> _hintedStepIndexes = <int>{};
   final Set<String> _mistakePuzzleIds = <String>{};
   int _wrongAttempts = 0;
@@ -127,6 +132,7 @@ class _LessonScreenState extends State<LessonScreen> {
         ? FoundationCatalog.lessonForNode(_currentNode(child))
         : FoundationCatalog.lessonForId(widget.lessonId!);
     final storyWorld = FoundationCatalog.storyWorldForLessonId(lesson.id);
+    final bossMiniGame = FoundationCatalog.bossMiniGameForLessonId(lesson.id);
     final storyWorldProgressAfterLesson = storyWorld == null
         ? null
         : FoundationCatalog.storyWorldProgressFor(
@@ -137,11 +143,24 @@ class _LessonScreenState extends State<LessonScreen> {
           ).firstWhere((progress) => progress.world.id == storyWorld.id);
     final challenges = _lessonChallenges(child, lesson);
     final challenge = challenges[_stepIndex];
+    final miniGameDefinition =
+        MiniGameRegistry.definitionForChallenge(challenge);
+    final bossProgress = bossMiniGame == null
+        ? null
+        : FoundationCatalog.bossMiniGameProgressFor(
+            lessonId: lesson.id,
+            completedQuestions:
+                _hasSubmitted && _isCorrect ? _stepIndex + 1 : _stepIndex,
+            totalQuestions: challenges.length,
+            wrongAttempts: _wrongAttempts,
+            usedHints: _hintedStepIndexes.length,
+          );
 
     if (_isComplete) {
       return _LessonCompleteView(
         lesson: lesson,
         isReviewLesson: lesson.id == FoundationCatalog.adaptiveReviewLesson.id,
+        bossMiniGame: bossMiniGame,
         totalQuestions: challenges.length,
         usedHints: _hintedStepIndexes.length,
         wrongAttempts: _wrongAttempts,
@@ -150,6 +169,20 @@ class _LessonScreenState extends State<LessonScreen> {
             ? null
             : _nextLessonIdAfter(lesson.id, child),
         onNextLessonSelected: widget.onNextLessonSelected,
+        onBackToMap: widget.onBackToMap,
+      );
+    }
+
+    if (bossMiniGame != null && !_bossIntroDismissed) {
+      return _BossIntroView(
+        miniGame: bossMiniGame,
+        storyWorld: storyWorld,
+        totalQuestions: challenges.length,
+        onStart: () {
+          setState(() {
+            _bossIntroDismissed = true;
+          });
+        },
         onBackToMap: widget.onBackToMap,
       );
     }
@@ -172,6 +205,10 @@ class _LessonScreenState extends State<LessonScreen> {
                     hearts: child.hearts,
                     storyWorld: storyWorld,
                   ),
+                  if (bossProgress != null) ...[
+                    const SizedBox(height: 14),
+                    _BossStepTracker(progress: bossProgress),
+                  ],
                   const SizedBox(height: 16),
                   _LessonQuestionCard(
                     challenge: challenge,
@@ -182,6 +219,16 @@ class _LessonScreenState extends State<LessonScreen> {
                     onToggleHint: _toggleHint,
                     onChoiceSelected: _selectChoice,
                   ),
+                  if (miniGameDefinition != null) ...[
+                    const SizedBox(height: 12),
+                    _MiniGameLaunchCard(
+                      definition: miniGameDefinition,
+                      onPlay: () => _openMiniGame(
+                        definition: miniGameDefinition,
+                        challenge: challenge,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 18),
                   FilledButton.icon(
                     onPressed: _selectedChoiceId == null || _isSaving
@@ -295,6 +342,51 @@ class _LessonScreenState extends State<LessonScreen> {
       _selectedChoiceId = choiceId;
       _hasSubmitted = false;
       _isCorrect = false;
+    });
+  }
+
+  Future<void> _openMiniGame({
+    required MiniGameDefinition definition,
+    required DailyChallenge challenge,
+  }) async {
+    final result = await MiniGameHostScreen.play(
+      context,
+      definition: definition,
+      challenge: challenge,
+    );
+    if (!mounted || result == null || result.exited) {
+      return;
+    }
+
+    _applyMiniGameResult(result, challenge);
+  }
+
+  void _applyMiniGameResult(
+    MiniGameResult result,
+    DailyChallenge challenge,
+  ) {
+    final choiceId = result.selectedChoiceId;
+    if (choiceId == null) {
+      return;
+    }
+
+    final wrongAttemptDelta = result.isCorrect
+        ? 0
+        : (result.wrongAttempts <= 0 ? 1 : result.wrongAttempts);
+
+    setState(() {
+      _selectedChoiceId = choiceId;
+      _hasSubmitted = true;
+      _isCorrect = result.isCorrect;
+      if (result.usedHints > 0 || !result.isCorrect) {
+        _showHint = true;
+        _hintedStepIndexes.add(_stepIndex);
+      }
+      if (!result.isCorrect) {
+        _wrongAttempts += wrongAttemptDelta;
+        _mistakePuzzleIds.addAll(result.mistakeSignals);
+        _mistakePuzzleIds.add(challenge.id);
+      }
     });
   }
 
@@ -435,6 +527,337 @@ class _LessonBackdropPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _BossIntroView extends StatelessWidget {
+  const _BossIntroView({
+    required this.miniGame,
+    required this.storyWorld,
+    required this.totalQuestions,
+    required this.onStart,
+    required this.onBackToMap,
+  });
+
+  final BossMiniGameDefinition miniGame;
+  final StoryWorldDefinition? storyWorld;
+  final int totalQuestions;
+  final VoidCallback onStart;
+  final VoidCallback onBackToMap;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(miniGame.accentHex);
+
+    return Scaffold(
+      backgroundColor: _LessonPalette.background,
+      body: Stack(
+        children: [
+          const Positioned.fill(child: _LessonBackdrop()),
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(18),
+              children: [
+                Row(
+                  children: [
+                    IconButton.filledTonal(
+                      tooltip: 'Back to map',
+                      onPressed: onBackToMap,
+                      icon: const Icon(Icons.arrow_back_rounded),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        storyWorld == null
+                            ? 'Boss challenge'
+                            : '${storyWorld!.title} boss',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: _LessonPalette.muted,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                DecoratedBox(
+                  decoration: _panelDecoration(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 96,
+                            height: 96,
+                            decoration: BoxDecoration(
+                              color: accent.withValues(alpha: 0.18),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: accent.withValues(alpha: 0.46),
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              _worldIcon(miniGame.worldId),
+                              color: accent,
+                              size: 46,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          miniGame.title,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                color: _LessonPalette.text,
+                                fontWeight: FontWeight.w900,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          miniGame.intro,
+                          textAlign: TextAlign.center,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: _LessonPalette.muted,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                        ),
+                        const SizedBox(height: 18),
+                        _BossProblemCard(
+                          accent: accent,
+                          problem: miniGame.problem,
+                          totalQuestions: totalQuestions,
+                        ),
+                        const SizedBox(height: 18),
+                        for (var index = 0;
+                            index < miniGame.steps.length;
+                            index += 1) ...[
+                          _BossIntroStepRow(
+                            step: miniGame.steps[index],
+                            index: index,
+                            accent: accent,
+                          ),
+                          if (index != miniGame.steps.length - 1)
+                            const SizedBox(height: 10),
+                        ],
+                        const SizedBox(height: 22),
+                        FilledButton.icon(
+                          onPressed: onStart,
+                          icon: const Icon(Icons.play_arrow_rounded),
+                          label: const Text('Start boss'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: accent,
+                            foregroundColor: _LessonPalette.background,
+                            minimumSize: const Size.fromHeight(56),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BossProblemCard extends StatelessWidget {
+  const _BossProblemCard({
+    required this.accent,
+    required this.problem,
+    required this.totalQuestions,
+  });
+
+  final Color accent;
+  final String problem;
+  final int totalQuestions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent.withValues(alpha: 0.34)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.extension_rounded, color: accent, size: 30),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  problem,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '3 boss steps -> $totalQuestions puzzle moments',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: _LessonPalette.muted,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BossIntroStepRow extends StatelessWidget {
+  const _BossIntroStepRow({
+    required this.step,
+    required this.index,
+    required this.accent,
+  });
+
+  final BossMiniGameStepDefinition step;
+  final int index;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: accent.withValues(alpha: 0.18),
+            shape: BoxShape.circle,
+            border: Border.all(color: accent.withValues(alpha: 0.46)),
+          ),
+          child: Center(
+            child: Text(
+              '${index + 1}',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: _LessonPalette.text,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                step.title,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: _LessonPalette.text,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                step.description,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: _LessonPalette.muted,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BossStepTracker extends StatelessWidget {
+  const _BossStepTracker({required this.progress});
+
+  final BossMiniGameProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(progress.miniGame.accentHex);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withValues(alpha: 0.32)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.workspace_premium_rounded, color: accent, size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Boss step ${progress.currentStepIndex + 1}/${progress.miniGame.steps.length}',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: accent,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+              ),
+              Text(
+                '${(progress.progress * 100).round()}%',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: _LessonPalette.text,
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              minHeight: 8,
+              value: progress.progress,
+              color: accent,
+              backgroundColor: Colors.white.withValues(alpha: 0.12),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            progress.currentStep.title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: _LessonPalette.text,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            progress.currentStep.description,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: _LessonPalette.muted,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _LessonHeader extends StatelessWidget {
@@ -1421,8 +1844,8 @@ class _BossInteractionStage extends StatelessWidget {
             Expanded(
               child: _InteractionCard(
                 icon: Icons.filter_1_rounded,
-                title: 'Clue',
-                subtitle: 'Find rule',
+                title: 'Rule',
+                subtitle: 'Find it',
                 selected: true,
               ),
             ),
@@ -1430,7 +1853,16 @@ class _BossInteractionStage extends StatelessWidget {
             Expanded(
               child: _InteractionCard(
                 icon: Icons.filter_2_rounded,
-                title: 'Check',
+                title: 'Skill',
+                subtitle: 'Apply it',
+                selected: true,
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: _InteractionCard(
+                icon: Icons.filter_3_rounded,
+                title: 'Final',
                 subtitle: 'Combine',
                 selected: true,
               ),
@@ -3153,10 +3585,102 @@ class _LessonFeedback extends StatelessWidget {
   }
 }
 
+class _MiniGameLaunchCard extends StatelessWidget {
+  const _MiniGameLaunchCard({
+    required this.definition,
+    required this.onPlay,
+  });
+
+  final MiniGameDefinition definition;
+  final VoidCallback onPlay;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = switch (definition.type) {
+      MiniGameType.memoryGrid => _LessonPalette.aqua,
+      MiniGameType.logicPath => _LessonPalette.star,
+      MiniGameType.mathBubbles => _LessonPalette.coral,
+      MiniGameType.shapeBuilder => _LessonPalette.violet,
+      MiniGameType.attentionScan => const Color(0xFF68D391),
+      MiniGameType.patternMachine => const Color(0xFF5C8EF7),
+      MiniGameType.sortLab => const Color(0xFFE9C46A),
+      MiniGameType.bossMix => _LessonPalette.coral,
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withValues(alpha: 0.34)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.22),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.sports_esports_rounded,
+                  color: accent,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${definition.title} mode',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: _LessonPalette.text,
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Play this puzzle as a mini-game.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: _LessonPalette.muted,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onPlay,
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: const Text('Play mini-game'),
+              style: FilledButton.styleFrom(
+                backgroundColor: accent,
+                foregroundColor: _LessonPalette.background,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _LessonCompleteView extends StatelessWidget {
   const _LessonCompleteView({
     required this.lesson,
     required this.isReviewLesson,
+    required this.bossMiniGame,
     required this.totalQuestions,
     required this.usedHints,
     required this.wrongAttempts,
@@ -3168,6 +3692,7 @@ class _LessonCompleteView extends StatelessWidget {
 
   final Lesson lesson;
   final bool isReviewLesson;
+  final BossMiniGameDefinition? bossMiniGame;
   final int totalQuestions;
   final int usedHints;
   final int wrongAttempts;
@@ -3179,6 +3704,7 @@ class _LessonCompleteView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final isBossLesson = bossMiniGame != null;
     final completionCoach = isReviewLesson
         ? FoundationCatalog.coachForCharacterId('brainy')
         : FoundationCatalog.coachForCharacterId(
@@ -3200,14 +3726,19 @@ class _LessonCompleteView extends StatelessWidget {
                     padding: const EdgeInsets.all(22),
                     child: Column(
                       children: [
-                        isReviewLesson
-                            ? const _ReviewReward()
-                            : const _StickerReward(),
+                        if (isReviewLesson)
+                          const _ReviewReward()
+                        else if (isBossLesson)
+                          _BossRewardReveal(miniGame: bossMiniGame!)
+                        else
+                          const _StickerReward(),
                         const SizedBox(height: 18),
                         Text(
                           isReviewLesson
                               ? l10n.adaptiveReviewCompleteTitle
-                              : l10n.lessonCompleteTitle,
+                              : isBossLesson
+                                  ? 'Boss cleared!'
+                                  : l10n.lessonCompleteTitle,
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -3221,7 +3752,9 @@ class _LessonCompleteView extends StatelessWidget {
                         Text(
                           isReviewLesson
                               ? l10n.adaptiveReviewCompleteBody
-                              : l10n.lessonCompleteBody,
+                              : isBossLesson
+                                  ? 'You combined every clue and unlocked a bigger reward moment.'
+                                  : l10n.lessonCompleteBody,
                           textAlign: TextAlign.center,
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -3236,10 +3769,13 @@ class _LessonCompleteView extends StatelessWidget {
                         ),
                         const SizedBox(height: 18),
                         if (!isReviewLesson) ...[
-                          _StickerUnlockCard(
-                            title: l10n.lessonStickerUnlockedTitle,
-                            body: l10n.lessonStickerUnlockedBody,
-                          ),
+                          if (isBossLesson)
+                            _BossRewardCard(miniGame: bossMiniGame!)
+                          else
+                            _StickerUnlockCard(
+                              title: l10n.lessonStickerUnlockedTitle,
+                              body: l10n.lessonStickerUnlockedBody,
+                            ),
                           const SizedBox(height: 18),
                         ],
                         if (storyWorldProgress != null) ...[
@@ -3253,6 +3789,15 @@ class _LessonCompleteView extends StatelessWidget {
                           usedHints: usedHints,
                           wrongAttempts: wrongAttempts,
                         ),
+                        if (isBossLesson) ...[
+                          const SizedBox(height: 18),
+                          _BossPerformanceSummaryCard(
+                            miniGame: bossMiniGame!,
+                            totalQuestions: totalQuestions,
+                            usedHints: usedHints,
+                            wrongAttempts: wrongAttempts,
+                          ),
+                        ],
                         const SizedBox(height: 18),
                         Row(
                           children: [
@@ -3284,10 +3829,14 @@ class _LessonCompleteView extends StatelessWidget {
                               child: _RewardTile(
                                 icon: isReviewLesson
                                     ? Icons.replay_rounded
-                                    : Icons.auto_awesome_rounded,
+                                    : isBossLesson
+                                        ? Icons.workspace_premium_rounded
+                                        : Icons.auto_awesome_rounded,
                                 label: isReviewLesson
                                     ? l10n.adaptiveReviewRewardMistakes
-                                    : l10n.lessonRewardCollection,
+                                    : isBossLesson
+                                        ? 'Boss reward'
+                                        : l10n.lessonRewardCollection,
                                 color: const Color(0xFF9C6AF2),
                               ),
                             ),
@@ -3386,6 +3935,240 @@ class _StickerReward extends StatelessWidget {
             bottom: 22,
             child: Icon(Icons.star_rounded, color: Color(0xFFFFC739), size: 24),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BossRewardReveal extends StatelessWidget {
+  const _BossRewardReveal({required this.miniGame});
+
+  final BossMiniGameDefinition miniGame;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(miniGame.accentHex);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.86, end: 1),
+      duration: const Duration(milliseconds: 520),
+      curve: Curves.elasticOut,
+      builder: (context, scale, child) {
+        return Transform.scale(scale: scale, child: child);
+      },
+      child: SizedBox(
+        width: 184,
+        height: 184,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 172,
+              height: 172,
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+                border: Border.all(color: accent.withValues(alpha: 0.38)),
+              ),
+            ),
+            Container(
+              width: 128,
+              height: 128,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    accent,
+                    _LessonPalette.star,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(34),
+                boxShadow: [
+                  BoxShadow(
+                    color: accent.withValues(alpha: 0.28),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.workspace_premium_rounded,
+                color: _LessonPalette.background,
+                size: 66,
+              ),
+            ),
+            const Positioned(
+              top: 12,
+              right: 18,
+              child: Icon(
+                Icons.auto_awesome_rounded,
+                color: Color(0xFFFFD15C),
+                size: 34,
+              ),
+            ),
+            const Positioned(
+              left: 18,
+              bottom: 22,
+              child: Icon(
+                Icons.shield_rounded,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BossRewardCard extends StatelessWidget {
+  const _BossRewardCard({required this.miniGame});
+
+  final BossMiniGameDefinition miniGame;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(miniGame.accentHex);
+    final reward = FoundationCatalog.rewardForId(miniGame.rewardId);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withValues(alpha: 0.36)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: accent,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.workspace_premium_rounded,
+              color: _LessonPalette.background,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  reward?.titleKey ?? 'Boss reward unlocked',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${miniGame.title} is cleared. This badge marks a mixed-skill win.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.muted,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BossPerformanceSummaryCard extends StatelessWidget {
+  const _BossPerformanceSummaryCard({
+    required this.miniGame,
+    required this.totalQuestions,
+    required this.usedHints,
+    required this.wrongAttempts,
+  });
+
+  final BossMiniGameDefinition miniGame;
+  final int totalQuestions;
+  final int usedHints;
+  final int wrongAttempts;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Color(miniGame.accentHex);
+    final correctEstimate = (totalQuestions - wrongAttempts).clamp(
+      0,
+      totalQuestions,
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withValues(alpha: 0.32)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.family_restroom_rounded, color: accent),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Parent summary',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: _LessonPalette.text,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Mixed skills: ${miniGame.mixedSkillTags.map((skill) => skill.name).join(', ')}.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: _LessonPalette.muted,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _ReviewMetric(
+                  value: '$correctEstimate/$totalQuestions',
+                  label: 'Boss accuracy',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _ReviewMetric(
+                  value: '$usedHints',
+                  label: 'Hints used',
+                ),
+              ),
+            ],
+          ),
+          if (wrongAttempts > 0) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Boss mistakes saved for adaptive review.',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ],
         ],
       ),
     );

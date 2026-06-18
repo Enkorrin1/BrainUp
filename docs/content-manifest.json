@@ -98,6 +98,49 @@
     ],
     "visualPuzzleCount": 485
   },
+  "miniGameReadiness": {
+    "runtime": "flame",
+    "audioRuntime": "flame_audio",
+    "enabledInteractionTypes": [
+      "memoryReveal"
+    ],
+    "readyPuzzleCount": 33,
+    "readyPuzzleIds": [
+      "puzzle.memory.order.001",
+      "puzzle.memory.order.002",
+      "puzzle.memory.order.003",
+      "puzzle.memory.order.004",
+      "puzzle.memory.order.005",
+      "puzzle.memory.order.006",
+      "puzzle.memory.order.007",
+      "puzzle.memory.order.008",
+      "puzzle.memory.order.009",
+      "puzzle.memory.order.010",
+      "puzzle.memory.order.011",
+      "puzzle.memory.order.012",
+      "puzzle.memory.order.013",
+      "puzzle.memory.order.014",
+      "puzzle.memory.order.015",
+      "puzzle.memory.order.016",
+      "puzzle.memory.order.017",
+      "puzzle.memory.order.018",
+      "puzzle.memory.order.019",
+      "puzzle.memory.order.020",
+      "puzzle.memory.order.021",
+      "puzzle.memory.order.022",
+      "puzzle.memory.order.023",
+      "puzzle.memory.order.024",
+      "puzzle.memory.order.025",
+      "puzzle.memory.order.026",
+      "puzzle.memory.order.027",
+      "puzzle.memory.order.028",
+      "puzzle.curated.memory.order.001",
+      "puzzle.curated.memory.order.002",
+      "puzzle.curated.memory.order.003",
+      "puzzle.curated.memory.order.004",
+      "puzzle.curated.memory.order.005"
+    ]
+  },
   "characterCoaches": [
     {
       "id": "brainy",
@@ -905,6 +948,143 @@
       ]
     }
   ],
+  "bossMiniGames": [
+    {
+      "id": "boss.shape_garden.prism_gate",
+      "lessonIds": [
+        "lesson.012"
+      ],
+      "worldId": "shape_garden",
+      "title": "Prism Gate Boss",
+      "intro": "Quadra needs three clues to open the Shape Garden gate.",
+      "problem": "Turn the shape, trace the route, then combine the pattern.",
+      "rewardId": "reward.badge.shape_master",
+      "accentHex": 4288441074,
+      "mixedSkillTags": [
+        "pattern",
+        "spatial",
+        "reasoning"
+      ],
+      "puzzleTypes": [
+        "sequenceComplete",
+        "spatialRotation",
+        "mixedBoss"
+      ],
+      "steps": [
+        {
+          "id": "shape.rule",
+          "title": "Solve the core rule",
+          "description": "Find how the shape or pattern changes.",
+          "skillTag": "pattern",
+          "puzzleType": "sequenceComplete"
+        },
+        {
+          "id": "shape.space",
+          "title": "Apply spatial thinking",
+          "description": "Rotate or trace the missing route.",
+          "skillTag": "spatial",
+          "puzzleType": "spatialRotation"
+        },
+        {
+          "id": "shape.final",
+          "title": "Combine both clues",
+          "description": "Use rule and space together for the final answer.",
+          "skillTag": "reasoning",
+          "puzzleType": "mixedBoss"
+        }
+      ]
+    },
+    {
+      "id": "boss.underwater_city.signal_core",
+      "lessonIds": [
+        "lesson.018"
+      ],
+      "worldId": "underwater_city",
+      "title": "Signal Core Boss",
+      "intro": "Lumi found a coral signal that only opens with memory teamwork.",
+      "problem": "Remember the signal, match the pairs, then choose the code.",
+      "rewardId": "reward.badge.memory_captain",
+      "accentHex": 4284255991,
+      "mixedSkillTags": [
+        "memory",
+        "attention",
+        "reasoning"
+      ],
+      "puzzleTypes": [
+        "memoryGrid",
+        "attentionScan",
+        "mixedBoss"
+      ],
+      "steps": [
+        {
+          "id": "signal.memory",
+          "title": "Hold the first signal",
+          "description": "Remember the order before it disappears.",
+          "skillTag": "memory",
+          "puzzleType": "memoryGrid"
+        },
+        {
+          "id": "signal.focus",
+          "title": "Check the hidden detail",
+          "description": "Spot the signal piece that changed.",
+          "skillTag": "attention",
+          "puzzleType": "attentionScan"
+        },
+        {
+          "id": "signal.final",
+          "title": "Combine the signal",
+          "description": "Use memory and focus to pick the final code.",
+          "skillTag": "reasoning",
+          "puzzleType": "mixedBoss"
+        }
+      ]
+    },
+    {
+      "id": "boss.riddle_castle.logic_gate",
+      "lessonIds": [
+        "lesson.024"
+      ],
+      "worldId": "riddle_castle",
+      "title": "Logic Gate Boss",
+      "intro": "Brainy and Rulo need every clue to unlock the castle gate.",
+      "problem": "Decode the rule, compare the clue, then solve the gate.",
+      "rewardId": "reward.badge.rule_finder",
+      "accentHex": 4293510250,
+      "mixedSkillTags": [
+        "pattern",
+        "reasoning",
+        "classification"
+      ],
+      "puzzleTypes": [
+        "codeBreaker",
+        "analogy",
+        "mixedBoss"
+      ],
+      "steps": [
+        {
+          "id": "gate.rule",
+          "title": "Find the gate rule",
+          "description": "Decode what changes from clue to clue.",
+          "skillTag": "pattern",
+          "puzzleType": "codeBreaker"
+        },
+        {
+          "id": "gate.reason",
+          "title": "Apply reasoning",
+          "description": "Compare the clues and remove the distractor.",
+          "skillTag": "reasoning",
+          "puzzleType": "analogy"
+        },
+        {
+          "id": "gate.final",
+          "title": "Open the final gate",
+          "description": "Combine rule and reasoning in one boss answer.",
+          "skillTag": "classification",
+          "puzzleType": "mixedBoss"
+        }
+      ]
+    }
+  ],
   "placementRules": [
     {
       "placement": "mainRoute",
@@ -1343,11 +1523,11 @@
       {
         "id": "bossLevels",
         "label": "Boss levels",
-        "current": 2,
+        "current": 3,
         "target": 10,
         "unit": "levels",
         "passes": false,
-        "remaining": 8
+        "remaining": 7
       },
       {
         "id": "adaptiveReview",
@@ -1399,11 +1579,11 @@
       {
         "id": "bossLevels",
         "label": "Boss levels",
-        "current": 2,
+        "current": 3,
         "target": 10,
         "unit": "levels",
         "passes": false,
-        "remaining": 8
+        "remaining": 7
       }
     ]
   },
@@ -1495,8 +1675,8 @@
     },
     {
       "lessonId": "lesson.018",
-      "placement": "mainRoute",
-      "defaultPuzzleCount": 5
+      "placement": "bossNode",
+      "defaultPuzzleCount": 7
     },
     {
       "lessonId": "lesson.019",

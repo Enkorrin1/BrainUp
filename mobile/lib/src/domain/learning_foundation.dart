@@ -471,6 +471,164 @@ class WeeklyEventProgress {
   }
 }
 
+class BossMiniGameStepDefinition {
+  const BossMiniGameStepDefinition({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.skillTag,
+    required this.puzzleType,
+  });
+
+  final String id;
+  final String title;
+  final String description;
+  final SkillTag skillTag;
+  final PuzzleType puzzleType;
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'skillTag': skillTag.name,
+      'puzzleType': puzzleType.name,
+    };
+  }
+}
+
+class BossMiniGameDefinition {
+  const BossMiniGameDefinition({
+    required this.id,
+    required this.lessonIds,
+    required this.worldId,
+    required this.title,
+    required this.intro,
+    required this.problem,
+    required this.rewardId,
+    required this.accentHex,
+    required this.steps,
+  });
+
+  final String id;
+  final List<String> lessonIds;
+  final String worldId;
+  final String title;
+  final String intro;
+  final String problem;
+  final String rewardId;
+  final int accentHex;
+  final List<BossMiniGameStepDefinition> steps;
+
+  List<SkillTag> get mixedSkillTags {
+    return {
+      for (final step in steps) step.skillTag,
+    }.toList(growable: false);
+  }
+
+  List<PuzzleType> get puzzleTypes {
+    return [
+      for (final step in steps) step.puzzleType,
+    ];
+  }
+
+  BossMiniGameStepDefinition stepForProgress({
+    required int completedQuestions,
+    required int totalQuestions,
+  }) {
+    if (steps.isEmpty) {
+      throw StateError('Boss mini-game has no steps: $id');
+    }
+
+    if (totalQuestions <= 0) {
+      return steps.first;
+    }
+
+    final rawIndex = (completedQuestions * steps.length) ~/ totalQuestions;
+    final index = rawIndex.clamp(0, steps.length - 1).toInt();
+    return steps[index];
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'lessonIds': lessonIds,
+      'worldId': worldId,
+      'title': title,
+      'intro': intro,
+      'problem': problem,
+      'rewardId': rewardId,
+      'accentHex': accentHex,
+      'mixedSkillTags': [
+        for (final skillTag in mixedSkillTags) skillTag.name,
+      ],
+      'puzzleTypes': [
+        for (final puzzleType in puzzleTypes) puzzleType.name,
+      ],
+      'steps': [
+        for (final step in steps) step.toJson(),
+      ],
+    };
+  }
+}
+
+class BossMiniGameProgress {
+  const BossMiniGameProgress({
+    required this.miniGame,
+    required this.currentStep,
+    required this.currentStepIndex,
+    required this.completedQuestions,
+    required this.totalQuestions,
+    required this.wrongAttempts,
+    required this.usedHints,
+  });
+
+  final BossMiniGameDefinition miniGame;
+  final BossMiniGameStepDefinition currentStep;
+  final int currentStepIndex;
+  final int completedQuestions;
+  final int totalQuestions;
+  final int wrongAttempts;
+  final int usedHints;
+
+  double get progress {
+    if (totalQuestions <= 0) {
+      return 0;
+    }
+
+    return (completedQuestions / totalQuestions).clamp(0.0, 1.0).toDouble();
+  }
+
+  bool get completed {
+    return completedQuestions >= totalQuestions && totalQuestions > 0;
+  }
+
+  String get performanceLabel {
+    if (wrongAttempts == 0 && usedHints == 0) {
+      return 'Clean boss clear';
+    }
+    if (wrongAttempts <= 1) {
+      return 'Strong boss clear';
+    }
+    return 'Review clues saved';
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'miniGameId': miniGame.id,
+      'currentStepId': currentStep.id,
+      'currentStepIndex': currentStepIndex,
+      'completedQuestions': completedQuestions,
+      'totalQuestions': totalQuestions,
+      'progress': progress,
+      'wrongAttempts': wrongAttempts,
+      'usedHints': usedHints,
+      'completed': completed,
+      'performanceLabel': performanceLabel,
+    };
+  }
+}
+
 class CharacterCoachDefinition {
   const CharacterCoachDefinition({
     required this.id,
@@ -1950,6 +2108,108 @@ class FoundationCatalog {
     ),
   ];
 
+  static const List<BossMiniGameDefinition> bossMiniGames = [
+    BossMiniGameDefinition(
+      id: 'boss.shape_garden.prism_gate',
+      lessonIds: ['lesson.012'],
+      worldId: 'shape_garden',
+      title: 'Prism Gate Boss',
+      intro: 'Quadra needs three clues to open the Shape Garden gate.',
+      problem: 'Turn the shape, trace the route, then combine the pattern.',
+      rewardId: 'reward.badge.shape_master',
+      accentHex: 0xFF9C6AF2,
+      steps: [
+        BossMiniGameStepDefinition(
+          id: 'shape.rule',
+          title: 'Solve the core rule',
+          description: 'Find how the shape or pattern changes.',
+          skillTag: SkillTag.pattern,
+          puzzleType: PuzzleType.sequenceComplete,
+        ),
+        BossMiniGameStepDefinition(
+          id: 'shape.space',
+          title: 'Apply spatial thinking',
+          description: 'Rotate or trace the missing route.',
+          skillTag: SkillTag.spatial,
+          puzzleType: PuzzleType.spatialRotation,
+        ),
+        BossMiniGameStepDefinition(
+          id: 'shape.final',
+          title: 'Combine both clues',
+          description: 'Use rule and space together for the final answer.',
+          skillTag: SkillTag.reasoning,
+          puzzleType: PuzzleType.mixedBoss,
+        ),
+      ],
+    ),
+    BossMiniGameDefinition(
+      id: 'boss.underwater_city.signal_core',
+      lessonIds: ['lesson.018'],
+      worldId: 'underwater_city',
+      title: 'Signal Core Boss',
+      intro: 'Lumi found a coral signal that only opens with memory teamwork.',
+      problem: 'Remember the signal, match the pairs, then choose the code.',
+      rewardId: 'reward.badge.memory_captain',
+      accentHex: 0xFF5C8EF7,
+      steps: [
+        BossMiniGameStepDefinition(
+          id: 'signal.memory',
+          title: 'Hold the first signal',
+          description: 'Remember the order before it disappears.',
+          skillTag: SkillTag.memory,
+          puzzleType: PuzzleType.memoryGrid,
+        ),
+        BossMiniGameStepDefinition(
+          id: 'signal.focus',
+          title: 'Check the hidden detail',
+          description: 'Spot the signal piece that changed.',
+          skillTag: SkillTag.attention,
+          puzzleType: PuzzleType.attentionScan,
+        ),
+        BossMiniGameStepDefinition(
+          id: 'signal.final',
+          title: 'Combine the signal',
+          description: 'Use memory and focus to pick the final code.',
+          skillTag: SkillTag.reasoning,
+          puzzleType: PuzzleType.mixedBoss,
+        ),
+      ],
+    ),
+    BossMiniGameDefinition(
+      id: 'boss.riddle_castle.logic_gate',
+      lessonIds: ['lesson.024'],
+      worldId: 'riddle_castle',
+      title: 'Logic Gate Boss',
+      intro: 'Brainy and Rulo need every clue to unlock the castle gate.',
+      problem: 'Decode the rule, compare the clue, then solve the gate.',
+      rewardId: 'reward.badge.rule_finder',
+      accentHex: 0xFFE9C46A,
+      steps: [
+        BossMiniGameStepDefinition(
+          id: 'gate.rule',
+          title: 'Find the gate rule',
+          description: 'Decode what changes from clue to clue.',
+          skillTag: SkillTag.pattern,
+          puzzleType: PuzzleType.codeBreaker,
+        ),
+        BossMiniGameStepDefinition(
+          id: 'gate.reason',
+          title: 'Apply reasoning',
+          description: 'Compare the clues and remove the distractor.',
+          skillTag: SkillTag.reasoning,
+          puzzleType: PuzzleType.analogy,
+        ),
+        BossMiniGameStepDefinition(
+          id: 'gate.final',
+          title: 'Open the final gate',
+          description: 'Combine rule and reasoning in one boss answer.',
+          skillTag: SkillTag.classification,
+          puzzleType: PuzzleType.mixedBoss,
+        ),
+      ],
+    ),
+  ];
+
   static const List<ContentPlacementRule> placementRules = [
     ContentPlacementRule(
       placement: ContentPlacement.mainRoute,
@@ -3349,6 +3609,79 @@ class FoundationCatalog {
     return null;
   }
 
+  static BossMiniGameDefinition? bossMiniGameForLessonId(String lessonId) {
+    for (final miniGame in bossMiniGames) {
+      if (miniGame.lessonIds.contains(lessonId)) {
+        return miniGame;
+      }
+    }
+
+    return null;
+  }
+
+  static BossMiniGameProgress? bossMiniGameProgressFor({
+    required String lessonId,
+    required int completedQuestions,
+    required int totalQuestions,
+    int wrongAttempts = 0,
+    int usedHints = 0,
+  }) {
+    final miniGame = bossMiniGameForLessonId(lessonId);
+    if (miniGame == null) {
+      return null;
+    }
+
+    final currentStep = miniGame.stepForProgress(
+      completedQuestions: completedQuestions,
+      totalQuestions: totalQuestions,
+    );
+    final currentStepIndex = miniGame.steps.indexOf(currentStep);
+
+    return BossMiniGameProgress(
+      miniGame: miniGame,
+      currentStep: currentStep,
+      currentStepIndex: currentStepIndex,
+      completedQuestions: completedQuestions,
+      totalQuestions: totalQuestions,
+      wrongAttempts: wrongAttempts,
+      usedHints: usedHints,
+    );
+  }
+
+  static const Set<PuzzleInteractionType> miniGameReadyInteractionTypes = {
+    PuzzleInteractionType.memoryReveal,
+  };
+
+  static bool isMiniGameReadyPuzzle(PuzzleDefinition puzzle) {
+    final metadata = puzzle.visualMetadata;
+    if (metadata == null) {
+      return false;
+    }
+
+    return puzzle.type == PuzzleType.memoryGrid &&
+        miniGameReadyInteractionTypes.contains(metadata.interactionType);
+  }
+
+  static Map<String, Object?> miniGameReadinessManifest() {
+    final readyPuzzles = [
+      for (final puzzle in allPuzzles)
+        if (isMiniGameReadyPuzzle(puzzle)) puzzle,
+    ];
+
+    return {
+      'runtime': 'flame',
+      'audioRuntime': 'flame_audio',
+      'enabledInteractionTypes': [
+        for (final interactionType in miniGameReadyInteractionTypes)
+          interactionType.name,
+      ],
+      'readyPuzzleCount': readyPuzzles.length,
+      'readyPuzzleIds': [
+        for (final puzzle in readyPuzzles) puzzle.id,
+      ],
+    };
+  }
+
   static Map<SkillTag, int> puzzleCountBySkill() {
     return {
       for (final skill in SkillTag.values)
@@ -3410,6 +3743,7 @@ class FoundationCatalog {
         'visualPuzzleCount':
             allPuzzles.where((puzzle) => puzzle.visualMetadata != null).length,
       },
+      'miniGameReadiness': miniGameReadinessManifest(),
       'characterCoaches': [
         for (final coach in characterCoaches) coach.toJson(),
       ],
@@ -3421,6 +3755,9 @@ class FoundationCatalog {
       ],
       'weeklyEvents': [
         for (final event in weeklyEvents) event.toJson(),
+      ],
+      'bossMiniGames': [
+        for (final miniGame in bossMiniGames) miniGame.toJson(),
       ],
       'placementRules': [
         for (final rule in placementRules) rule.toJson(),
@@ -3965,6 +4302,10 @@ class FoundationCatalog {
   static ContentPlacement placementForLesson(Lesson lesson) {
     if (lesson.id == adaptiveReviewLesson.id) {
       return ContentPlacement.adaptiveReview;
+    }
+
+    if (bossMiniGameForLessonId(lesson.id) != null) {
+      return ContentPlacement.bossNode;
     }
 
     final lessonNumber = _lessonNumber(lesson.id);

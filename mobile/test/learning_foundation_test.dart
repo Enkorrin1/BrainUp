@@ -302,6 +302,56 @@ void main() {
       );
     });
 
+    test('boss mini-games expose mixed-skill templates and progress', () {
+      const bosses = FoundationCatalog.bossMiniGames;
+      final manifest = FoundationCatalog.contentManifest();
+      final manifestBosses = manifest['bossMiniGames'] as List<Object?>;
+
+      expect(bosses.length, greaterThanOrEqualTo(3));
+      for (final boss in bosses) {
+        expect(boss.steps.length, 3, reason: boss.id);
+        expect(boss.mixedSkillTags.toSet().length, greaterThanOrEqualTo(2));
+        expect(
+          FoundationCatalog.knownWorldIds.contains(boss.worldId),
+          isTrue,
+          reason: boss.id,
+        );
+        expect(FoundationCatalog.rewardForId(boss.rewardId), isNotNull);
+      }
+
+      final boss = FoundationCatalog.bossMiniGameForLessonId('lesson.012');
+      final progress = FoundationCatalog.bossMiniGameProgressFor(
+        lessonId: 'lesson.012',
+        completedQuestions: 3,
+        totalQuestions: 7,
+        wrongAttempts: 1,
+        usedHints: 1,
+      );
+
+      expect(boss?.title, 'Prism Gate Boss');
+      expect(progress?.currentStepIndex, 1);
+      expect(progress?.performanceLabel, 'Strong boss clear');
+      expect(
+        manifestBosses.cast<Map<String, Object?>>().first,
+        containsPair('steps', isA<List<Object?>>()),
+      );
+    });
+
+    test('content manifest exports mini-game readiness signals', () {
+      final manifest = FoundationCatalog.contentManifest();
+      final readiness = manifest['miniGameReadiness'] as Map<String, Object?>;
+      final readyPuzzleIds = readiness['readyPuzzleIds'] as List<Object?>;
+
+      expect(readiness['runtime'], 'flame');
+      expect(readiness['audioRuntime'], 'flame_audio');
+      expect(
+        readiness['enabledInteractionTypes'],
+        contains(PuzzleInteractionType.memoryReveal.name),
+      );
+      expect(readiness['readyPuzzleCount'], greaterThan(0));
+      expect(readyPuzzleIds, isNotEmpty);
+    });
+
     test('content dashboard report exposes quality and saturation signals', () {
       final dashboard = FoundationCatalog.contentDashboardReport();
       final json =

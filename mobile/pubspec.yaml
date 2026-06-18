@@ -1,4 +1,4 @@
-﻿name: brain_up
+name: brain_up
 description: BrainUp mobile app for short daily logic and thinking challenges.
 publish_to: "none"
 version: 0.1.0+1
@@ -7,6 +7,8 @@ environment:
   sdk: ">=3.4.0 <4.0.0"
 
 dependencies:
+  flame: ^1.37.0
+  flame_audio: ^2.12.1
   flutter:
     sdk: flutter
   flutter_localizations:
