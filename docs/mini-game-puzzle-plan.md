@@ -240,6 +240,10 @@ Definition of done:
 
 Build the first three real mini-games.
 
+Status: implemented as the first playable pack. BrainUp now has three distinct
+Flame mini-game scenes, shared tutorial guidance, success/retry feedback, and
+registry routing for memory, logic path, and shape builder puzzle families.
+
 Scope:
 
 - `MemoryGridGame`;

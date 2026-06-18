@@ -8,20 +8,30 @@ import 'package:brain_up/src/mini_games/core/mini_game_result.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('registry creates a playable memory mini-game definition', () {
-    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
-      FoundationCatalog.isMiniGameReadyPuzzle,
-    );
-    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
-    final definition = MiniGameRegistry.definitionForChallenge(challenge);
+  test('registry creates the first three playable mini-game definitions', () {
+    final cases = {
+      PuzzleType.memoryGrid: MiniGameType.memoryGrid,
+      PuzzleType.pathPuzzle: MiniGameType.logicPath,
+      PuzzleType.spatialRotation: MiniGameType.shapeBuilder,
+    };
 
-    expect(definition, isNotNull);
-    expect(definition?.type, MiniGameType.memoryGrid);
-    expect(definition?.puzzleId, challenge.id);
-    expect(definition?.firstRound.correctChoiceId, challenge.correctChoiceId);
-    expect(definition?.rounds, hasLength(1));
-    expect(definition?.assetKeys, isNotEmpty);
-    expect(definition?.toJson(), containsPair('type', 'memoryGrid'));
+    for (final entry in cases.entries) {
+      final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+        (puzzle) =>
+            puzzle.type == entry.key &&
+            FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+      final definition = MiniGameRegistry.definitionForChallenge(challenge);
+
+      expect(definition, isNotNull);
+      expect(definition?.type, entry.value);
+      expect(definition?.puzzleId, challenge.id);
+      expect(definition?.firstRound.correctChoiceId, challenge.correctChoiceId);
+      expect(definition?.rounds, hasLength(1));
+      expect(definition?.assetKeys, isNotEmpty);
+      expect(definition?.toJson(), containsPair('type', entry.value.name));
+    }
   });
 
   test('mini-game controller returns normalized answer and exit results', () {
@@ -51,5 +61,29 @@ void main() {
     expect(wrong.difficultySignal, MiniGameDifficultySignal.easier);
     expect(exited.exited, isTrue);
     expect(exited.completionReason, MiniGameCompletionReason.exited);
+  });
+
+  test('mini-game controller preserves retry signals after a later success',
+      () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      FoundationCatalog.isMiniGameReadyPuzzle,
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final controller = MiniGameController(definition: definition);
+    final wrongChoice = challenge.choices
+        .firstWhere((choice) => choice.id != challenge.correctChoiceId)
+        .id;
+
+    final firstTry = controller.answer(wrongChoice);
+    final corrected = controller.answer(challenge.correctChoiceId);
+
+    expect(firstTry.isCorrect, isFalse);
+    expect(firstTry.wrongAttempts, 1);
+    expect(corrected.isCorrect, isTrue);
+    expect(corrected.wrongAttempts, 1);
+    expect(corrected.stars, 1);
+    expect(corrected.mistakeSignals, contains(challenge.id));
+    expect(corrected.difficultySignal, MiniGameDifficultySignal.easier);
   });
 }

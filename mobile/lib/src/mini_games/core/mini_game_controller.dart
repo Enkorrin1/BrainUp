@@ -10,9 +10,14 @@ class MiniGameController {
   final MiniGameDefinition definition;
   final DateTime _startedAt;
   int _usedHints = 0;
+  int _wrongAttempts = 0;
 
   int get usedHints {
     return _usedHints;
+  }
+
+  int get wrongAttempts {
+    return _wrongAttempts;
   }
 
   void recordHint() {
@@ -21,7 +26,9 @@ class MiniGameController {
 
   MiniGameResult answer(String choiceId) {
     final isCorrect = choiceId == definition.firstRound.correctChoiceId;
-    final wrongAttempts = isCorrect ? 0 : 1;
+    if (!isCorrect) {
+      _wrongAttempts += 1;
+    }
 
     return MiniGameResult(
       miniGameId: definition.id,
@@ -31,14 +38,14 @@ class MiniGameController {
       score: isCorrect ? _scoreForCorrectAnswer : 0,
       stars: isCorrect ? _starsForCorrectAnswer : 0,
       durationSeconds: _durationSeconds,
-      wrongAttempts: wrongAttempts,
+      wrongAttempts: _wrongAttempts,
       usedHints: _usedHints,
       skillTags: [definition.skillTag],
-      mistakeSignals: isCorrect ? const [] : [definition.puzzleId],
+      mistakeSignals: _wrongAttempts == 0 ? const [] : [definition.puzzleId],
       rewardSignals: isCorrect ? [_rewardSignal] : const [],
       difficultySignal: _difficultySignalFor(
         isCorrect: isCorrect,
-        wrongAttempts: wrongAttempts,
+        wrongAttempts: _wrongAttempts,
       ),
       completionReason: MiniGameCompletionReason.answered,
     );
@@ -59,10 +66,16 @@ class MiniGameController {
   }
 
   int get _scoreForCorrectAnswer {
+    if (_wrongAttempts > 0) {
+      return 60;
+    }
     return _usedHints == 0 ? 100 : 75;
   }
 
   int get _starsForCorrectAnswer {
+    if (_wrongAttempts > 0) {
+      return 1;
+    }
     return _usedHints == 0 ? 3 : 2;
   }
 

@@ -5,7 +5,15 @@ import '../../domain/daily_challenge.dart';
 import '../core/mini_game_controller.dart';
 import '../core/mini_game_definition.dart';
 import '../core/mini_game_result.dart';
-import '../games/memory_grid_game/memory_grid_preview_game.dart';
+import '../games/logic_path_game/logic_path_game.dart';
+import '../games/memory_grid_game/memory_grid_game.dart';
+import '../games/shape_builder_game/shape_builder_game.dart';
+
+enum _MiniGameFeedbackState {
+  idle,
+  success,
+  retry,
+}
 
 class MiniGameHostScreen extends StatefulWidget {
   const MiniGameHostScreen({
@@ -42,6 +50,8 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
   late final MiniGameController _controller;
   String? _selectedChoiceId;
   bool _showHint = false;
+  bool _showTutorial = true;
+  _MiniGameFeedbackState _feedbackState = _MiniGameFeedbackState.idle;
 
   @override
   void initState() {
@@ -59,7 +69,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
         children: [
           Positioned.fill(
             child: GameWidget(
-              game: MemoryGridPreviewGame(definition: widget.definition),
+              game: _gameFor(widget.definition),
             ),
           ),
           Positioned.fill(
@@ -89,7 +99,21 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
                     accent: accent,
                     onExit: _exit,
                   ),
+                  const SizedBox(height: 10),
+                  if (_showTutorial)
+                    _MiniGameTutorialStrip(
+                      accent: accent,
+                      onDismissed: () {
+                        setState(() {
+                          _showTutorial = false;
+                        });
+                      },
+                    ),
                   const Spacer(),
+                  _MiniGameFeedbackBanner(
+                    state: _feedbackState,
+                    accent: accent,
+                  ),
                   _MiniGameControlPanel(
                     challenge: widget.challenge,
                     definition: widget.definition,
@@ -100,6 +124,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
                     onChoiceSelected: (choiceId) {
                       setState(() {
                         _selectedChoiceId = choiceId;
+                        _feedbackState = _MiniGameFeedbackState.idle;
                       });
                     },
                     onSubmit: _selectedChoiceId == null ? null : _submit,
@@ -120,13 +145,31 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
     _controller.recordHint();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     final choiceId = _selectedChoiceId;
     if (choiceId == null) {
       return;
     }
 
-    Navigator.of(context).pop(_controller.answer(choiceId));
+    final result = _controller.answer(choiceId);
+    if (!result.isCorrect) {
+      setState(() {
+        _selectedChoiceId = null;
+        _showHint = true;
+        _feedbackState = _MiniGameFeedbackState.retry;
+      });
+      return;
+    }
+
+    setState(() {
+      _feedbackState = _MiniGameFeedbackState.success;
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 520));
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.of(context).pop(result);
   }
 
   void _exit() {
@@ -143,6 +186,132 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       MiniGameType.patternMachine => const Color(0xFF5C8EF7),
       MiniGameType.sortLab => const Color(0xFFE9C46A),
       MiniGameType.bossMix => const Color(0xFFFF6F7D),
+    };
+  }
+
+  FlameGame _gameFor(MiniGameDefinition definition) {
+    return switch (definition.type) {
+      MiniGameType.memoryGrid => MemoryGridGame(definition: definition),
+      MiniGameType.logicPath => LogicPathGame(definition: definition),
+      MiniGameType.shapeBuilder => ShapeBuilderGame(definition: definition),
+      MiniGameType.mathBubbles ||
+      MiniGameType.attentionScan ||
+      MiniGameType.patternMachine ||
+      MiniGameType.sortLab ||
+      MiniGameType.bossMix =>
+        MemoryGridGame(definition: definition),
+    };
+  }
+}
+
+class _MiniGameTutorialStrip extends StatelessWidget {
+  const _MiniGameTutorialStrip({
+    required this.accent,
+    required this.onDismissed,
+  });
+
+  final Color accent;
+  final VoidCallback onDismissed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xDD1A2858),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: accent.withValues(alpha: 0.34)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.touch_app_rounded, color: accent),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Watch the scene, choose the best answer, then submit.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+          ),
+          TextButton(
+            onPressed: onDismissed,
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniGameFeedbackBanner extends StatelessWidget {
+  const _MiniGameFeedbackBanner({
+    required this.state,
+    required this.accent,
+  });
+
+  final _MiniGameFeedbackState state;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 220),
+      child: state == _MiniGameFeedbackState.idle
+          ? const SizedBox.shrink()
+          : Padding(
+              key: ValueKey(state),
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _color.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: _color.withValues(alpha: 0.48)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(_icon, color: _color),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _message,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
+
+  Color get _color {
+    return switch (state) {
+      _MiniGameFeedbackState.success => accent,
+      _MiniGameFeedbackState.retry => const Color(0xFFFF6F7D),
+      _MiniGameFeedbackState.idle => Colors.transparent,
+    };
+  }
+
+  IconData get _icon {
+    return switch (state) {
+      _MiniGameFeedbackState.success => Icons.check_circle_rounded,
+      _MiniGameFeedbackState.retry => Icons.lightbulb_rounded,
+      _MiniGameFeedbackState.idle => Icons.circle,
+    };
+  }
+
+  String get _message {
+    return switch (state) {
+      _MiniGameFeedbackState.success => 'Mini-game solved!',
+      _MiniGameFeedbackState.retry => 'Good try. Use the hint and try again.',
+      _MiniGameFeedbackState.idle => '',
     };
   }
 }

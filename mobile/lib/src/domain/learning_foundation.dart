@@ -3650,6 +3650,8 @@ class FoundationCatalog {
 
   static const Set<PuzzleInteractionType> miniGameReadyInteractionTypes = {
     PuzzleInteractionType.memoryReveal,
+    PuzzleInteractionType.tracePath,
+    PuzzleInteractionType.rotateObject,
   };
 
   static bool isMiniGameReadyPuzzle(PuzzleDefinition puzzle) {
@@ -3658,8 +3660,12 @@ class FoundationCatalog {
       return false;
     }
 
-    return puzzle.type == PuzzleType.memoryGrid &&
-        miniGameReadyInteractionTypes.contains(metadata.interactionType);
+    return switch ((puzzle.type, metadata.interactionType)) {
+      (PuzzleType.memoryGrid, PuzzleInteractionType.memoryReveal) => true,
+      (PuzzleType.pathPuzzle, PuzzleInteractionType.tracePath) => true,
+      (PuzzleType.spatialRotation, PuzzleInteractionType.rotateObject) => true,
+      _ => false,
+    };
   }
 
   static Map<String, Object?> miniGameReadinessManifest() {
@@ -3676,6 +3682,14 @@ class FoundationCatalog {
           interactionType.name,
       ],
       'readyPuzzleCount': readyPuzzles.length,
+      'readyPuzzleCountsByType': {
+        for (final type in [
+          PuzzleType.memoryGrid,
+          PuzzleType.pathPuzzle,
+          PuzzleType.spatialRotation,
+        ])
+          type.name: readyPuzzles.where((puzzle) => puzzle.type == type).length,
+      },
       'readyPuzzleIds': [
         for (final puzzle in readyPuzzles) puzzle.id,
       ],

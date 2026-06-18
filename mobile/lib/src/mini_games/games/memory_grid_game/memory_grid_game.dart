@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/mini_game_definition.dart';
 
-class MemoryGridPreviewGame extends FlameGame {
-  MemoryGridPreviewGame({required this.definition});
+class MemoryGridGame extends FlameGame {
+  MemoryGridGame({required this.definition});
 
   final MiniGameDefinition definition;
   double _elapsed = 0;
@@ -86,16 +86,17 @@ class MemoryGridPreviewGame extends FlameGame {
 
         canvas.drawRRect(rounded, paint);
         canvas.drawRRect(rounded, borderPaint);
-        _drawTileIcon(canvas, rect.center, index);
+        _drawTileIcon(canvas, rect.center, index, pulse);
       }
     }
   }
 
-  void _drawTileIcon(Canvas canvas, Offset center, int index) {
-    final icons = ['+', '*', '#', '?'];
+  void _drawTileIcon(Canvas canvas, Offset center, int index, double pulse) {
+    final icons = ['+', '*', '#', '?', '='];
+    final visible = pulse > 0.34 || index.isEven;
     final textPainter = TextPainter(
       text: TextSpan(
-        text: icons[index % icons.length],
+        text: visible ? icons[index % icons.length] : '?',
         style: const TextStyle(
           color: Colors.white,
           fontSize: 24,

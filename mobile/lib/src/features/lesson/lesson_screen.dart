@@ -370,19 +370,19 @@ class _LessonScreenState extends State<LessonScreen> {
       return;
     }
 
-    final wrongAttemptDelta = result.isCorrect
-        ? 0
-        : (result.wrongAttempts <= 0 ? 1 : result.wrongAttempts);
+    final wrongAttemptDelta = result.wrongAttempts <= 0
+        ? (result.isCorrect ? 0 : 1)
+        : result.wrongAttempts;
 
     setState(() {
       _selectedChoiceId = choiceId;
       _hasSubmitted = true;
       _isCorrect = result.isCorrect;
-      if (result.usedHints > 0 || !result.isCorrect) {
+      if (result.usedHints > 0 || wrongAttemptDelta > 0 || !result.isCorrect) {
         _showHint = true;
         _hintedStepIndexes.add(_stepIndex);
       }
-      if (!result.isCorrect) {
+      if (wrongAttemptDelta > 0) {
         _wrongAttempts += wrongAttemptDelta;
         _mistakePuzzleIds.addAll(result.mistakeSignals);
         _mistakePuzzleIds.add(challenge.id);

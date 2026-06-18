@@ -320,7 +320,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.text('Submit mini-game'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 700));
 
     expect(find.textContaining('Correct!'), findsOneWidget);
     expect(find.text('Next'), findsOneWidget);

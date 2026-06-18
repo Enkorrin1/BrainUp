@@ -7,6 +7,8 @@ class MiniGameRegistry {
 
   static const enabledInteractionTypes = {
     PuzzleInteractionType.memoryReveal,
+    PuzzleInteractionType.tracePath,
+    PuzzleInteractionType.rotateObject,
   };
 
   static MiniGameDefinition? definitionForChallenge(DailyChallenge challenge) {
@@ -73,6 +75,14 @@ class MiniGameRegistry {
     if (interactionType == PuzzleInteractionType.memoryReveal &&
         puzzleType == PuzzleType.memoryGrid) {
       return MiniGameType.memoryGrid;
+    }
+    if (interactionType == PuzzleInteractionType.tracePath &&
+        puzzleType == PuzzleType.pathPuzzle) {
+      return MiniGameType.logicPath;
+    }
+    if (interactionType == PuzzleInteractionType.rotateObject &&
+        puzzleType == PuzzleType.spatialRotation) {
+      return MiniGameType.shapeBuilder;
     }
 
     return null;

@@ -341,14 +341,23 @@ void main() {
       final manifest = FoundationCatalog.contentManifest();
       final readiness = manifest['miniGameReadiness'] as Map<String, Object?>;
       final readyPuzzleIds = readiness['readyPuzzleIds'] as List<Object?>;
+      final countsByType =
+          readiness['readyPuzzleCountsByType'] as Map<String, Object?>;
 
       expect(readiness['runtime'], 'flame');
       expect(readiness['audioRuntime'], 'flame_audio');
       expect(
         readiness['enabledInteractionTypes'],
-        contains(PuzzleInteractionType.memoryReveal.name),
+        containsAll([
+          PuzzleInteractionType.memoryReveal.name,
+          PuzzleInteractionType.tracePath.name,
+          PuzzleInteractionType.rotateObject.name,
+        ]),
       );
       expect(readiness['readyPuzzleCount'], greaterThan(0));
+      expect(countsByType[PuzzleType.memoryGrid.name], greaterThan(0));
+      expect(countsByType[PuzzleType.pathPuzzle.name], greaterThan(0));
+      expect(countsByType[PuzzleType.spatialRotation.name], greaterThan(0));
       expect(readyPuzzleIds, isNotEmpty);
     });
 
