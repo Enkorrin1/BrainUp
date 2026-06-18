@@ -33,6 +33,8 @@ class MiniGameSceneEvent {
     this.targetId,
     this.accepted,
     this.traceHotspotIndices = const [],
+    this.rotationQuarterTurns,
+    this.assembledHotspotIndices = const [],
   });
 
   final MiniGameSceneAction action;
@@ -42,6 +44,8 @@ class MiniGameSceneEvent {
   final String? targetId;
   final bool? accepted;
   final List<int> traceHotspotIndices;
+  final int? rotationQuarterTurns;
+  final List<int> assembledHotspotIndices;
 
   Map<String, Object?> toJson() {
     return {
@@ -53,6 +57,10 @@ class MiniGameSceneEvent {
       if (accepted != null) 'accepted': accepted,
       if (traceHotspotIndices.isNotEmpty)
         'traceHotspotIndices': traceHotspotIndices,
+      if (rotationQuarterTurns != null)
+        'rotationQuarterTurns': rotationQuarterTurns,
+      if (assembledHotspotIndices.isNotEmpty)
+        'assembledHotspotIndices': assembledHotspotIndices,
     };
   }
 }
@@ -67,6 +75,8 @@ class MiniGameSceneSnapshot {
     required this.wrongAttempts,
     required this.lastEvent,
     required this.traceHotspotIndices,
+    required this.rotationQuarterTurnsByHotspot,
+    required this.assembledHotspotIndices,
   });
 
   final MiniGameSceneState state;
@@ -77,6 +87,8 @@ class MiniGameSceneSnapshot {
   final int wrongAttempts;
   final MiniGameSceneEvent? lastEvent;
   final List<int> traceHotspotIndices;
+  final Map<int, int> rotationQuarterTurnsByHotspot;
+  final List<int> assembledHotspotIndices;
 
   Map<String, Object?> toJson() {
     return {
@@ -87,6 +99,12 @@ class MiniGameSceneSnapshot {
       'usedHints': usedHints,
       'wrongAttempts': wrongAttempts,
       'traceHotspotIndices': traceHotspotIndices,
+      'rotationQuarterTurnsByHotspot': rotationQuarterTurnsByHotspot.map(
+        (hotspotIndex, quarterTurns) {
+          return MapEntry(hotspotIndex.toString(), quarterTurns);
+        },
+      ),
+      'assembledHotspotIndices': assembledHotspotIndices,
       if (lastEvent != null) 'lastEvent': lastEvent!.toJson(),
     };
   }
@@ -114,6 +132,8 @@ class MiniGameSceneController extends ChangeNotifier {
   int _interactionCount = 0;
   MiniGameSceneEvent? _lastEvent;
   final List<int> _traceHotspotIndices = [];
+  final Map<int, int> _rotationQuarterTurnsByHotspot = {};
+  final List<int> _assembledHotspotIndices = [];
 
   MiniGameSceneState get state {
     return _state;
@@ -143,6 +163,14 @@ class MiniGameSceneController extends ChangeNotifier {
     return List.unmodifiable(_traceHotspotIndices);
   }
 
+  Map<int, int> get rotationQuarterTurnsByHotspot {
+    return Map.unmodifiable(_rotationQuarterTurnsByHotspot);
+  }
+
+  List<int> get assembledHotspotIndices {
+    return List.unmodifiable(_assembledHotspotIndices);
+  }
+
   MiniGameSceneSnapshot get snapshot {
     return MiniGameSceneSnapshot(
       state: _state,
@@ -153,6 +181,8 @@ class MiniGameSceneController extends ChangeNotifier {
       wrongAttempts: wrongAttempts,
       lastEvent: _lastEvent,
       traceHotspotIndices: traceHotspotIndices,
+      rotationQuarterTurnsByHotspot: rotationQuarterTurnsByHotspot,
+      assembledHotspotIndices: assembledHotspotIndices,
     );
   }
 
@@ -175,6 +205,8 @@ class MiniGameSceneController extends ChangeNotifier {
     String? targetId,
     bool? accepted,
     List<int> traceHotspotIndices = const [],
+    int? rotationQuarterTurns,
+    List<int> assembledHotspotIndices = const [],
   }) {
     _selectedChoiceId = choiceId;
     _selectedHotspotIndex = hotspotIndex;
@@ -188,6 +220,8 @@ class MiniGameSceneController extends ChangeNotifier {
       targetId: targetId,
       accepted: accepted,
       traceHotspotIndices: traceHotspotIndices,
+      rotationQuarterTurns: rotationQuarterTurns,
+      assembledHotspotIndices: assembledHotspotIndices,
     );
     onChoiceSelected?.call(choiceId);
     notifyListeners();
@@ -206,6 +240,30 @@ class MiniGameSceneController extends ChangeNotifier {
       choiceId,
       hotspotIndex: hotspotIndex,
       action: MiniGameSceneAction.drag,
+    );
+  }
+
+  void recordRotation({
+    required int hotspotIndex,
+    required int quarterTurns,
+  }) {
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: hotspotIndex,
+    );
+    if (choiceId == null) {
+      return;
+    }
+
+    final normalized =
+        MiniGameCanvasInteraction.normalizedQuarterTurns(quarterTurns);
+    _rotationQuarterTurnsByHotspot[hotspotIndex] = normalized;
+    selectChoice(
+      choiceId,
+      hotspotIndex: hotspotIndex,
+      action: MiniGameSceneAction.rotate,
+      rotationQuarterTurns: normalized,
+      assembledHotspotIndices: assembledHotspotIndices,
     );
   }
 
@@ -327,6 +385,52 @@ class MiniGameSceneController extends ChangeNotifier {
       autoSubmitted: true,
       targetId: targetId,
       accepted: accepted,
+    );
+    return submitSelected(isCorrectOverride: accepted);
+  }
+
+  MiniGameResult? submitAssembly({
+    required int hotspotIndex,
+    required String targetId,
+    required int quarterTurns,
+  }) {
+    if (!MiniGameCanvasInteraction.isKnownDropTarget(
+      definition: definition,
+      targetId: targetId,
+    )) {
+      return null;
+    }
+
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: hotspotIndex,
+    );
+    if (choiceId == null) {
+      return null;
+    }
+
+    final normalized =
+        MiniGameCanvasInteraction.normalizedQuarterTurns(quarterTurns);
+    _rotationQuarterTurnsByHotspot[hotspotIndex] = normalized;
+    final accepted = MiniGameCanvasInteraction.isCorrectRotationAssembly(
+      definition: definition,
+      choiceId: choiceId,
+      targetId: targetId,
+      quarterTurns: normalized,
+    );
+    if (accepted && !_assembledHotspotIndices.contains(hotspotIndex)) {
+      _assembledHotspotIndices.add(hotspotIndex);
+    }
+
+    selectChoice(
+      choiceId,
+      hotspotIndex: hotspotIndex,
+      action: MiniGameSceneAction.snap,
+      autoSubmitted: true,
+      targetId: targetId,
+      accepted: accepted,
+      rotationQuarterTurns: normalized,
+      assembledHotspotIndices: assembledHotspotIndices,
     );
     return submitSelected(isCorrectOverride: accepted);
   }

@@ -532,3 +532,32 @@ Next:
 
 - expand trace content with branches and rule-specific blockers;
 - add Android screenshots once a usable ADB emulator is available.
+
+### 2026-06-19 - Stage 46, Slice 1
+
+Implemented:
+
+- rotation quarter-turns are now normalized and validated in shared mini-game
+  canvas logic;
+- `MiniGameSceneController` now records per-hotspot rotation state and assembled
+  hotspot ids;
+- shape assembly now requires the correct choice, correct socket, and correct
+  target rotation before success;
+- `ShapeBuilderGame` now rotates pieces on tap, renders orientation arrows,
+  shows the target rotation marker, and only submits when a rotated piece is
+  dropped into the socket;
+- successful assembly snaps the piece into the build area, while wrong angle or
+  wrong piece gives invalid-drop feedback;
+- regression coverage checks wrong-angle retry and correct-angle success.
+
+Verified:
+
+- `flutter analyze`;
+- `flutter test test\mini_game_registry_test.dart`;
+- `flutter test`;
+- `flutter build apk --debug`.
+
+Next:
+
+- add multi-piece assembly rules for hard spatial levels;
+- create distinct silhouettes per spatial content family.

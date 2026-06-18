@@ -1,3 +1,4 @@
+import '../../domain/learning_foundation.dart';
 import 'mini_game_definition.dart';
 
 class MiniGameCanvasInteraction {
@@ -49,6 +50,35 @@ class MiniGameCanvasInteraction {
     return choiceId == definition.firstRound.correctChoiceId &&
         targets.isNotEmpty &&
         targetId == targets.first.id;
+  }
+
+  static int normalizedQuarterTurns(int quarterTurns) {
+    return ((quarterTurns % 4) + 4) % 4;
+  }
+
+  static int targetRotationQuarterTurns({
+    required MiniGameDefinition definition,
+  }) {
+    return switch (definition.difficulty) {
+      PuzzleDifficulty.easy => 1,
+      PuzzleDifficulty.normal => 2,
+      PuzzleDifficulty.hard || PuzzleDifficulty.boss => 3,
+    };
+  }
+
+  static bool isCorrectRotationAssembly({
+    required MiniGameDefinition definition,
+    required String choiceId,
+    required String targetId,
+    required int quarterTurns,
+  }) {
+    return isCorrectDrop(
+          definition: definition,
+          choiceId: choiceId,
+          targetId: targetId,
+        ) &&
+        normalizedQuarterTurns(quarterTurns) ==
+            targetRotationQuarterTurns(definition: definition);
   }
 
   static List<int> normalizedHotspotSequence(List<int> hotspotIndices) {

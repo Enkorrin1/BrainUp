@@ -325,6 +325,57 @@ void main() {
     expect(results.map((result) => result.isCorrect), [false, true]);
   });
 
+  test('scene controller requires correct rotation for shape assembly', () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      (puzzle) =>
+          puzzle.type == PuzzleType.spatialRotation &&
+          FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final correctIndex = definition.firstRound.choiceIds.indexOf(
+      definition.firstRound.correctChoiceId,
+    );
+    final targetId = definition
+        .firstRound.correctDropTargetByChoiceId[challenge.correctChoiceId]!;
+    final targetQuarterTurns =
+        MiniGameCanvasInteraction.targetRotationQuarterTurns(
+      definition: definition,
+    );
+    final results = <MiniGameResult>[];
+    final controller = MiniGameSceneController(
+      definition: definition,
+      onResult: results.add,
+    )..start();
+
+    final wrongAngle = controller.submitAssembly(
+      hotspotIndex: correctIndex,
+      targetId: targetId,
+      quarterTurns: targetQuarterTurns - 1,
+    );
+    expect(wrongAngle?.isCorrect, isFalse);
+    expect(wrongAngle?.selectedChoiceId, challenge.correctChoiceId);
+    expect(controller.state, MiniGameSceneState.retry);
+    expect(controller.snapshot.lastEvent?.accepted, isFalse);
+    expect(
+      controller.snapshot.lastEvent?.rotationQuarterTurns,
+      MiniGameCanvasInteraction.normalizedQuarterTurns(targetQuarterTurns - 1),
+    );
+
+    final corrected = controller.submitAssembly(
+      hotspotIndex: correctIndex,
+      targetId: targetId,
+      quarterTurns: targetQuarterTurns,
+    );
+    expect(corrected?.isCorrect, isTrue);
+    expect(controller.state, MiniGameSceneState.success);
+    expect(controller.assembledHotspotIndices, contains(correctIndex));
+    expect(controller.snapshot.lastEvent?.accepted, isTrue);
+    expect(controller.snapshot.lastEvent?.rotationQuarterTurns,
+        targetQuarterTurns);
+    expect(results.map((result) => result.isCorrect), [false, true]);
+  });
+
   test('quality audit passes for mini-game-ready content definitions', () {
     final definitions = FoundationCatalog.allPuzzles
         .where(FoundationCatalog.isMiniGameReadyPuzzle)
