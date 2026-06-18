@@ -1,14 +1,19 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:brain_up/src/app/brain_up_app.dart';
 import 'package:brain_up/src/data/app_locale_store.dart';
 import 'package:brain_up/src/data/family_profile_store.dart';
+import 'package:brain_up/src/domain/daily_challenge.dart';
 import 'package:brain_up/src/domain/family_profile.dart';
 import 'package:brain_up/src/domain/learning_foundation.dart';
 import 'package:brain_up/src/features/course/course_screen.dart';
 import 'package:brain_up/src/features/parent/parent_screen.dart';
 import 'package:brain_up/src/features/path/path_screen.dart';
 import 'package:brain_up/src/l10n/l10n.dart';
+import 'package:brain_up/src/mini_games/core/mini_game_definition.dart';
+import 'package:brain_up/src/mini_games/core/mini_game_registry.dart';
 import 'package:brain_up/src/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -206,35 +211,34 @@ void main() {
     expect(find.text('Review'), findsOneWidget);
 
     await tester.tap(find.text('Review'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Step 1 of 5'), findsOneWidget);
     expect(find.textContaining('Remember:'), findsOneWidget);
-    expect(find.text('Reveal'), findsOneWidget);
-    expect(find.byKey(const ValueKey('stage-flip-0')), findsOneWidget);
-    expect(
-      find.text('Reveal the cards, remember the order, then answer.'),
-      findsOneWidget,
-    );
+    expect(find.text('Memory Grid'), findsOneWidget);
+    expect(find.text('Play directly in this puzzle'), findsOneWidget);
+    expect(find.text('Play mini-game'), findsNothing);
+    expect(_gameWidgetFinder(), findsOneWidget);
   });
 
   testWidgets('shows adaptive review result without map reward',
       (tester) async {
-    final store = _MemoryFamilyProfileStore(
-      _testProfileWithPracticeSessions([
-        PracticeSession(
-          completedAt: DateTime(2026, 6, 12, 18),
-          challengeId: 'lesson.009',
-          challengeTitle: 'Memory lesson',
-          skill: 'Working memory',
-          minutes: 5,
-          correctAnswers: 2,
-          totalQuestions: 5,
-          wrongAttempts: 2,
-          mistakePuzzleIds: ['memory.order.normal.003'],
-        ),
-      ]),
-    );
+    final profile = _testProfileWithPracticeSessions([
+      PracticeSession(
+        completedAt: DateTime(2026, 6, 12, 18),
+        challengeId: 'lesson.009',
+        challengeTitle: 'Memory lesson',
+        skill: 'Working memory',
+        minutes: 5,
+        correctAnswers: 2,
+        totalQuestions: 5,
+        wrongAttempts: 2,
+        mistakePuzzleIds: ['memory.order.normal.003'],
+      ),
+    ]);
+    final challenges = _adaptiveReviewChallenges(profile);
+    final store = _MemoryFamilyProfileStore(profile);
 
     await tester.pumpWidget(
       BrainUpApp(
@@ -245,24 +249,25 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Review'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    final answers = ['Shoe', 'Lock', 'Ball', 'Rocket', 'Red'];
-    for (var index = 0; index < answers.length; index += 1) {
-      final answerFinder = find.text(answers[index]).last;
-      await tester.ensureVisible(answerFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(answerFinder);
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Check'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Check'));
-      await tester.pumpAndSettle();
-      final nextLabel = index == answers.length - 1 ? 'Finish lesson' : 'Next';
+    for (var index = 0; index < challenges.length; index += 1) {
+      final challenge = challenges[index];
+      final definition = MiniGameRegistry.definitionForChallenge(challenge);
+      if (definition == null) {
+        await _answerClassicChallenge(tester, challenge);
+      } else {
+        await _tapInlineMemoryCorrectTile(tester, definition);
+      }
+
+      final nextLabel =
+          index == challenges.length - 1 ? 'Finish lesson' : 'Next';
       await tester.ensureVisible(find.text(nextLabel));
-      await tester.pumpAndSettle();
+      await tester.pump();
       await tester.tap(find.text(nextLabel));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
     }
 
     expect(find.text('Review complete!'), findsOneWidget);
@@ -279,23 +284,23 @@ void main() {
     expect(find.text('Practice tricky bits'), findsNothing);
   });
 
-  testWidgets('opens memory puzzle as a mini-game and returns result',
-      (tester) async {
-    final store = _MemoryFamilyProfileStore(
-      _testProfileWithPracticeSessions([
-        PracticeSession(
-          completedAt: DateTime(2026, 6, 12, 18),
-          challengeId: 'lesson.009',
-          challengeTitle: 'Memory lesson',
-          skill: 'Working memory',
-          minutes: 5,
-          correctAnswers: 2,
-          totalQuestions: 5,
-          wrongAttempts: 2,
-          mistakePuzzleIds: ['memory.order.normal.003'],
-        ),
-      ]),
-    );
+  testWidgets('plays memory puzzle inline and returns result', (tester) async {
+    final profile = _testProfileWithPracticeSessions([
+      PracticeSession(
+        completedAt: DateTime(2026, 6, 12, 18),
+        challengeId: 'lesson.009',
+        challengeTitle: 'Memory lesson',
+        skill: 'Working memory',
+        minutes: 5,
+        correctAnswers: 2,
+        totalQuestions: 5,
+        wrongAttempts: 2,
+        mistakePuzzleIds: ['memory.order.normal.003'],
+      ),
+    ]);
+    final challenge = _firstAdaptiveReviewChallenge(profile);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final store = _MemoryFamilyProfileStore(profile);
 
     await tester.pumpWidget(
       BrainUpApp(
@@ -306,21 +311,14 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Review'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Memory Grid mode'), findsOneWidget);
-    await tester.ensureVisible(find.text('Play mini-game'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Play mini-game'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Memory Grid'), findsOneWidget);
-    await tester.tap(find.text('Shoe').last);
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(find.text('Submit mini-game'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('Play directly in this puzzle'), findsOneWidget);
+    expect(find.text('Play mini-game'), findsNothing);
+
+    await _tapInlineMemoryCorrectTile(tester, definition);
 
     expect(find.textContaining('Correct!'), findsOneWidget);
     expect(find.text('Next'), findsOneWidget);
@@ -749,6 +747,144 @@ FamilyProfile _testProfileWithStars(int stars) {
     childProfiles: [child],
     activeChildId: child.id,
   );
+}
+
+DailyChallenge _firstAdaptiveReviewChallenge(FamilyProfile profile) {
+  return _adaptiveReviewChallenges(profile).first;
+}
+
+List<DailyChallenge> _adaptiveReviewChallenges(FamilyProfile profile) {
+  final child = profile.activeChild;
+  final puzzles = FoundationCatalog.puzzlesForLesson(
+    lesson: FoundationCatalog.adaptiveReviewLesson,
+    ageBandId: _ageBandIdForChild(child),
+    reviewProfile: PracticeReviewProfile.fromSessions(child.practiceSessions),
+  );
+  return [
+    for (final puzzle in puzzles) dailyChallengeForPuzzle(puzzle, child.age),
+  ];
+}
+
+AgeBandId _ageBandIdForChild(ChildProfile child) {
+  return switch (child.age) {
+    ChildAge.four || ChildAge.five => AgeBandId.age4to5,
+    ChildAge.six => AgeBandId.age6,
+    ChildAge.seven || ChildAge.eight => AgeBandId.age7to8,
+  };
+}
+
+Finder _gameWidgetFinder() {
+  return find.byWidgetPredicate(
+    (widget) => widget.runtimeType.toString().startsWith('GameWidget'),
+  );
+}
+
+Future<void> _tapInlineMemoryCorrectTile(
+  WidgetTester tester,
+  MiniGameDefinition definition,
+) async {
+  final correctIndex = definition.firstRound.choiceIds.indexOf(
+    definition.firstRound.correctChoiceId,
+  );
+  expect(correctIndex, greaterThanOrEqualTo(0));
+
+  final gameFinder = _gameWidgetFinder().first;
+  await tester.ensureVisible(gameFinder);
+  await tester.pump();
+
+  final gameRect = tester.getRect(gameFinder);
+  await tester.tapAt(
+    _memoryTileCenter(
+      gameRect: gameRect,
+      choiceCount: definition.firstRound.choiceIds.length,
+      correctIndex: correctIndex,
+    ),
+  );
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 700));
+}
+
+Future<void> _answerClassicChallenge(
+  WidgetTester tester,
+  DailyChallenge challenge,
+) async {
+  final correctChoice = challenge.choices.firstWhere(
+    (choice) => challenge.isCorrectChoice(choice.id),
+  );
+  final l10n = lookupAppLocalizations(const Locale('en'));
+  final answerFinder = find
+      .text(
+        l10n.choiceLabelFor(challenge, correctChoice),
+      )
+      .last;
+  await tester.ensureVisible(answerFinder);
+  await tester.pump();
+  await tester.tap(answerFinder);
+  await tester.pump();
+  await tester.ensureVisible(find.text('Check'));
+  await tester.pump();
+  await tester.tap(find.text('Check'));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+}
+
+Offset _memoryTileCenter({
+  required Rect gameRect,
+  required int choiceCount,
+  required int correctIndex,
+}) {
+  if (choiceCount <= 3) {
+    final tileWidth = math.min(
+      118.0,
+      (gameRect.width - 56 - (choiceCount - 1) * 12) / choiceCount,
+    );
+    const tileHeight = 106.0;
+    final totalWidth = tileWidth * choiceCount + (choiceCount - 1) * 12;
+    final topLeft = Offset(
+      (gameRect.width - totalWidth) / 2,
+      gameRect.height * 0.43 - tileHeight / 2,
+    );
+    return gameRect.topLeft +
+        topLeft +
+        Offset(
+          correctIndex * (tileWidth + 12) + tileWidth / 2,
+          tileHeight / 2,
+        );
+  }
+
+  if (choiceCount == 4) {
+    final tileSize = math.min(100.0, gameRect.size.shortestSide / 3.2);
+    final gap = tileSize * 0.18;
+    final gridWidth = tileSize * 2 + gap;
+    final topLeft = Offset(
+      (gameRect.width - gridWidth) / 2,
+      (gameRect.height - gridWidth) / 2 - 12,
+    );
+    final row = correctIndex ~/ 2;
+    final column = correctIndex % 2;
+    return gameRect.topLeft +
+        topLeft +
+        Offset(
+          column * (tileSize + gap) + tileSize / 2,
+          row * (tileSize + gap) + tileSize / 2,
+        );
+  }
+
+  final tileSize = math.min(86.0, gameRect.size.shortestSide / 4.2);
+  final gap = tileSize * 0.16;
+  final gridWidth = tileSize * 3 + gap * 2;
+  final topLeft = Offset(
+    (gameRect.width - gridWidth) / 2,
+    (gameRect.height - gridWidth) / 2 - 12,
+  );
+  final row = correctIndex ~/ 3;
+  final column = correctIndex % 3;
+  return gameRect.topLeft +
+      topLeft +
+      Offset(
+        column * (tileSize + gap) + tileSize / 2,
+        row * (tileSize + gap) + tileSize / 2,
+      );
 }
 
 class _MemoryFamilyProfileStore implements FamilyProfileStore {

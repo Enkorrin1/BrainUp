@@ -123,6 +123,52 @@ class MemoryGridGame extends FlameGame with TapCallbacks {
   }
 
   List<Rect> _tileRectsFor(Size canvasSize) {
+    final choiceCount = definition.firstRound.choiceIds.length;
+    if (choiceCount <= 3) {
+      final tileWidth = math.min(
+        118.0,
+        (canvasSize.width - 56 - (choiceCount - 1) * 12) / choiceCount,
+      );
+      const tileHeight = 106.0;
+      final totalWidth = tileWidth * choiceCount + (choiceCount - 1) * 12;
+      final topLeft = Offset(
+        (canvasSize.width - totalWidth) / 2,
+        canvasSize.height * 0.43 - tileHeight / 2,
+      );
+
+      return [
+        for (var index = 0; index < choiceCount; index += 1)
+          Rect.fromLTWH(
+            topLeft.dx + index * (tileWidth + 12),
+            topLeft.dy,
+            tileWidth,
+            tileHeight,
+          ),
+      ];
+    }
+
+    if (choiceCount == 4) {
+      final shortestSide = canvasSize.shortestSide;
+      final tileSize = math.min(100.0, shortestSide / 3.2);
+      final gap = tileSize * 0.18;
+      final gridWidth = tileSize * 2 + gap;
+      final topLeft = Offset(
+        (canvasSize.width - gridWidth) / 2,
+        (canvasSize.height - gridWidth) / 2 - 12,
+      );
+
+      return [
+        for (var row = 0; row < 2; row += 1)
+          for (var column = 0; column < 2; column += 1)
+            Rect.fromLTWH(
+              topLeft.dx + column * (tileSize + gap),
+              topLeft.dy + row * (tileSize + gap),
+              tileSize,
+              tileSize,
+            ),
+      ];
+    }
+
     final shortestSide = canvasSize.shortestSide;
     final tileSize = math.min(86.0, shortestSide / 4.2);
     final gap = tileSize * 0.16;
@@ -152,23 +198,44 @@ class MemoryGridGame extends FlameGame with TapCallbacks {
     bool selected,
   ) {
     final icons = ['+', '*', '#', '?', '='];
-    final visible = selected || pulse > 0.34 || index.isEven;
+    final choiceIds = definition.firstRound.choiceIds;
+    final choiceId = index < choiceIds.length ? choiceIds[index] : null;
+    final label = choiceId == null
+        ? icons[index % icons.length]
+        : definition.firstRound.labelForChoice(choiceId);
+    final visible =
+        choiceId != null || selected || pulse > 0.34 || index.isEven;
     final textPainter = TextPainter(
       text: TextSpan(
-        text: visible ? icons[index % icons.length] : '?',
+        text: visible ? label : '?',
         style: TextStyle(
           color: Colors.white,
-          fontSize: selected ? 30 : 24,
+          fontSize: selected ? 18 : 15,
           fontWeight: FontWeight.w900,
         ),
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
-    )..layout();
+      maxLines: 2,
+      ellipsis: '...',
+    )..layout(maxWidth: 78);
+
+    final symbolPaint = Paint()
+      ..color = selected
+          ? const Color(0xFFFFD15C)
+          : const Color(0xFF42F4D2).withValues(alpha: 0.84);
+    canvas.drawCircle(
+        center.translate(0, -22), selected ? 16 : 13, symbolPaint);
+    canvas.drawCircle(
+      center.translate(0, -22),
+      selected ? 7 : 5,
+      Paint()..color = const Color(0xFF07132F),
+    );
 
     textPainter.paint(
       canvas,
-      center - Offset(textPainter.width / 2, textPainter.height / 2),
+      center.translate(0, 16) -
+          Offset(textPainter.width / 2, textPainter.height / 2),
     );
   }
 

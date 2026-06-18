@@ -1,4 +1,6 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/daily_challenge.dart';
@@ -8,7 +10,8 @@ import '../../l10n/l10n.dart';
 import '../../mini_games/core/mini_game_definition.dart';
 import '../../mini_games/core/mini_game_registry.dart';
 import '../../mini_games/core/mini_game_result.dart';
-import '../../mini_games/host/mini_game_host_screen.dart';
+import '../../mini_games/core/mini_game_scene_controller.dart';
+import '../../mini_games/host/mini_game_scene_factory.dart';
 
 class _LessonPalette {
   static const background = Color(0xFF07132F);
@@ -121,6 +124,7 @@ class _LessonScreenState extends State<LessonScreen> {
   bool _isSaving = false;
   bool _showHint = false;
   bool _bossIntroDismissed = false;
+  int _interactiveAttemptTick = 0;
   final Set<int> _hintedStepIndexes = <int>{};
   final Set<String> _mistakePuzzleIds = <String>{};
   int _wrongAttempts = 0;
@@ -212,23 +216,18 @@ class _LessonScreenState extends State<LessonScreen> {
                   const SizedBox(height: 16),
                   _LessonQuestionCard(
                     challenge: challenge,
+                    miniGameDefinition: miniGameDefinition,
+                    interactiveAttemptTick: _interactiveAttemptTick,
                     selectedChoiceId: _selectedChoiceId,
                     hasSubmitted: _hasSubmitted,
                     isCorrect: _isCorrect,
                     showHint: _showHint,
                     onToggleHint: _toggleHint,
                     onChoiceSelected: _selectChoice,
+                    onInteractiveResult: (result) {
+                      _applyMiniGameResult(result, challenge);
+                    },
                   ),
-                  if (miniGameDefinition != null) ...[
-                    const SizedBox(height: 12),
-                    _MiniGameLaunchCard(
-                      definition: miniGameDefinition,
-                      onPlay: () => _openMiniGame(
-                        definition: miniGameDefinition,
-                        challenge: challenge,
-                      ),
-                    ),
-                  ],
                   const SizedBox(height: 18),
                   FilledButton.icon(
                     onPressed: _selectedChoiceId == null || _isSaving
@@ -345,22 +344,6 @@ class _LessonScreenState extends State<LessonScreen> {
     });
   }
 
-  Future<void> _openMiniGame({
-    required MiniGameDefinition definition,
-    required DailyChallenge challenge,
-  }) async {
-    final result = await MiniGameHostScreen.play(
-      context,
-      definition: definition,
-      challenge: challenge,
-    );
-    if (!mounted || result == null || result.exited) {
-      return;
-    }
-
-    _applyMiniGameResult(result, challenge);
-  }
-
   void _applyMiniGameResult(
     MiniGameResult result,
     DailyChallenge challenge,
@@ -401,6 +384,7 @@ class _LessonScreenState extends State<LessonScreen> {
         _hasSubmitted = false;
         _isCorrect = false;
         _showHint = true;
+        _interactiveAttemptTick += 1;
         _hintedStepIndexes.add(_stepIndex);
       });
       return;
@@ -1069,21 +1053,27 @@ class _CoachSpeechCard extends StatelessWidget {
 class _LessonQuestionCard extends StatelessWidget {
   const _LessonQuestionCard({
     required this.challenge,
+    required this.miniGameDefinition,
+    required this.interactiveAttemptTick,
     required this.selectedChoiceId,
     required this.hasSubmitted,
     required this.isCorrect,
     required this.showHint,
     required this.onToggleHint,
     required this.onChoiceSelected,
+    required this.onInteractiveResult,
   });
 
   final DailyChallenge challenge;
+  final MiniGameDefinition? miniGameDefinition;
+  final int interactiveAttemptTick;
   final String? selectedChoiceId;
   final bool hasSubmitted;
   final bool isCorrect;
   final bool showHint;
   final VoidCallback onToggleHint;
   final ValueChanged<String> onChoiceSelected;
+  final ValueChanged<MiniGameResult> onInteractiveResult;
 
   @override
   Widget build(BuildContext context) {
@@ -1095,6 +1085,7 @@ class _LessonQuestionCard extends StatelessWidget {
       hasSubmitted: hasSubmitted,
       isCorrect: isCorrect,
     );
+    final playableDefinition = miniGameDefinition;
 
     return DecoratedBox(
       decoration: _panelDecoration(),
@@ -1166,8 +1157,10 @@ class _LessonQuestionCard extends StatelessWidget {
               moment: coachMoment,
             ),
             const SizedBox(height: 18),
-            _PuzzleVisual(challenge: challenge),
-            const SizedBox(height: 14),
+            if (playableDefinition == null) ...[
+              _PuzzleVisual(challenge: challenge),
+              const SizedBox(height: 14),
+            ],
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -1187,43 +1180,59 @@ class _LessonQuestionCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            if (challenge.interaction != null) ...[
-              _LessonInteractionStage(
+            if (playableDefinition != null) ...[
+              _EmbeddedInteractivePuzzleStage(
+                key: ValueKey(
+                  'embedded-${challenge.id}-$interactiveAttemptTick',
+                ),
                 challenge: challenge,
-                selectedChoiceId: selectedChoiceId,
+                definition: playableDefinition,
                 hasSubmitted: hasSubmitted,
                 isCorrect: isCorrect,
-                onChoiceSelected: onChoiceSelected,
+                showHint: showHint,
+                onHint: onToggleHint,
+                onResult: onInteractiveResult,
               ),
               const SizedBox(height: 18),
-            ],
-            _HintButton(
-              expanded: showHint,
-              onPressed: onToggleHint,
-            ),
-            if (showHint && (!hasSubmitted || !isCorrect)) ...[
-              const SizedBox(height: 10),
-              _HintPanel(challenge: challenge),
-            ],
-            const SizedBox(height: 14),
-            for (var index = 0; index < challenge.choices.length; index += 1)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _LessonChoiceTile(
+            ] else ...[
+              if (challenge.interaction != null) ...[
+                _LessonInteractionStage(
                   challenge: challenge,
-                  choice: challenge.choices[index],
-                  label: l10n.choiceLabelFor(
-                    challenge,
-                    challenge.choices[index],
-                  ),
-                  index: index,
-                  selected: selectedChoiceId == challenge.choices[index].id,
-                  submitted: hasSubmitted,
-                  correct:
-                      challenge.isCorrectChoice(challenge.choices[index].id),
-                  onTap: () => onChoiceSelected(challenge.choices[index].id),
+                  selectedChoiceId: selectedChoiceId,
+                  hasSubmitted: hasSubmitted,
+                  isCorrect: isCorrect,
+                  onChoiceSelected: onChoiceSelected,
                 ),
+                const SizedBox(height: 18),
+              ],
+              _HintButton(
+                expanded: showHint,
+                onPressed: onToggleHint,
               ),
+              if (showHint && (!hasSubmitted || !isCorrect)) ...[
+                const SizedBox(height: 10),
+                _HintPanel(challenge: challenge),
+              ],
+              const SizedBox(height: 14),
+              for (var index = 0; index < challenge.choices.length; index += 1)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _LessonChoiceTile(
+                    challenge: challenge,
+                    choice: challenge.choices[index],
+                    label: l10n.choiceLabelFor(
+                      challenge,
+                      challenge.choices[index],
+                    ),
+                    index: index,
+                    selected: selectedChoiceId == challenge.choices[index].id,
+                    submitted: hasSubmitted,
+                    correct:
+                        challenge.isCorrectChoice(challenge.choices[index].id),
+                    onTap: () => onChoiceSelected(challenge.choices[index].id),
+                  ),
+                ),
+            ],
             if (hasSubmitted) ...[
               const SizedBox(height: 4),
               AnimatedSwitcher(
@@ -1247,6 +1256,377 @@ class _LessonQuestionCard extends StatelessWidget {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _EmbeddedPuzzleFeedbackState {
+  idle,
+  success,
+  retry,
+}
+
+class _EmbeddedInteractivePuzzleStage extends StatefulWidget {
+  const _EmbeddedInteractivePuzzleStage({
+    required this.challenge,
+    required this.definition,
+    required this.hasSubmitted,
+    required this.isCorrect,
+    required this.showHint,
+    required this.onHint,
+    required this.onResult,
+    super.key,
+  });
+
+  final DailyChallenge challenge;
+  final MiniGameDefinition definition;
+  final bool hasSubmitted;
+  final bool isCorrect;
+  final bool showHint;
+  final VoidCallback onHint;
+  final ValueChanged<MiniGameResult> onResult;
+
+  @override
+  State<_EmbeddedInteractivePuzzleStage> createState() {
+    return _EmbeddedInteractivePuzzleStageState();
+  }
+}
+
+class _EmbeddedInteractivePuzzleStageState
+    extends State<_EmbeddedInteractivePuzzleStage> {
+  late final MiniGameSceneController _sceneController;
+  late final FlameGame _game;
+  String? _selectedChoiceId;
+  _EmbeddedPuzzleFeedbackState _feedbackState =
+      _EmbeddedPuzzleFeedbackState.idle;
+  bool _correctResultLocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sceneController = MiniGameSceneController(
+      definition: widget.definition,
+      onChoiceSelected: _handleSceneChoiceSelected,
+      onResult: _handleSceneResult,
+    )..start();
+    _game = miniGameSceneFor(
+      widget.definition,
+      sceneController: _sceneController,
+    );
+  }
+
+  @override
+  void dispose() {
+    _sceneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = miniGameAccentFor(widget.definition.type);
+    final effectiveFeedback = _effectiveFeedbackState;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            accent.withValues(alpha: 0.18),
+            const Color(0xFF101D46).withValues(alpha: 0.88),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: _borderColorFor(effectiveFeedback, accent),
+          width: widget.hasSubmitted ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withValues(alpha: 0.18),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final sceneHeight = constraints.maxWidth < 380 ? 360.0 : 410.0;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.22),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: accent.withValues(alpha: 0.48),
+                      ),
+                    ),
+                    child: Icon(
+                      _iconFor(widget.definition.type),
+                      color: accent,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.definition.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    color: _LessonPalette.text,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _statusTextFor(effectiveFeedback),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    color: _statusColorFor(
+                                      effectiveFeedback,
+                                      accent,
+                                    ),
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _EmbeddedPuzzleStatePill(
+                    feedbackState: effectiveFeedback,
+                    accent: accent,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF07132F),
+                  ),
+                  child: SizedBox(
+                    height: sceneHeight,
+                    child: GameWidget(game: _game),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: widget.showHint ? null : _showHint,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: accent,
+                        side: BorderSide(
+                          color: accent.withValues(alpha: 0.46),
+                        ),
+                        backgroundColor: accent.withValues(alpha: 0.08),
+                      ),
+                      icon: const Icon(Icons.lightbulb_rounded),
+                      label: Text(widget.showHint ? 'Hint shown' : 'Hint'),
+                    ),
+                  ),
+                  if (_selectedChoiceId != null) ...[
+                    const SizedBox(width: 10),
+                    _EmbeddedSelectionChip(
+                      accent: accent,
+                      label: _labelForChoice(_selectedChoiceId!),
+                    ),
+                  ],
+                ],
+              ),
+              if (widget.showHint) ...[
+                const SizedBox(height: 10),
+                Text(
+                  widget.challenge.hint,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: _LessonPalette.muted,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  _EmbeddedPuzzleFeedbackState get _effectiveFeedbackState {
+    if (widget.hasSubmitted && widget.isCorrect) {
+      return _EmbeddedPuzzleFeedbackState.success;
+    }
+    if (widget.hasSubmitted && !widget.isCorrect) {
+      return _EmbeddedPuzzleFeedbackState.retry;
+    }
+    return _feedbackState;
+  }
+
+  void _showHint() {
+    HapticFeedback.selectionClick();
+    widget.onHint();
+    _sceneController.recordHint();
+  }
+
+  void _handleSceneChoiceSelected(String choiceId) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      _selectedChoiceId = choiceId;
+      _feedbackState = _EmbeddedPuzzleFeedbackState.idle;
+    });
+  }
+
+  void _handleSceneResult(MiniGameResult result) {
+    if (result.isCorrect && _correctResultLocked) {
+      return;
+    }
+    if (result.isCorrect) {
+      _correctResultLocked = true;
+      HapticFeedback.heavyImpact();
+    } else {
+      HapticFeedback.mediumImpact();
+    }
+    setState(() {
+      _selectedChoiceId = result.selectedChoiceId;
+      _feedbackState = result.isCorrect
+          ? _EmbeddedPuzzleFeedbackState.success
+          : _EmbeddedPuzzleFeedbackState.retry;
+    });
+    widget.onResult(result);
+  }
+
+  String _labelForChoice(String choiceId) {
+    return widget.challenge.choices
+        .firstWhere(
+          (choice) => choice.id == choiceId,
+          orElse: () => ChallengeChoice(id: choiceId, label: choiceId),
+        )
+        .label;
+  }
+
+  IconData _iconFor(MiniGameType type) {
+    return switch (type) {
+      MiniGameType.memoryGrid => Icons.grid_view_rounded,
+      MiniGameType.logicPath => Icons.route_rounded,
+      MiniGameType.mathBubbles => Icons.balance_rounded,
+      MiniGameType.shapeBuilder => Icons.category_rounded,
+      MiniGameType.attentionScan => Icons.center_focus_strong_rounded,
+      MiniGameType.patternMachine => Icons.auto_mode_rounded,
+      MiniGameType.sortLab => Icons.inventory_2_rounded,
+      MiniGameType.bossMix => Icons.auto_awesome_rounded,
+    };
+  }
+
+  Color _borderColorFor(_EmbeddedPuzzleFeedbackState state, Color accent) {
+    return switch (state) {
+      _EmbeddedPuzzleFeedbackState.success => _LessonPalette.aqua,
+      _EmbeddedPuzzleFeedbackState.retry => _LessonPalette.coral,
+      _EmbeddedPuzzleFeedbackState.idle => accent.withValues(alpha: 0.44),
+    };
+  }
+
+  Color _statusColorFor(_EmbeddedPuzzleFeedbackState state, Color accent) {
+    return switch (state) {
+      _EmbeddedPuzzleFeedbackState.success => _LessonPalette.aqua,
+      _EmbeddedPuzzleFeedbackState.retry => _LessonPalette.coral,
+      _EmbeddedPuzzleFeedbackState.idle => accent,
+    };
+  }
+
+  String _statusTextFor(_EmbeddedPuzzleFeedbackState state) {
+    return switch (state) {
+      _EmbeddedPuzzleFeedbackState.success => 'Solved on the scene',
+      _EmbeddedPuzzleFeedbackState.retry => 'Try again on the scene',
+      _EmbeddedPuzzleFeedbackState.idle => 'Play directly in this puzzle',
+    };
+  }
+}
+
+class _EmbeddedPuzzleStatePill extends StatelessWidget {
+  const _EmbeddedPuzzleStatePill({
+    required this.feedbackState,
+    required this.accent,
+  });
+
+  final _EmbeddedPuzzleFeedbackState feedbackState;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (feedbackState) {
+      _EmbeddedPuzzleFeedbackState.success => _LessonPalette.aqua,
+      _EmbeddedPuzzleFeedbackState.retry => _LessonPalette.coral,
+      _EmbeddedPuzzleFeedbackState.idle => accent,
+    };
+    final icon = switch (feedbackState) {
+      _EmbeddedPuzzleFeedbackState.success => Icons.check_rounded,
+      _EmbeddedPuzzleFeedbackState.retry => Icons.refresh_rounded,
+      _EmbeddedPuzzleFeedbackState.idle => Icons.touch_app_rounded,
+    };
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.18),
+        shape: BoxShape.circle,
+        border: Border.all(color: color.withValues(alpha: 0.52)),
+      ),
+      child: Icon(icon, color: color, size: 21),
+    );
+  }
+}
+
+class _EmbeddedSelectionChip extends StatelessWidget {
+  const _EmbeddedSelectionChip({
+    required this.accent,
+    required this.label,
+  });
+
+  final Color accent;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 42, maxWidth: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: accent.withValues(alpha: 0.48)),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: _LessonPalette.text,
+                fontWeight: FontWeight.w900,
+              ),
         ),
       ),
     );
@@ -3577,97 +3957,6 @@ class _LessonFeedback extends StatelessWidget {
                   ),
                 ],
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniGameLaunchCard extends StatelessWidget {
-  const _MiniGameLaunchCard({
-    required this.definition,
-    required this.onPlay,
-  });
-
-  final MiniGameDefinition definition;
-  final VoidCallback onPlay;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = switch (definition.type) {
-      MiniGameType.memoryGrid => _LessonPalette.aqua,
-      MiniGameType.logicPath => _LessonPalette.star,
-      MiniGameType.mathBubbles => _LessonPalette.coral,
-      MiniGameType.shapeBuilder => _LessonPalette.violet,
-      MiniGameType.attentionScan => const Color(0xFF68D391),
-      MiniGameType.patternMachine => const Color(0xFF5C8EF7),
-      MiniGameType.sortLab => const Color(0xFFE9C46A),
-      MiniGameType.bossMix => _LessonPalette.coral,
-    };
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.13),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: accent.withValues(alpha: 0.34)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.22),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.sports_esports_rounded,
-                  color: accent,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${definition.title} mode',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: _LessonPalette.text,
-                            fontWeight: FontWeight.w900,
-                          ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      'Play this puzzle as a mini-game.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: _LessonPalette.muted,
-                            fontWeight: FontWeight.w800,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: onPlay,
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: const Text('Play mini-game'),
-              style: FilledButton.styleFrom(
-                backgroundColor: accent,
-                foregroundColor: _LessonPalette.background,
-              ),
             ),
           ),
         ],

@@ -561,3 +561,37 @@ Next:
 
 - add multi-piece assembly rules for hard spatial levels;
 - create distinct silhouettes per spatial content family.
+
+### 2026-06-19 - Stage 47, Slice 1
+
+Implemented:
+
+- playable puzzle scenes are now embedded directly inside the lesson question
+  card instead of being launched through a separate `Play mini-game` card;
+- mini-game-ready lessons hide the old static interaction stage and answer
+  tiles, so the child solves by tapping, dragging, tracing, or assembling inside
+  the scene itself;
+- the lesson screen now receives results directly from the scene controller and
+  uses the normal lesson `Next` / `Try again` flow after scene success or retry;
+- retry resets recreate the embedded scene, so a failed interactive attempt
+  starts cleanly;
+- visible host copy was changed from mini-game language to puzzle language;
+- Memory Grid tiles now render real answer labels in large tappable scene cards
+  instead of abstract placeholder symbols;
+- widget coverage now protects the inline playable Memory Grid path and asserts
+  that `Play mini-game` is absent from the lesson flow.
+
+Verified:
+
+- `flutter analyze`;
+- `flutter test test\widget_test.dart --plain-name "plays memory puzzle inline and returns result"`;
+- `flutter test test\widget_test.dart`;
+- `flutter test`;
+- `flutter build apk --debug`.
+
+Next:
+
+- make Math Balance, Sort Lab, Logic Path, and Shape Builder scenes visually
+  richer with content-specific art, character reactions, and clearer object
+  states;
+- capture emulator screenshots of the new inline puzzle flow.

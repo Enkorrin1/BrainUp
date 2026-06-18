@@ -8,11 +8,7 @@ import '../core/mini_game_character_reaction.dart';
 import '../core/mini_game_definition.dart';
 import '../core/mini_game_result.dart';
 import '../core/mini_game_scene_controller.dart';
-import '../games/boss_mix_game/boss_mix_game.dart';
-import '../games/drag_drop_game/drag_drop_game.dart';
-import '../games/logic_path_game/logic_path_game.dart';
-import '../games/memory_grid_game/memory_grid_game.dart';
-import '../games/shape_builder_game/shape_builder_game.dart';
+import 'mini_game_scene_factory.dart';
 
 enum _MiniGameFeedbackState {
   idle,
@@ -73,7 +69,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       onChoiceSelected: _onSceneChoiceSelected,
       onResult: _handleSceneResult,
     )..start();
-    _game = _gameFor(
+    _game = miniGameSceneFor(
       widget.definition,
       sceneController: _sceneController,
     );
@@ -81,7 +77,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = _accentFor(widget.definition.type);
+    final accent = miniGameAccentFor(widget.definition.type);
 
     return Scaffold(
       backgroundColor: const Color(0xFF07132F),
@@ -267,53 +263,6 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
         ? ''
         : widget.definition.audioProfile.cueIds.first;
     _audioController.playCue(knownCue ? cueId : fallbackCue);
-  }
-
-  Color _accentFor(MiniGameType type) {
-    return switch (type) {
-      MiniGameType.memoryGrid => const Color(0xFF42F4D2),
-      MiniGameType.logicPath => const Color(0xFFFFD15C),
-      MiniGameType.mathBubbles => const Color(0xFFFF6F7D),
-      MiniGameType.shapeBuilder => const Color(0xFF9C6AF2),
-      MiniGameType.attentionScan => const Color(0xFF68D391),
-      MiniGameType.patternMachine => const Color(0xFF5C8EF7),
-      MiniGameType.sortLab => const Color(0xFFE9C46A),
-      MiniGameType.bossMix => const Color(0xFFFF6F7D),
-    };
-  }
-
-  FlameGame _gameFor(
-    MiniGameDefinition definition, {
-    required MiniGameSceneController sceneController,
-  }) {
-    return switch (definition.type) {
-      MiniGameType.memoryGrid => MemoryGridGame(
-          definition: definition,
-          sceneController: sceneController,
-        ),
-      MiniGameType.logicPath => LogicPathGame(
-          definition: definition,
-          sceneController: sceneController,
-        ),
-      MiniGameType.shapeBuilder => ShapeBuilderGame(
-          definition: definition,
-          sceneController: sceneController,
-        ),
-      MiniGameType.bossMix => BossMixGame(
-          definition: definition,
-          sceneController: sceneController,
-        ),
-      MiniGameType.mathBubbles || MiniGameType.sortLab => DragDropGame(
-          definition: definition,
-          sceneController: sceneController,
-        ),
-      MiniGameType.attentionScan ||
-      MiniGameType.patternMachine =>
-        MemoryGridGame(
-          definition: definition,
-          sceneController: sceneController,
-        ),
-    };
   }
 }
 
@@ -628,7 +577,7 @@ class _MiniGameFeedbackBanner extends StatelessWidget {
 
   String get _message {
     return switch (state) {
-      _MiniGameFeedbackState.success => 'Mini-game solved!',
+      _MiniGameFeedbackState.success => 'Puzzle solved!',
       _MiniGameFeedbackState.retry => 'Good try. Use the hint and try again.',
       _MiniGameFeedbackState.idle => '',
     };
@@ -694,7 +643,7 @@ class _MiniGameTopBar extends StatelessWidget {
           ),
         ),
         IconButton.filledTonal(
-          tooltip: soundEnabled ? 'Mute mini-game' : 'Sound off',
+          tooltip: soundEnabled ? 'Mute puzzle' : 'Sound off',
           onPressed: onSoundToggled,
           icon: Icon(
             soundEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded,
@@ -702,7 +651,7 @@ class _MiniGameTopBar extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         IconButton.filledTonal(
-          tooltip: 'Exit mini-game',
+          tooltip: 'Exit puzzle',
           onPressed: onExit,
           icon: const Icon(Icons.close_rounded),
         ),
@@ -806,8 +755,8 @@ class _MiniGameControlPanel extends StatelessWidget {
                 flex: 2,
                 child: FilledButton.icon(
                   onPressed: onSubmit,
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Submit mini-game'),
+                  icon: const Icon(Icons.check_rounded),
+                  label: const Text('Check puzzle'),
                   style: FilledButton.styleFrom(
                     backgroundColor: accent,
                     foregroundColor: const Color(0xFF07132F),
