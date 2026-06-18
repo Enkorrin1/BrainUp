@@ -2863,28 +2863,32 @@ class _ChoiceVisual extends StatelessWidget {
       child: child,
     );
   }
-
-  Color _colorForChoice(String choiceId) {
-    return switch (choiceId) {
-      'circle' || 'red' || 'red-circles' => const Color(0xFFFF6F6B),
-      'triangle' || 'blue' || 'blue-squares' => const Color(0xFF5C8EF7),
-      'star' || 'green' || 'green-stars' => const Color(0xFF35B37E),
-      'apple' => const Color(0xFFFF6F6B),
-      'ball' => const Color(0xFFFF9F43),
-      'banana' => const Color(0xFFFFC739),
-      'pear' => const Color(0xFF35B37E),
-      'rocket' || 'same' => const Color(0xFF18B7AE),
-      'planet' || 'square' => const Color(0xFF5C8EF7),
-      'lock' || '4+2+1' => const Color(0xFF18B7AE),
-      'shoe' || '4+1' => const Color(0xFF9C6AF2),
-      'cloud' || '2+1' => const Color(0xFF5C8EF7),
-      _ => const Color(0xFFFF9D2E),
-    };
-  }
 }
 
-String? _assetForChoice(String challengeId, String choiceId) {
-  return switch ('$challengeId:$choiceId') {
+Color _colorForChoice(String choiceId) {
+  return switch (choiceId) {
+    'circle' || 'red' || 'red-circles' => const Color(0xFFFF6F6B),
+    'triangle' || 'blue' || 'blue-squares' => const Color(0xFF5C8EF7),
+    'star' || 'green' || 'green-stars' => const Color(0xFF35B37E),
+    'apple' => const Color(0xFFFF6F6B),
+    'ball' => const Color(0xFFFF9F43),
+    'banana' => const Color(0xFFFFC739),
+    'pear' => const Color(0xFF35B37E),
+    'rocket' || 'same' || 'left' || 'right' => const Color(0xFF18B7AE),
+    'planet' || 'square' => const Color(0xFF5C8EF7),
+    'lock' || '4+2+1' => const Color(0xFF18B7AE),
+    'shoe' || '4+1' => const Color(0xFF9C6AF2),
+    'cloud' || '2+1' => const Color(0xFF5C8EF7),
+    _ => const Color(0xFFFF9D2E),
+  };
+}
+
+String? _assetForChoice(
+  String challengeId,
+  String choiceId, {
+  String? semanticAssetId,
+}) {
+  final exactAsset = switch ('$challengeId:$choiceId') {
     'shape-path:triangle' => _PuzzleAssets.triangle,
     'shape-path:circle' => _PuzzleAssets.circle,
     'shape-path:star' => _PuzzleAssets.star,
@@ -2923,6 +2927,38 @@ String? _assetForChoice(String challengeId, String choiceId) {
     'shape-stack:triangle' => _PuzzleAssets.triangle,
     _ => null,
   };
+  if (exactAsset != null) {
+    return exactAsset;
+  }
+
+  final choiceAsset = _assetForLooseKey(choiceId);
+  if (choiceAsset != null) {
+    return choiceAsset;
+  }
+
+  return semanticAssetId == null ? null : _assetForLooseKey(semanticAssetId);
+}
+
+String? _assetForLooseKey(String value) {
+  final key = value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+  if (key.contains('apple')) return _PuzzleAssets.apple;
+  if (key.contains('pear')) return _PuzzleAssets.pear;
+  if (key.contains('banana')) return _PuzzleAssets.banana;
+  if (key.contains('ball')) return _PuzzleAssets.ball;
+  if (key.contains('rocket')) return _PuzzleAssets.rocket;
+  if (key.contains('planet')) return _PuzzleAssets.planet;
+  if (key.contains('star')) return _PuzzleAssets.star;
+  if (key.contains('lock')) return _PuzzleAssets.lock;
+  if (key.contains('key')) return _PuzzleAssets.key;
+  if (key.contains('shoe')) return _PuzzleAssets.shoe;
+  if (key.contains('cloud')) return _PuzzleAssets.cloud;
+  if (key.contains('circle')) return _PuzzleAssets.circle;
+  if (key.contains('square')) return _PuzzleAssets.square;
+  if (key.contains('triangle')) return _PuzzleAssets.triangle;
+  if (key.contains('cube') || key.contains('block')) {
+    return _PuzzleAssets.cubeBlue;
+  }
+  return null;
 }
 
 class _PuzzleAssets {
@@ -2977,7 +3013,7 @@ class _PuzzleVisual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final generatedVisual = _generatedVisualFor(challenge.id);
+    final exactVisual = _exactVisualFor(challenge.id);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -2986,73 +3022,64 @@ class _PuzzleVisual extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         border: Border.all(color: const Color(0xFFFFFFFF), width: 2),
       ),
-      child: generatedVisual ??
-          switch (challenge.id) {
-            'shape-path' => const _ShapePatternVisual(),
-            'fruit-pattern' => const _FruitPatternVisual(),
-            'toy-count' => const _ToyCountVisual(),
-            'odd-card' => const _OddCardVisual(),
-            'logic-train' => const _LogicTrainVisual(),
-            'sticker-sum' => const _StickerSumVisual(),
-            'memory-pairs' => const _MemoryPairsVisual(),
-            'lock-key' => const _LockKeyVisual(),
-            'shadow-match' => const _ShadowMatchVisual(),
-            'balance-scale' => const _BalanceScaleVisual(),
-            'shape-rotation' => const _ShapeRotationVisual(),
-            'code-grid' => const _CodeGridVisual(),
-            'number-bridge' => const _NumberBridgeVisual(),
-            'detail-count' => const _DetailCountVisual(),
-            'space-sequence' => const _SpaceSequenceVisual(),
-            'shape-stack' => const _ShapeStackVisual(),
-            _ => const _DefaultPuzzleVisual(),
-          },
+      child: exactVisual ?? _DataDrivenPuzzleVisual(challenge: challenge),
     );
   }
 
-  Widget? _generatedVisualFor(String id) {
-    if (id.startsWith('pattern.trail.')) {
-      return const _GeneratedPatternTrailVisual();
+  Widget? _exactVisualFor(String id) {
+    return switch (id) {
+      'shape-path' => const _ShapePatternVisual(),
+      'fruit-pattern' => const _FruitPatternVisual(),
+      'toy-count' => const _ToyCountVisual(),
+      'odd-card' => const _OddCardVisual(),
+      'logic-train' => const _LogicTrainVisual(),
+      'sticker-sum' => const _StickerSumVisual(),
+      'memory-pairs' => const _MemoryPairsVisual(),
+      'lock-key' => const _LockKeyVisual(),
+      'shadow-match' => const _ShadowMatchVisual(),
+      'balance-scale' => const _BalanceScaleVisual(),
+      'shape-rotation' => const _ShapeRotationVisual(),
+      'code-grid' => const _CodeGridVisual(),
+      'number-bridge' => const _NumberBridgeVisual(),
+      'detail-count' => const _DetailCountVisual(),
+      'space-sequence' => const _SpaceSequenceVisual(),
+      'shape-stack' => const _ShapeStackVisual(),
+      _ => null,
+    };
+  }
+}
+
+class _DataDrivenPuzzleVisual extends StatelessWidget {
+  const _DataDrivenPuzzleVisual({required this.challenge});
+
+  final DailyChallenge challenge;
+
+  @override
+  Widget build(BuildContext context) {
+    final interactionItems = challenge.interaction?.items ?? const [];
+    final itemAssetsById = {
+      for (final item in interactionItems) item.id: item.assetId,
+    };
+    final displayChoices = challenge.choices.take(4).toList(growable: false);
+
+    if (displayChoices.isEmpty) {
+      return const _DefaultPuzzleVisual();
     }
-    if (id.startsWith('memory.pairs.')) {
-      return const _GeneratedMemoryGridVisual();
-    }
-    if (id.startsWith('math.bridge.')) {
-      return const _GeneratedMathBridgeVisual();
-    }
-    if (id.startsWith('focus.details.')) {
-      return const _GeneratedFocusDetailsVisual();
-    }
-    if (id.startsWith('logic.code.')) {
-      return const _GeneratedLogicCodeVisual();
-    }
-    if (id.startsWith('space.turn.')) {
-      return const _GeneratedSpaceTurnVisual();
-    }
-    if (id.startsWith('sort.odd.')) {
-      return const _GeneratedSortOddVisual();
-    }
-    if (id.startsWith('category.groups.')) {
-      return const _GeneratedSortOddVisual();
-    }
-    if (id.startsWith('route.path.')) {
-      return const _GeneratedSpaceTurnVisual();
-    }
-    if (id.startsWith('analogy.link.')) {
-      return const _GeneratedLogicCodeVisual();
-    }
-    if (id.startsWith('rebus.picture.')) {
-      return const _GeneratedBossVisual();
-    }
-    if (id.startsWith('compare.weight.')) {
-      return const _GeneratedMathBridgeVisual();
-    }
-    if (id.startsWith('memory.order.')) {
-      return const _GeneratedMemoryGridVisual();
-    }
-    if (id.startsWith('mixed.boss.')) {
-      return const _GeneratedBossVisual();
-    }
-    return null;
+
+    return _VisualRow(
+      children: [
+        for (final choice in displayChoices)
+          _SemanticObjectCard(
+            asset: _assetForChoice(
+              challenge.id,
+              choice.id,
+              semanticAssetId: itemAssetsById[choice.id],
+            ),
+            label: choice.label,
+            color: _colorForChoice(choice.id),
+          ),
+      ],
+    );
   }
 }
 
@@ -3338,157 +3365,6 @@ class _ShapeStackVisual extends StatelessWidget {
   }
 }
 
-class _GeneratedPatternTrailVisual extends StatelessWidget {
-  const _GeneratedPatternTrailVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _VisualRow(
-      children: [
-        _ObjectCard(asset: _PuzzleAssets.planet, color: Color(0xFF8B63E8)),
-        _ObjectCard(asset: _PuzzleAssets.star, color: Color(0xFFFFC739)),
-        _ObjectCard(asset: _PuzzleAssets.planet, color: Color(0xFF8B63E8)),
-        _ObjectCard(asset: _PuzzleAssets.star, color: Color(0xFFFFC739)),
-        _QuestionToken(),
-      ],
-    );
-  }
-}
-
-class _GeneratedMemoryGridVisual extends StatelessWidget {
-  const _GeneratedMemoryGridVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _VisualRow(
-      children: [
-        _ObjectCard(asset: _PuzzleAssets.key, color: Color(0xFFFFB84D)),
-        _MathSign('+'),
-        _QuestionToken(),
-        _ObjectCard(asset: _PuzzleAssets.lock, color: Color(0xFF18B7AE)),
-      ],
-    );
-  }
-}
-
-class _GeneratedMathBridgeVisual extends StatelessWidget {
-  const _GeneratedMathBridgeVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _VisualRow(
-      children: [
-        _NumberBubble('5', color: Color(0xFF5C8EF7)),
-        _MathSign('+'),
-        _NumberBubble('3', color: Color(0xFF18B7AE)),
-        _MathSign('='),
-        _QuestionToken(),
-      ],
-    );
-  }
-}
-
-class _GeneratedFocusDetailsVisual extends StatelessWidget {
-  const _GeneratedFocusDetailsVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        _VisualRow(
-          children: [
-            _ShapeToken.circle(color: Color(0xFFFF6F6B)),
-            _ShapeToken.circle(color: Color(0xFFFF6F6B)),
-            _ShapeToken.circle(color: Color(0xFFFF6F6B)),
-          ],
-        ),
-        SizedBox(height: 8),
-        _VisualRow(
-          children: [
-            _ShapeToken.square(color: Color(0xFF5C8EF7)),
-            _ShapeToken.square(color: Color(0xFF5C8EF7)),
-            _ShapeToken.star(color: Color(0xFF35B37E)),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _GeneratedLogicCodeVisual extends StatelessWidget {
-  const _GeneratedLogicCodeVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        _NumberGridRow(values: ['2', '3', '5'], color: Color(0xFF5C8EF7)),
-        SizedBox(height: 8),
-        _NumberGridRow(values: ['4', '6', '?'], color: Color(0xFF18B7AE)),
-      ],
-    );
-  }
-}
-
-class _GeneratedSpaceTurnVisual extends StatelessWidget {
-  const _GeneratedSpaceTurnVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _VisualRow(
-      children: [
-        _ShapeToken.triangle(color: Color(0xFF9C6AF2)),
-        _MathSign('turn'),
-        _RotatedTriangleToken(),
-      ],
-    );
-  }
-}
-
-class _GeneratedSortOddVisual extends StatelessWidget {
-  const _GeneratedSortOddVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _VisualRow(
-      children: [
-        _ObjectCard(asset: _PuzzleAssets.apple, color: Color(0xFFFF6F6B)),
-        _ObjectCard(asset: _PuzzleAssets.pear, color: Color(0xFF35B37E)),
-        _ObjectCard(asset: _PuzzleAssets.banana, color: Color(0xFFFFC739)),
-        _ObjectCard(asset: _PuzzleAssets.rocket, color: Color(0xFF18B7AE)),
-      ],
-    );
-  }
-}
-
-class _GeneratedBossVisual extends StatelessWidget {
-  const _GeneratedBossVisual();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        _VisualRow(
-          children: [
-            _NumberBubble('2', color: Color(0xFF5C8EF7)),
-            _NumberBubble('4', color: Color(0xFF18B7AE)),
-            _NumberBubble('6', color: Color(0xFFFFB84D)),
-            _QuestionToken(),
-          ],
-        ),
-        SizedBox(height: 8),
-        _VisualRow(
-          children: [
-            _PuzzleSvg(asset: _PuzzleAssets.puzzleCard, size: 42),
-            _MathSign('+'),
-            _ObjectCard(asset: _PuzzleAssets.star, color: Color(0xFFFFC739)),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 class _DefaultPuzzleVisual extends StatelessWidget {
   const _DefaultPuzzleVisual();
 
@@ -3715,6 +3591,47 @@ class _ObjectCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: _PuzzleSvg(asset: asset, size: 48),
+    );
+  }
+}
+
+class _SemanticObjectCard extends StatelessWidget {
+  const _SemanticObjectCard({
+    required this.asset,
+    required this.label,
+    required this.color,
+  });
+
+  final String? asset;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final child = asset == null
+        ? Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: const Color(0xFF07132F),
+                  fontWeight: FontWeight.w900,
+                ),
+          )
+        : _PuzzleSvg(asset: asset!, size: 46);
+
+    return Container(
+      width: 72,
+      height: 72,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+      ),
+      alignment: Alignment.center,
+      child: child,
     );
   }
 }

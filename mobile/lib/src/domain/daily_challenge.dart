@@ -459,9 +459,30 @@ List<ChallengeInteractionItem> _interactionItemsFor(
       ChallengeInteractionItem(
         id: generated.choices[index].id,
         label: generated.choices[index].label,
-        assetId: _choiceAssetAt(metadata.choiceAssets, index),
+        assetId: _choiceAssetForChoiceId(generated.choices[index].id) ??
+            _choiceAssetAt(metadata.choiceAssets, index),
       ),
   ];
+}
+
+String? _choiceAssetForChoiceId(String choiceId) {
+  final key = choiceId.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+  if (key.contains('apple')) return 'object.apple';
+  if (key.contains('pear')) return 'object.pear';
+  if (key.contains('banana')) return 'object.banana';
+  if (key.contains('ball')) return 'object.ball';
+  if (key.contains('rocket')) return 'object.rocket';
+  if (key.contains('planet')) return 'object.planet';
+  if (key.contains('star')) return 'object.star';
+  if (key.contains('lock')) return 'object.lock';
+  if (key.contains('key')) return 'object.key';
+  if (key.contains('shoe')) return 'object.shoe';
+  if (key.contains('cloud')) return 'object.cloud';
+  if (key.contains('circle')) return 'object.circle';
+  if (key.contains('square')) return 'object.square';
+  if (key.contains('triangle')) return 'object.triangle';
+  if (key.contains('cube') || key.contains('block')) return 'object.cube';
+  return null;
 }
 
 String? _choiceAssetAt(List<String> assets, int index) {

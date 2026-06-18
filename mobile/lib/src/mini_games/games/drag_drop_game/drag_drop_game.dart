@@ -4,6 +4,7 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/mini_game_canvas_visuals.dart';
 import '../../core/mini_game_definition.dart';
 import '../../core/mini_game_scene_controller.dart';
 
@@ -293,19 +294,7 @@ class DragDropGame extends FlameGame with DragCallbacks {
       Offset(targetRect.width * 0.42, 0),
       beamPaint,
     );
-    canvas.drawCircle(
-      Offset(-targetRect.width * 0.32, 34),
-      32,
-      Paint()..color = const Color(0x8842F4D2),
-    );
-    canvas.drawCircle(
-      Offset(targetRect.width * 0.32, 34),
-      36 + _dropPulse * 10,
-      Paint()
-        ..color = const Color(0x99FF6F7D).withValues(
-          alpha: 0.52 + _dropPulse * 0.24,
-        ),
-    );
+    _drawBalanceClueObjects(canvas, targetRect);
     canvas.restore();
 
     _drawTargetLabel(
@@ -314,6 +303,89 @@ class DragDropGame extends FlameGame with DragCallbacks {
       _round.dropTargets.first.label,
       const Color(0xFFFFD15C),
     );
+  }
+
+  void _drawBalanceClueObjects(Canvas canvas, Rect targetRect) {
+    final prompt = definition.prompt.toLowerCase();
+    if (prompt.contains('two apples') && prompt.contains('one pear')) {
+      _drawScaleGroup(
+        canvas,
+        center: Offset(-targetRect.width * 0.32, 36),
+        objects: const ['apple', 'apple'],
+      );
+      _drawScaleGroup(
+        canvas,
+        center: Offset(targetRect.width * 0.32, 36),
+        objects: const ['pear'],
+      );
+      return;
+    }
+
+    if (prompt.contains('3 stars') && prompt.contains('2 stars')) {
+      _drawScaleGroup(
+        canvas,
+        center: Offset(-targetRect.width * 0.32, 36),
+        objects: const ['star', 'star', 'star'],
+      );
+      _drawScaleGroup(
+        canvas,
+        center: Offset(targetRect.width * 0.32, 36),
+        objects: const ['star', 'star'],
+      );
+      return;
+    }
+
+    if (prompt.contains('big cube') || prompt.contains('small cubes')) {
+      _drawScaleGroup(
+        canvas,
+        center: Offset(-targetRect.width * 0.32, 36),
+        objects: const ['cube'],
+        size: 36,
+      );
+      _drawScaleGroup(
+        canvas,
+        center: Offset(targetRect.width * 0.32, 36),
+        objects: const ['cube', 'cube', 'cube'],
+        size: 25,
+      );
+      return;
+    }
+
+    final choiceIds = _round.choiceIds;
+    _drawScaleGroup(
+      canvas,
+      center: Offset(-targetRect.width * 0.32, 36),
+      objects: choiceIds.isEmpty ? const ['left'] : [choiceIds.first],
+    );
+    _drawScaleGroup(
+      canvas,
+      center: Offset(targetRect.width * 0.32, 36),
+      objects: choiceIds.length < 2 ? const ['right'] : [choiceIds[1]],
+    );
+  }
+
+  void _drawScaleGroup(
+    Canvas canvas, {
+    required Offset center,
+    required List<String> objects,
+    double size = 28,
+  }) {
+    final width = math.max(1, objects.length) * size * 0.58;
+    for (var index = 0; index < objects.length; index += 1) {
+      final choiceId = objects[index];
+      final itemCenter = center.translate(
+        -width / 2 + index * size * 0.58 + size * 0.29,
+        objects.length > 2 && index.isOdd ? -size * 0.18 : 0,
+      );
+      MiniGameCanvasVisuals.drawChoiceGlyph(
+        canvas,
+        center: itemCenter,
+        choiceId: choiceId,
+        label: choiceId,
+        color: MiniGameCanvasVisuals.colorForChoice(choiceId, index),
+        size: size,
+      );
+    }
   }
 
   void _drawSortTargets(Canvas canvas, Map<String, Rect> targetRects) {
@@ -458,8 +530,15 @@ class DragDropGame extends FlameGame with DragCallbacks {
         ),
     );
 
-    _drawItemSymbol(canvas, rect.center.translate(0, -9), index, color);
     final label = _round.labelForChoice(choiceId);
+    _drawItemSymbol(
+      canvas,
+      rect.center.translate(0, -9),
+      choiceId: choiceId,
+      label: label,
+      index: index,
+      color: color,
+    );
     final textPainter = TextPainter(
       text: TextSpan(
         text: label,
@@ -501,46 +580,43 @@ class DragDropGame extends FlameGame with DragCallbacks {
     }
   }
 
-  void _drawItemSymbol(Canvas canvas, Offset center, int index, Color color) {
-    final symbolPaint = Paint()..color = const Color(0xFF07132F);
+  void _drawItemSymbol(
+    Canvas canvas,
+    Offset center, {
+    required String choiceId,
+    required String label,
+    required int index,
+    required Color color,
+  }) {
     if (_isSortLab) {
-      final path = Path();
-      for (var pointIndex = 0; pointIndex < 5; pointIndex += 1) {
-        final angle = -math.pi / 2 + pointIndex * math.pi * 2 / 5;
-        final point = Offset(
-          center.dx + math.cos(angle) * 15,
-          center.dy + math.sin(angle) * 15,
-        );
-        if (pointIndex == 0) {
-          path.moveTo(point.dx, point.dy);
-        } else {
-          path.lineTo(point.dx, point.dy);
-        }
-      }
-      path.close();
-      canvas.drawPath(path, symbolPaint);
+      MiniGameCanvasVisuals.drawChoiceGlyph(
+        canvas,
+        center: center,
+        choiceId: choiceId,
+        label: label,
+        color: const Color(0xFF07132F),
+        size: 38,
+        highContrast: true,
+      );
       return;
     }
 
-    if (index.isEven) {
-      canvas.drawCircle(center, 15, symbolPaint);
-      canvas.drawCircle(
-        center,
-        7,
-        Paint()..color = color.withValues(alpha: 0.9),
-      );
-    } else {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCenter(center: center, width: 30, height: 24),
-          const Radius.circular(8),
-        ),
-        symbolPaint,
-      );
-    }
+    MiniGameCanvasVisuals.drawChoiceGlyph(
+      canvas,
+      center: center,
+      choiceId: choiceId,
+      label: label,
+      color: const Color(0xFF07132F),
+      size: 38,
+      highContrast: true,
+    );
   }
 
   Color _itemColor(int index) {
+    if (index >= 0 && index < _round.choiceIds.length) {
+      return MiniGameCanvasVisuals.colorForChoice(
+          _round.choiceIds[index], index);
+    }
     final palette = _isSortLab
         ? const [
             Color(0xFF68D391),

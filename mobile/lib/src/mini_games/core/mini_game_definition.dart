@@ -40,6 +40,7 @@ class MiniGameRoundDefinition {
     required this.correctChoiceId,
     required this.choiceIds,
     this.choiceLabelsById = const {},
+    this.choiceAssetKeysById = const {},
     this.dropTargets = const [],
     this.correctDropTargetByChoiceId = const {},
   });
@@ -50,6 +51,7 @@ class MiniGameRoundDefinition {
   final String correctChoiceId;
   final List<String> choiceIds;
   final Map<String, String> choiceLabelsById;
+  final Map<String, String> choiceAssetKeysById;
   final List<MiniGameDropTargetDefinition> dropTargets;
   final Map<String, String> correctDropTargetByChoiceId;
 
@@ -65,6 +67,7 @@ class MiniGameRoundDefinition {
       'correctChoiceId': correctChoiceId,
       'choiceIds': choiceIds,
       'choiceLabelsById': choiceLabelsById,
+      'choiceAssetKeysById': choiceAssetKeysById,
       'dropTargets': [
         for (final target in dropTargets) target.toJson(),
       ],

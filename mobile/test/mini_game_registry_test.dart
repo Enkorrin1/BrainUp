@@ -90,6 +90,25 @@ void main() {
     }
   });
 
+  test('playable choice assets follow the actual answer objects', () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      (puzzle) =>
+          puzzle.payloadRef.startsWith('compare.weight.') &&
+          FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final assetsByChoice = {
+      for (final item in challenge.interaction!.items) item.id: item.assetId,
+    };
+
+    expect(challenge.choices.map((choice) => choice.id), contains('apple'));
+    expect(assetsByChoice['apple'], 'object.apple');
+    expect(assetsByChoice['pear'], 'object.pear');
+    expect(definition.firstRound.choiceAssetKeysById['apple'], 'object.apple');
+    expect(definition.firstRound.choiceAssetKeysById['pear'], 'object.pear');
+  });
+
   test('mini-game controller returns normalized answer and exit results', () {
     final puzzle = FoundationCatalog.allPuzzles.firstWhere(
       FoundationCatalog.isMiniGameReadyPuzzle,

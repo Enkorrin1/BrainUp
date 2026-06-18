@@ -595,3 +595,33 @@ Next:
   richer with content-specific art, character reactions, and clearer object
   states;
 - capture emulator screenshots of the new inline puzzle flow.
+
+### 2026-06-19 - Stage 48, Slice 1
+
+Implemented:
+
+- generated lesson visuals no longer use hardcoded placeholder scenes that can
+  contradict the actual task content;
+- static puzzle visuals now build from the current challenge choices/items and
+  only show an image when it matches the answer object;
+- interaction item assets now prefer the real choice id (`apple`, `pear`,
+  `rocket`, etc.) before falling back to family metadata;
+- mini-game rounds now carry `choiceAssetKeysById` for scene-level rendering;
+- Memory Grid and DragDrop scenes now draw semantic object glyphs for answer
+  objects instead of generic circles/blocks;
+- Math Balance now renders clue objects from the task, including apples vs pear,
+  stars vs stars, and big cube vs small cubes;
+- regression coverage now locks apple/pear asset mapping for compare-weight
+  playable puzzles.
+
+Verified:
+
+- `flutter analyze`;
+- `flutter test test\mini_game_registry_test.dart test\widget_test.dart`;
+- `flutter test`;
+- `flutter build apk --debug`.
+
+Next:
+
+- replace canvas glyphs with final authored art packs per puzzle family;
+- add screenshot QA checks for object-to-task visual alignment.

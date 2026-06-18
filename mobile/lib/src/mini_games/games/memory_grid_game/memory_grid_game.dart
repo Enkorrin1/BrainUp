@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/mini_game_canvas_interaction.dart';
+import '../../core/mini_game_canvas_visuals.dart';
 import '../../core/mini_game_definition.dart';
 import '../../core/mini_game_scene_controller.dart';
 
@@ -220,16 +221,13 @@ class MemoryGridGame extends FlameGame with TapCallbacks {
       ellipsis: '...',
     )..layout(maxWidth: 78);
 
-    final symbolPaint = Paint()
-      ..color = selected
-          ? const Color(0xFFFFD15C)
-          : const Color(0xFF42F4D2).withValues(alpha: 0.84);
-    canvas.drawCircle(
-        center.translate(0, -22), selected ? 16 : 13, symbolPaint);
-    canvas.drawCircle(
-      center.translate(0, -22),
-      selected ? 7 : 5,
-      Paint()..color = const Color(0xFF07132F),
+    MiniGameCanvasVisuals.drawChoiceGlyph(
+      canvas,
+      center: center.translate(0, -22),
+      choiceId: choiceId ?? label,
+      label: label,
+      color: MiniGameCanvasVisuals.colorForChoice(choiceId ?? label, index),
+      size: selected ? 44 : 38,
     );
 
     textPainter.paint(

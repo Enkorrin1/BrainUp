@@ -112,6 +112,10 @@ class MiniGameRegistry {
             choiceLabelsById: {
               for (final choice in challenge.choices) choice.id: choice.label,
             },
+            choiceAssetKeysById: {
+              for (final item in interaction.items)
+                if (item.assetId != null) item.id: item.assetId!,
+            },
             dropTargets: _dropTargetsFor(
               interaction: interaction,
               miniGameType: miniGameType,
