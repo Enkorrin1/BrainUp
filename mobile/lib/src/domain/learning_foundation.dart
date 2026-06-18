@@ -3710,9 +3710,11 @@ class FoundationCatalog {
   }
 
   static const Set<PuzzleInteractionType> miniGameReadyInteractionTypes = {
+    PuzzleInteractionType.dragToTarget,
     PuzzleInteractionType.memoryReveal,
     PuzzleInteractionType.tracePath,
     PuzzleInteractionType.rotateObject,
+    PuzzleInteractionType.sortObjects,
     PuzzleInteractionType.multiStepBoss,
   };
 
@@ -3743,6 +3745,36 @@ class FoundationCatalog {
     };
 
     return switch ((puzzleType, interactionType)) {
+      (
+        PuzzleType.visualCompare || PuzzleType.countBridge,
+        PuzzleInteractionType.dragToTarget
+      ) =>
+        MiniGameContentConfig(
+          gameKey: 'mathBubbles',
+          templateId: 'template.math_balance.drag_to_scale',
+          tutorialKey: 'tutorial.math_balance.drag_match',
+          assetSlots: assetSlots,
+          effectCueIds: const [
+            'drag_lift',
+            'drop_snap',
+            'scale_balance',
+            'hint_pulse',
+            'sparkle_success',
+            'soft_retry',
+          ],
+          audioCueIds: const [
+            'mini.tap',
+            'mini.drop',
+            'mini.hint',
+            'mini.correct',
+            'mini.retry',
+          ],
+          minRounds: 1,
+          maxDistractors: maxDistractors,
+          reducedMotionSafe: true,
+          editorTemplatePath:
+              'docs/mini-game-editor-templates/math-balance.json',
+        ),
       (PuzzleType.memoryGrid, PuzzleInteractionType.memoryReveal) =>
         MiniGameContentConfig(
           gameKey: 'memoryGrid',
@@ -3821,6 +3853,35 @@ class FoundationCatalog {
           editorTemplatePath:
               'docs/mini-game-editor-templates/shape-builder.json',
         ),
+      (
+        PuzzleType.categorySort || PuzzleType.oddOneOut,
+        PuzzleInteractionType.sortObjects
+      ) =>
+        MiniGameContentConfig(
+          gameKey: 'sortLab',
+          templateId: 'template.sort_lab.drag_to_basket',
+          tutorialKey: 'tutorial.sort_lab.sort_objects',
+          assetSlots: assetSlots,
+          effectCueIds: const [
+            'drag_lift',
+            'drop_snap',
+            'basket_glow',
+            'hint_pulse',
+            'sparkle_success',
+            'soft_retry',
+          ],
+          audioCueIds: const [
+            'mini.tap',
+            'mini.drop',
+            'mini.hint',
+            'mini.correct',
+            'mini.retry',
+          ],
+          minRounds: 1,
+          maxDistractors: maxDistractors,
+          reducedMotionSafe: true,
+          editorTemplatePath: 'docs/mini-game-editor-templates/sort-lab.json',
+        ),
       (PuzzleType.mixedBoss, PuzzleInteractionType.multiStepBoss) =>
         MiniGameContentConfig(
           gameKey: 'bossMix',
@@ -3860,11 +3921,21 @@ class FoundationCatalog {
     }
 
     return switch ((puzzle.type, metadata.interactionType)) {
+      (
+        PuzzleType.visualCompare || PuzzleType.countBridge,
+        PuzzleInteractionType.dragToTarget
+      ) =>
+        metadata.miniGameConfig?.isValid == true,
       (PuzzleType.memoryGrid, PuzzleInteractionType.memoryReveal) =>
         metadata.miniGameConfig?.isValid == true,
       (PuzzleType.pathPuzzle, PuzzleInteractionType.tracePath) =>
         metadata.miniGameConfig?.isValid == true,
       (PuzzleType.spatialRotation, PuzzleInteractionType.rotateObject) =>
+        metadata.miniGameConfig?.isValid == true,
+      (
+        PuzzleType.categorySort || PuzzleType.oddOneOut,
+        PuzzleInteractionType.sortObjects
+      ) =>
         metadata.miniGameConfig?.isValid == true,
       (PuzzleType.mixedBoss, PuzzleInteractionType.multiStepBoss) =>
         metadata.miniGameConfig?.isValid == true,
@@ -3888,9 +3959,13 @@ class FoundationCatalog {
       'readyPuzzleCount': readyPuzzles.length,
       'readyPuzzleCountsByType': {
         for (final type in [
+          PuzzleType.visualCompare,
+          PuzzleType.countBridge,
           PuzzleType.memoryGrid,
           PuzzleType.pathPuzzle,
           PuzzleType.spatialRotation,
+          PuzzleType.categorySort,
+          PuzzleType.oddOneOut,
           PuzzleType.mixedBoss,
         ])
           type.name: readyPuzzles.where((puzzle) => puzzle.type == type).length,
@@ -5163,6 +5238,19 @@ class ContentBank {
           estimatedSeconds: seconds,
           cognitiveLoad: load,
           bossMixTags: bossTags,
+          miniGameConfig: FoundationCatalog._miniGameConfigFor(
+            puzzleType: family.type,
+            interactionType: PuzzleInteractionType.sortObjects,
+            difficulty: difficulty,
+            familyId: 'classification.object_sort',
+            sceneAsset: 'world.forest_lab.background.sorting_shelves',
+            choiceAssets: const [
+              'world.forest_lab.object.seed_packet',
+              'world.forest_lab.object.mushroom',
+              'world.forest_lab.object.berry',
+            ],
+            characterId: 'mira',
+          ),
         ),
       'route.path' => VisualPuzzleMetadata(
           familyId: 'spatial.route_build',
@@ -5210,6 +5298,19 @@ class ContentBank {
           estimatedSeconds: seconds,
           cognitiveLoad: load,
           bossMixTags: bossTags,
+          miniGameConfig: FoundationCatalog._miniGameConfigFor(
+            puzzleType: PuzzleType.visualCompare,
+            interactionType: PuzzleInteractionType.dragToTarget,
+            difficulty: difficulty,
+            familyId: 'math.logic_scales',
+            sceneAsset: 'world.robot_town.background.gear_factory',
+            choiceAssets: const [
+              'world.robot_town.object.gear',
+              'world.robot_town.object.battery',
+              'world.robot_town.object.robot_part',
+            ],
+            characterId: 'numba',
+          ),
         ),
       'memory.order' => VisualPuzzleMetadata(
           familyId: 'memory.order_recall',

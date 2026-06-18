@@ -11,9 +11,11 @@ class MiniGameRegistry {
   const MiniGameRegistry._();
 
   static const enabledInteractionTypes = {
+    PuzzleInteractionType.dragToTarget,
     PuzzleInteractionType.memoryReveal,
     PuzzleInteractionType.tracePath,
     PuzzleInteractionType.rotateObject,
+    PuzzleInteractionType.sortObjects,
     PuzzleInteractionType.multiStepBoss,
   };
 
@@ -107,6 +109,18 @@ class MiniGameRegistry {
             choiceIds: [
               for (final choice in challenge.choices) choice.id,
             ],
+            choiceLabelsById: {
+              for (final choice in challenge.choices) choice.id: choice.label,
+            },
+            dropTargets: _dropTargetsFor(
+              interaction: interaction,
+              miniGameType: miniGameType,
+            ),
+            correctDropTargetByChoiceId: _correctDropTargetsFor(
+              interaction: interaction,
+              miniGameType: miniGameType,
+              correctChoiceId: challenge.correctChoiceId,
+            ),
           ),
       ],
     );
@@ -148,6 +162,11 @@ class MiniGameRegistry {
     required PuzzleInteractionType interactionType,
     required PuzzleType puzzleType,
   }) {
+    if (interactionType == PuzzleInteractionType.dragToTarget &&
+        (puzzleType == PuzzleType.visualCompare ||
+            puzzleType == PuzzleType.countBridge)) {
+      return MiniGameType.mathBubbles;
+    }
     if (interactionType == PuzzleInteractionType.memoryReveal &&
         puzzleType == PuzzleType.memoryGrid) {
       return MiniGameType.memoryGrid;
@@ -164,8 +183,58 @@ class MiniGameRegistry {
         puzzleType == PuzzleType.mixedBoss) {
       return MiniGameType.bossMix;
     }
+    if (interactionType == PuzzleInteractionType.sortObjects &&
+        (puzzleType == PuzzleType.categorySort ||
+            puzzleType == PuzzleType.oddOneOut)) {
+      return MiniGameType.sortLab;
+    }
 
     return null;
+  }
+
+  static List<MiniGameDropTargetDefinition> _dropTargetsFor({
+    required ChallengeInteractionSpec interaction,
+    required MiniGameType miniGameType,
+  }) {
+    if (interaction.targets.isNotEmpty) {
+      return [
+        for (final target in interaction.targets)
+          MiniGameDropTargetDefinition(
+            id: target.id,
+            label: target.label,
+          ),
+      ];
+    }
+    if (miniGameType == MiniGameType.shapeBuilder) {
+      return const [
+        MiniGameDropTargetDefinition(
+          id: 'target.shape_socket',
+          label: 'Shape socket',
+        ),
+      ];
+    }
+    return const [];
+  }
+
+  static Map<String, String> _correctDropTargetsFor({
+    required ChallengeInteractionSpec interaction,
+    required MiniGameType miniGameType,
+    required String correctChoiceId,
+  }) {
+    if (interaction.type == PuzzleInteractionType.rotateObject &&
+        miniGameType == MiniGameType.shapeBuilder) {
+      return {
+        correctChoiceId: 'target.shape_socket',
+      };
+    }
+
+    final validTargetIds = {
+      for (final target in interaction.targets) target.id,
+    };
+    return {
+      for (final entry in interaction.correctMatches.entries)
+        if (validTargetIds.contains(entry.value)) entry.key: entry.value,
+    };
   }
 
   static String _titleFor(MiniGameType type) {

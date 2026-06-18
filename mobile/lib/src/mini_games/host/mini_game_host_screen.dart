@@ -9,6 +9,7 @@ import '../core/mini_game_definition.dart';
 import '../core/mini_game_result.dart';
 import '../core/mini_game_scene_controller.dart';
 import '../games/boss_mix_game/boss_mix_game.dart';
+import '../games/drag_drop_game/drag_drop_game.dart';
 import '../games/logic_path_game/logic_path_game.dart';
 import '../games/memory_grid_game/memory_grid_game.dart';
 import '../games/shape_builder_game/shape_builder_game.dart';
@@ -302,10 +303,12 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
           definition: definition,
           sceneController: sceneController,
         ),
-      MiniGameType.mathBubbles ||
+      MiniGameType.mathBubbles || MiniGameType.sortLab => DragDropGame(
+          definition: definition,
+          sceneController: sceneController,
+        ),
       MiniGameType.attentionScan ||
-      MiniGameType.patternMachine ||
-      MiniGameType.sortLab =>
+      MiniGameType.patternMachine =>
         MemoryGridGame(
           definition: definition,
           sceneController: sceneController,

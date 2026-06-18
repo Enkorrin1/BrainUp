@@ -25,7 +25,16 @@ class MiniGameController {
   }
 
   MiniGameResult answer(String choiceId) {
-    final isCorrect = choiceId == definition.firstRound.correctChoiceId;
+    return answerWithCorrectness(
+      choiceId: choiceId,
+      isCorrect: choiceId == definition.firstRound.correctChoiceId,
+    );
+  }
+
+  MiniGameResult answerWithCorrectness({
+    required String choiceId,
+    required bool isCorrect,
+  }) {
     if (!isCorrect) {
       _wrongAttempts += 1;
     }

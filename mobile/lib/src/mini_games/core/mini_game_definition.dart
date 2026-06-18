@@ -15,6 +15,23 @@ enum MiniGameType {
   bossMix,
 }
 
+class MiniGameDropTargetDefinition {
+  const MiniGameDropTargetDefinition({
+    required this.id,
+    required this.label,
+  });
+
+  final String id;
+  final String label;
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'label': label,
+    };
+  }
+}
+
 class MiniGameRoundDefinition {
   const MiniGameRoundDefinition({
     required this.id,
@@ -22,6 +39,9 @@ class MiniGameRoundDefinition {
     required this.goal,
     required this.correctChoiceId,
     required this.choiceIds,
+    this.choiceLabelsById = const {},
+    this.dropTargets = const [],
+    this.correctDropTargetByChoiceId = const {},
   });
 
   final String id;
@@ -29,6 +49,13 @@ class MiniGameRoundDefinition {
   final String goal;
   final String correctChoiceId;
   final List<String> choiceIds;
+  final Map<String, String> choiceLabelsById;
+  final List<MiniGameDropTargetDefinition> dropTargets;
+  final Map<String, String> correctDropTargetByChoiceId;
+
+  String labelForChoice(String choiceId) {
+    return choiceLabelsById[choiceId] ?? choiceId;
+  }
 
   Map<String, Object?> toJson() {
     return {
@@ -37,6 +64,11 @@ class MiniGameRoundDefinition {
       'goal': goal,
       'correctChoiceId': correctChoiceId,
       'choiceIds': choiceIds,
+      'choiceLabelsById': choiceLabelsById,
+      'dropTargets': [
+        for (final target in dropTargets) target.toJson(),
+      ],
+      'correctDropTargetByChoiceId': correctDropTargetByChoiceId,
     };
   }
 }

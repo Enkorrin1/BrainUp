@@ -476,3 +476,31 @@ Android emulator note:
 - both AVDs appeared in ADB only as `offline`, so APK install/screenshot was
   not completed in this pass;
 - the offline emulator processes were closed after the failed launch attempt.
+
+### 2026-06-19 - Stage 44, Slice 1
+
+Implemented:
+
+- round definitions now carry choice labels, drop targets, and correct
+  choice-to-target mappings;
+- `MiniGameSceneController` now records drag starts and validates drop results
+  by both object and target id;
+- wrong target drops can now produce a retry even if the dragged object is the
+  correct answer object;
+- added a shared Flame `DragDropGame` for math balance and sort lab mini-games;
+- `ShapeBuilderGame` now supports dragging pieces into a shape socket with snap
+  and invalid-drop feedback;
+- math drag-to-target and sorting content are now mini-game-ready through
+  `mathBubbles` and `sortLab` definitions;
+- content configs were added for math balance and sort lab authoring templates.
+
+Verified:
+
+- `flutter analyze`;
+- `flutter test`;
+- `flutter build apk --debug`.
+
+Next:
+
+- add more physically meaningful object states for Math Balance and Sort Lab;
+- add Android emulator screenshots once ADB can attach to a non-offline AVD.

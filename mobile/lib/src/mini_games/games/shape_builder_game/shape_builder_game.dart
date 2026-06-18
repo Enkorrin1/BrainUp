@@ -8,7 +8,7 @@ import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
 import '../../core/mini_game_scene_controller.dart';
 
-class ShapeBuilderGame extends FlameGame with TapCallbacks {
+class ShapeBuilderGame extends FlameGame with DragCallbacks, TapCallbacks {
   ShapeBuilderGame({
     required this.definition,
     required this.sceneController,
@@ -18,6 +18,9 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
   final MiniGameSceneController sceneController;
   double _elapsed = 0;
   double _snapPulse = 0;
+  double _invalidPulse = 0;
+  int? _draggingPieceIndex;
+  Offset? _draggedPieceCenter;
 
   @override
   Color backgroundColor() {
@@ -29,6 +32,7 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
     super.update(dt);
     _elapsed += dt;
     _snapPulse = math.max(0, _snapPulse - dt * 2.8);
+    _invalidPulse = math.max(0, _invalidPulse - dt * 3.4);
   }
 
   @override
@@ -39,12 +43,13 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
     final center = Offset(canvasSize.width / 2, canvasSize.height * 0.42);
     _drawShapeGarden(canvas, canvasSize, center);
     _drawBuilderShape(canvas, center, canvasSize.shortestSide);
+    _drawDropSocket(canvas, canvasSize);
     _drawPieces(canvas, canvasSize);
     _drawLabel(canvas, canvasSize);
   }
 
   @override
-  void onTapDown(TapDownEvent event) {
+  void onTapUp(TapUpEvent event) {
     final point = Offset(event.canvasPosition.x, event.canvasPosition.y);
     final pieces = _pieceCentersFor(Size(size.x, size.y));
     for (var index = 0; index < pieces.length; index += 1) {
@@ -64,6 +69,70 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
         return;
       }
     }
+  }
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+    final point = Offset(event.canvasPosition.x, event.canvasPosition.y);
+    final pieceIndex = _pieceIndexAt(point, Size(size.x, size.y));
+    if (pieceIndex == null) {
+      return;
+    }
+
+    _draggingPieceIndex = pieceIndex;
+    _draggedPieceCenter = point;
+    sceneController.recordDragStart(pieceIndex);
+  }
+
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    if (_draggingPieceIndex == null) {
+      return;
+    }
+    _draggedPieceCenter = Offset(
+      event.canvasEndPosition.x,
+      event.canvasEndPosition.y,
+    );
+  }
+
+  @override
+  void onDragEnd(DragEndEvent event) {
+    super.onDragEnd(event);
+    final pieceIndex = _draggingPieceIndex;
+    final dropPoint = _draggedPieceCenter;
+    if (pieceIndex == null || dropPoint == null) {
+      _clearDrag();
+      return;
+    }
+
+    if (!_shapeSocketRectFor(Size(size.x, size.y)).contains(dropPoint)) {
+      _invalidPulse = 1;
+      _clearDrag();
+      return;
+    }
+
+    final result = sceneController.submitDrop(
+      hotspotIndex: pieceIndex,
+      targetId: 'target.shape_socket',
+      action: MiniGameSceneAction.snap,
+    );
+    _snapPulse = 1;
+    if (result == null || !result.isCorrect) {
+      _invalidPulse = 1;
+    }
+    _clearDrag();
+  }
+
+  @override
+  void onDragCancel(DragCancelEvent event) {
+    super.onDragCancel(event);
+    _clearDrag();
+  }
+
+  void _clearDrag() {
+    _draggingPieceIndex = null;
+    _draggedPieceCenter = null;
   }
 
   void _drawShapeGarden(Canvas canvas, Size canvasSize, Offset center) {
@@ -136,11 +205,56 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
     canvas.drawCircle(center, radius * 0.48, innerPaint);
   }
 
+  void _drawDropSocket(Canvas canvas, Size canvasSize) {
+    final socketRect = _shapeSocketRectFor(canvasSize);
+    final socket = RRect.fromRectAndRadius(
+      socketRect,
+      const Radius.circular(28),
+    );
+    canvas.drawRRect(
+      socket,
+      Paint()..color = const Color(0x229C6AF2),
+    );
+    canvas.drawRRect(
+      socket,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3 + _snapPulse * 3
+        ..color = (_invalidPulse > 0
+                ? const Color(0xFFFF6F7D)
+                : const Color(0xFFFFD15C))
+            .withValues(alpha: 0.36 + _snapPulse * 0.28 + _invalidPulse * 0.32),
+    );
+
+    final textPainter = TextPainter(
+      text: const TextSpan(
+        text: 'DROP',
+        style: TextStyle(
+          color: Color(0xFFC6D0FF),
+          fontSize: 11,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: socketRect.width);
+    textPainter.paint(
+      canvas,
+      Offset(
+        socketRect.center.dx - textPainter.width / 2,
+        socketRect.bottom + 8,
+      ),
+    );
+  }
+
   void _drawPieces(Canvas canvas, Size canvasSize) {
     final pieces = _pieceCentersFor(canvasSize);
     final buildTarget = Offset(canvasSize.width / 2, canvasSize.height * 0.42);
     for (var index = 0; index < pieces.length; index += 1) {
-      final center = pieces[index];
+      final dragging = _draggingPieceIndex == index;
+      final center = dragging && _draggedPieceCenter != null
+          ? _draggedPieceCenter!
+          : pieces[index];
       final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
         definition: definition,
         hotspotIndex: index,
@@ -148,8 +262,12 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
       final selected =
           choiceId != null && choiceId == sceneController.selectedChoiceId;
       final snap = selected ? _snapPulse : 0.0;
-      final displayCenter = Offset.lerp(center, buildTarget, snap * 0.22)!;
-      final size = 46.0 + math.sin(_elapsed * 1.8 + index) * 4 + snap * 14;
+      final displayCenter =
+          dragging ? center : Offset.lerp(center, buildTarget, snap * 0.22)!;
+      final size = 46.0 +
+          math.sin(_elapsed * 1.8 + index) * 4 +
+          snap * 14 +
+          (dragging ? 10 : 0);
       final rect = Rect.fromCenter(center: center, width: size, height: size);
       final paint = Paint()
         ..color = [
@@ -201,6 +319,16 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
               ? Colors.white.withValues(alpha: 0.76)
               : Colors.white.withValues(alpha: 0.10),
       );
+
+      if (_invalidPulse > 0 && selected) {
+        canvas.drawRect(
+          outlineRect.inflate(_invalidPulse * 8),
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 3
+            ..color = const Color(0xFFFF6F7D).withValues(alpha: _invalidPulse),
+        );
+      }
     }
   }
 
@@ -211,6 +339,24 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
       Offset(canvasSize.width * 0.50, y + math.sin(_elapsed * 2) * 10),
       Offset(canvasSize.width * 0.76, y),
     ];
+  }
+
+  int? _pieceIndexAt(Offset point, Size canvasSize) {
+    final pieces = _pieceCentersFor(canvasSize);
+    for (var index = pieces.length - 1; index >= 0; index -= 1) {
+      if ((point - pieces[index]).distance <= 58) {
+        return index;
+      }
+    }
+    return null;
+  }
+
+  Rect _shapeSocketRectFor(Size canvasSize) {
+    return Rect.fromCenter(
+      center: Offset(canvasSize.width / 2, canvasSize.height * 0.42),
+      width: math.min(188.0, canvasSize.width * 0.48),
+      height: math.min(188.0, canvasSize.width * 0.48),
+    );
   }
 
   void _drawLabel(Canvas canvas, Size canvasSize) {

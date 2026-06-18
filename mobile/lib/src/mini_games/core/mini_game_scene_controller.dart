@@ -30,12 +30,16 @@ class MiniGameSceneEvent {
     required this.hotspotIndex,
     required this.choiceId,
     required this.autoSubmitted,
+    this.targetId,
+    this.accepted,
   });
 
   final MiniGameSceneAction action;
   final int hotspotIndex;
   final String choiceId;
   final bool autoSubmitted;
+  final String? targetId;
+  final bool? accepted;
 
   Map<String, Object?> toJson() {
     return {
@@ -43,6 +47,8 @@ class MiniGameSceneEvent {
       'hotspotIndex': hotspotIndex,
       'choiceId': choiceId,
       'autoSubmitted': autoSubmitted,
+      if (targetId != null) 'targetId': targetId,
+      if (accepted != null) 'accepted': accepted,
     };
   }
 }
@@ -153,6 +159,8 @@ class MiniGameSceneController extends ChangeNotifier {
     int? hotspotIndex,
     MiniGameSceneAction action = MiniGameSceneAction.tap,
     bool autoSubmitted = false,
+    String? targetId,
+    bool? accepted,
   }) {
     _selectedChoiceId = choiceId;
     _selectedHotspotIndex = hotspotIndex;
@@ -163,9 +171,27 @@ class MiniGameSceneController extends ChangeNotifier {
       hotspotIndex: hotspotIndex ?? -1,
       choiceId: choiceId,
       autoSubmitted: autoSubmitted,
+      targetId: targetId,
+      accepted: accepted,
     );
     onChoiceSelected?.call(choiceId);
     notifyListeners();
+  }
+
+  void recordDragStart(int hotspotIndex) {
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: hotspotIndex,
+    );
+    if (choiceId == null) {
+      return;
+    }
+
+    selectChoice(
+      choiceId,
+      hotspotIndex: hotspotIndex,
+      action: MiniGameSceneAction.drag,
+    );
   }
 
   MiniGameResult? submitHotspot(
@@ -189,13 +215,54 @@ class MiniGameSceneController extends ChangeNotifier {
     return submitSelected();
   }
 
-  MiniGameResult? submitSelected() {
+  MiniGameResult? submitDrop({
+    required int hotspotIndex,
+    required String targetId,
+    MiniGameSceneAction action = MiniGameSceneAction.drop,
+  }) {
+    if (!MiniGameCanvasInteraction.isKnownDropTarget(
+      definition: definition,
+      targetId: targetId,
+    )) {
+      return null;
+    }
+
+    final choiceId = MiniGameCanvasInteraction.choiceIdForHotspot(
+      definition: definition,
+      hotspotIndex: hotspotIndex,
+    );
+    if (choiceId == null) {
+      return null;
+    }
+
+    final accepted = MiniGameCanvasInteraction.isCorrectDrop(
+      definition: definition,
+      choiceId: choiceId,
+      targetId: targetId,
+    );
+    selectChoice(
+      choiceId,
+      hotspotIndex: hotspotIndex,
+      action: action,
+      autoSubmitted: true,
+      targetId: targetId,
+      accepted: accepted,
+    );
+    return submitSelected(isCorrectOverride: accepted);
+  }
+
+  MiniGameResult? submitSelected({bool? isCorrectOverride}) {
     final choiceId = _selectedChoiceId;
     if (choiceId == null) {
       return null;
     }
 
-    final result = _resultController.answer(choiceId);
+    final result = isCorrectOverride == null
+        ? _resultController.answer(choiceId)
+        : _resultController.answerWithCorrectness(
+            choiceId: choiceId,
+            isCorrect: isCorrectOverride,
+          );
     if (result.isCorrect) {
       _state = MiniGameSceneState.success;
     } else {

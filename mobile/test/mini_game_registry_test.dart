@@ -63,6 +63,33 @@ void main() {
     );
   });
 
+  test('registry creates drag-drop definitions for math and sorting content',
+      () {
+    final cases = {
+      PuzzleInteractionType.dragToTarget: MiniGameType.mathBubbles,
+      PuzzleInteractionType.sortObjects: MiniGameType.sortLab,
+    };
+
+    for (final entry in cases.entries) {
+      final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+        (puzzle) =>
+            puzzle.visualMetadata?.interactionType == entry.key &&
+            FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+      );
+      final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+      final definition = MiniGameRegistry.definitionForChallenge(challenge);
+
+      expect(definition, isNotNull);
+      expect(definition?.type, entry.value);
+      expect(definition?.firstRound.dropTargets, isNotEmpty);
+      expect(
+        definition?.firstRound.correctDropTargetByChoiceId.keys,
+        contains(challenge.correctChoiceId),
+      );
+      expect(definition?.contentConfig?.isValid, isTrue);
+    }
+  });
+
   test('mini-game controller returns normalized answer and exit results', () {
     final puzzle = FoundationCatalog.allPuzzles.firstWhere(
       FoundationCatalog.isMiniGameReadyPuzzle,
@@ -199,6 +226,55 @@ void main() {
     expect(correct?.isCorrect, isTrue);
     expect(controller.state, MiniGameSceneState.success);
     expect(controller.selectedChoiceId, definition.firstRound.correctChoiceId);
+    expect(results.map((result) => result.isCorrect), [false, true]);
+  });
+
+  test('scene controller validates target id for drop results', () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      (puzzle) =>
+          puzzle.visualMetadata?.interactionType ==
+              PuzzleInteractionType.sortObjects &&
+          FoundationCatalog.isMiniGameReadyPuzzle(puzzle),
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final correctIndex = definition.firstRound.choiceIds.indexOf(
+      definition.firstRound.correctChoiceId,
+    );
+    final wrongTargetId = definition.firstRound.dropTargets
+        .firstWhere(
+          (target) =>
+              target.id !=
+              definition.firstRound
+                  .correctDropTargetByChoiceId[challenge.correctChoiceId],
+        )
+        .id;
+    final correctTargetId = definition
+        .firstRound.correctDropTargetByChoiceId[challenge.correctChoiceId]!;
+    final results = <MiniGameResult>[];
+    final controller = MiniGameSceneController(
+      definition: definition,
+      onResult: results.add,
+    )..start();
+
+    final wrongDrop = controller.submitDrop(
+      hotspotIndex: correctIndex,
+      targetId: wrongTargetId,
+    );
+    expect(wrongDrop?.isCorrect, isFalse);
+    expect(wrongDrop?.selectedChoiceId, challenge.correctChoiceId);
+    expect(controller.state, MiniGameSceneState.retry);
+    expect(controller.snapshot.lastEvent?.targetId, wrongTargetId);
+    expect(controller.snapshot.lastEvent?.accepted, isFalse);
+
+    final correctDrop = controller.submitDrop(
+      hotspotIndex: correctIndex,
+      targetId: correctTargetId,
+    );
+    expect(correctDrop?.isCorrect, isTrue);
+    expect(controller.state, MiniGameSceneState.success);
+    expect(controller.snapshot.lastEvent?.targetId, correctTargetId);
+    expect(controller.snapshot.lastEvent?.accepted, isTrue);
     expect(results.map((result) => result.isCorrect), [false, true]);
   });
 
