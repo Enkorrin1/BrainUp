@@ -6,17 +6,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
+import '../../core/mini_game_scene_controller.dart';
 
 class ShapeBuilderGame extends FlameGame with TapCallbacks {
   ShapeBuilderGame({
     required this.definition,
-    required this.selectedChoiceId,
-    required this.onChoiceSelected,
+    required this.sceneController,
   });
 
   final MiniGameDefinition definition;
-  final String? selectedChoiceId;
-  final ValueChanged<String> onChoiceSelected;
+  final MiniGameSceneController sceneController;
   double _elapsed = 0;
   double _snapPulse = 0;
 
@@ -58,7 +57,10 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
           return;
         }
         _snapPulse = 1;
-        onChoiceSelected(choiceId);
+        sceneController.submitHotspot(
+          index,
+          action: MiniGameSceneAction.snap,
+        );
         return;
       }
     }
@@ -143,7 +145,8 @@ class ShapeBuilderGame extends FlameGame with TapCallbacks {
         definition: definition,
         hotspotIndex: index,
       );
-      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final selected =
+          choiceId != null && choiceId == sceneController.selectedChoiceId;
       final snap = selected ? _snapPulse : 0.0;
       final displayCenter = Offset.lerp(center, buildTarget, snap * 0.22)!;
       final size = 46.0 + math.sin(_elapsed * 1.8 + index) * 4 + snap * 14;

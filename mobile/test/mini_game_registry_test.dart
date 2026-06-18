@@ -7,6 +7,7 @@ import 'package:brain_up/src/mini_games/core/mini_game_definition.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_quality.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_registry.dart';
 import 'package:brain_up/src/mini_games/core/mini_game_result.dart';
+import 'package:brain_up/src/mini_games/core/mini_game_scene_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -162,6 +163,43 @@ void main() {
       ),
       isNull,
     );
+  });
+
+  test('scene controller auto-submits canvas hotspots into result states', () {
+    final puzzle = FoundationCatalog.allPuzzles.firstWhere(
+      FoundationCatalog.isMiniGameReadyPuzzle,
+    );
+    final challenge = dailyChallengeForPuzzle(puzzle, ChildAge.seven);
+    final definition = MiniGameRegistry.definitionForChallenge(challenge)!;
+    final correctIndex = definition.firstRound.choiceIds.indexOf(
+      definition.firstRound.correctChoiceId,
+    );
+    final wrongIndex = definition.firstRound.choiceIds.indexWhere(
+      (choiceId) => choiceId != definition.firstRound.correctChoiceId,
+    );
+    final results = <MiniGameResult>[];
+    final controller = MiniGameSceneController(
+      definition: definition,
+      onResult: results.add,
+    )..start();
+
+    final wrong = controller.submitHotspot(
+      wrongIndex,
+      action: MiniGameSceneAction.tap,
+    );
+    expect(wrong?.isCorrect, isFalse);
+    expect(controller.state, MiniGameSceneState.retry);
+    expect(controller.selectedChoiceId, isNull);
+    expect(controller.wrongAttempts, 1);
+
+    final correct = controller.submitHotspot(
+      correctIndex,
+      action: MiniGameSceneAction.tap,
+    );
+    expect(correct?.isCorrect, isTrue);
+    expect(controller.state, MiniGameSceneState.success);
+    expect(controller.selectedChoiceId, definition.firstRound.correctChoiceId);
+    expect(results.map((result) => result.isCorrect), [false, true]);
   });
 
   test('quality audit passes for mini-game-ready content definitions', () {

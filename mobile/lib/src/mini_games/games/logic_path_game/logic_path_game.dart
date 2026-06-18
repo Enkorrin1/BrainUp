@@ -6,17 +6,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
+import '../../core/mini_game_scene_controller.dart';
 
 class LogicPathGame extends FlameGame with TapCallbacks {
   LogicPathGame({
     required this.definition,
-    required this.selectedChoiceId,
-    required this.onChoiceSelected,
+    required this.sceneController,
   });
 
   final MiniGameDefinition definition;
-  final String? selectedChoiceId;
-  final ValueChanged<String> onChoiceSelected;
+  final MiniGameSceneController sceneController;
   double _elapsed = 0;
   int? _selectedNodeIndex;
   double _tapPulse = 0;
@@ -59,7 +58,10 @@ class LogicPathGame extends FlameGame with TapCallbacks {
         }
         _selectedNodeIndex = index;
         _tapPulse = 1;
-        onChoiceSelected(choiceId);
+        sceneController.submitHotspot(
+          index,
+          action: MiniGameSceneAction.trace,
+        );
         return;
       }
     }
@@ -117,7 +119,8 @@ class LogicPathGame extends FlameGame with TapCallbacks {
         definition: definition,
         hotspotIndex: index,
       );
-      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final selected =
+          choiceId != null && choiceId == sceneController.selectedChoiceId;
       _drawNode(canvas, points[index], index, selected);
     }
 

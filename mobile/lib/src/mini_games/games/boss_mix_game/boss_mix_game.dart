@@ -6,17 +6,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
+import '../../core/mini_game_scene_controller.dart';
 
 class BossMixGame extends FlameGame with TapCallbacks {
   BossMixGame({
     required this.definition,
-    required this.selectedChoiceId,
-    required this.onChoiceSelected,
+    required this.sceneController,
   });
 
   final MiniGameDefinition definition;
-  final String? selectedChoiceId;
-  final ValueChanged<String> onChoiceSelected;
+  final MiniGameSceneController sceneController;
   double _elapsed = 0;
   double _bossTapPulse = 0;
 
@@ -73,7 +72,10 @@ class BossMixGame extends FlameGame with TapCallbacks {
       return;
     }
     _bossTapPulse = 1;
-    onChoiceSelected(choiceId);
+    sceneController.submitHotspot(
+      index,
+      action: index == 2 ? MiniGameSceneAction.snap : MiniGameSceneAction.tap,
+    );
   }
 
   void _drawBossBackdrop(Canvas canvas, Size canvasSize, Offset center) {
@@ -108,7 +110,7 @@ class BossMixGame extends FlameGame with TapCallbacks {
           definition: definition,
           hotspotIndex: 2,
         ) ==
-        selectedChoiceId;
+        sceneController.selectedChoiceId;
     for (var ring = 0; ring < 3; ring += 1) {
       final pulse = 0.5 + 0.5 * math.sin(_elapsed * 1.7 + ring);
       final paint = Paint()
@@ -167,7 +169,8 @@ class BossMixGame extends FlameGame with TapCallbacks {
         definition: definition,
         hotspotIndex: index,
       );
-      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final selected =
+          choiceId != null && choiceId == sceneController.selectedChoiceId;
       final active =
           selected || index <= (_elapsed / 3).floor() % labels.length;
       final color = [

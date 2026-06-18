@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import '../../domain/daily_challenge.dart';
 import '../core/mini_game_audio.dart';
 import '../core/mini_game_character_reaction.dart';
-import '../core/mini_game_controller.dart';
 import '../core/mini_game_definition.dart';
 import '../core/mini_game_result.dart';
+import '../core/mini_game_scene_controller.dart';
 import '../games/boss_mix_game/boss_mix_game.dart';
 import '../games/logic_path_game/logic_path_game.dart';
 import '../games/memory_grid_game/memory_grid_game.dart';
@@ -51,11 +51,13 @@ class MiniGameHostScreen extends StatefulWidget {
 }
 
 class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
-  late final MiniGameController _controller;
+  late final MiniGameSceneController _sceneController;
   late final MiniGameAudioController _audioController;
+  late final FlameGame _game;
   String? _selectedChoiceId;
   bool _showHint = false;
   bool _showTutorial = true;
+  bool _resolvingResult = false;
   MiniGameAudioSettings _audioSettings = MiniGameAudioSettings.muted;
   MiniGameCharacterState _characterState = MiniGameCharacterState.idle;
   _MiniGameFeedbackState _feedbackState = _MiniGameFeedbackState.idle;
@@ -64,8 +66,16 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = MiniGameController(definition: widget.definition);
     _audioController = MiniGameAudioController(settings: _audioSettings);
+    _sceneController = MiniGameSceneController(
+      definition: widget.definition,
+      onChoiceSelected: _onSceneChoiceSelected,
+      onResult: _handleSceneResult,
+    )..start();
+    _game = _gameFor(
+      widget.definition,
+      sceneController: _sceneController,
+    );
   }
 
   @override
@@ -78,11 +88,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
         children: [
           Positioned.fill(
             child: GameWidget(
-              game: _gameFor(
-                widget.definition,
-                selectedChoiceId: _selectedChoiceId,
-                onChoiceSelected: _selectChoice,
-              ),
+              game: _game,
             ),
           ),
           Positioned.fill(
@@ -177,10 +183,14 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       _showHint = true;
       _characterState = MiniGameCharacterState.hint;
     });
-    _controller.recordHint();
+    _sceneController.recordHint();
   }
 
   void _selectChoice(String choiceId) {
+    _sceneController.selectChoice(choiceId);
+  }
+
+  void _onSceneChoiceSelected(String choiceId) {
     HapticFeedback.selectionClick();
     _playAudioCue('mini.tap');
     setState(() {
@@ -190,13 +200,11 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
     });
   }
 
-  Future<void> _submit() async {
-    final choiceId = _selectedChoiceId;
-    if (choiceId == null) {
-      return;
-    }
+  void _submit() {
+    _sceneController.submitSelected();
+  }
 
-    final result = _controller.answer(choiceId);
+  Future<void> _handleSceneResult(MiniGameResult result) async {
     if (!result.isCorrect) {
       HapticFeedback.mediumImpact();
       _playAudioCue('mini.retry');
@@ -210,6 +218,10 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       return;
     }
 
+    if (_resolvingResult) {
+      return;
+    }
+    _resolvingResult = true;
     HapticFeedback.heavyImpact();
     _playAudioCue('mini.correct');
     if (widget.definition.isBoss) {
@@ -227,11 +239,12 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       return;
     }
 
+    _sceneController.markComplete();
     Navigator.of(context).pop(result);
   }
 
   void _exit() {
-    Navigator.of(context).pop(_controller.exit());
+    Navigator.of(context).pop(_sceneController.exit());
   }
 
   void _toggleSound() {
@@ -270,29 +283,24 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
 
   FlameGame _gameFor(
     MiniGameDefinition definition, {
-    required String? selectedChoiceId,
-    required ValueChanged<String> onChoiceSelected,
+    required MiniGameSceneController sceneController,
   }) {
     return switch (definition.type) {
       MiniGameType.memoryGrid => MemoryGridGame(
           definition: definition,
-          selectedChoiceId: selectedChoiceId,
-          onChoiceSelected: onChoiceSelected,
+          sceneController: sceneController,
         ),
       MiniGameType.logicPath => LogicPathGame(
           definition: definition,
-          selectedChoiceId: selectedChoiceId,
-          onChoiceSelected: onChoiceSelected,
+          sceneController: sceneController,
         ),
       MiniGameType.shapeBuilder => ShapeBuilderGame(
           definition: definition,
-          selectedChoiceId: selectedChoiceId,
-          onChoiceSelected: onChoiceSelected,
+          sceneController: sceneController,
         ),
       MiniGameType.bossMix => BossMixGame(
           definition: definition,
-          selectedChoiceId: selectedChoiceId,
-          onChoiceSelected: onChoiceSelected,
+          sceneController: sceneController,
         ),
       MiniGameType.mathBubbles ||
       MiniGameType.attentionScan ||
@@ -300,8 +308,7 @@ class _MiniGameHostScreenState extends State<MiniGameHostScreen> {
       MiniGameType.sortLab =>
         MemoryGridGame(
           definition: definition,
-          selectedChoiceId: selectedChoiceId,
-          onChoiceSelected: onChoiceSelected,
+          sceneController: sceneController,
         ),
     };
   }

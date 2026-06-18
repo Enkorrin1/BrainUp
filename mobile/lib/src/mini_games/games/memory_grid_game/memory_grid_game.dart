@@ -6,17 +6,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/mini_game_canvas_interaction.dart';
 import '../../core/mini_game_definition.dart';
+import '../../core/mini_game_scene_controller.dart';
 
 class MemoryGridGame extends FlameGame with TapCallbacks {
   MemoryGridGame({
     required this.definition,
-    required this.selectedChoiceId,
-    required this.onChoiceSelected,
+    required this.sceneController,
   });
 
   final MiniGameDefinition definition;
-  final String? selectedChoiceId;
-  final ValueChanged<String> onChoiceSelected;
+  final MiniGameSceneController sceneController;
   double _elapsed = 0;
   int? _pressedTileIndex;
   double _pressPulse = 0;
@@ -71,7 +70,7 @@ class MemoryGridGame extends FlameGame with TapCallbacks {
         }
         _pressedTileIndex = index;
         _pressPulse = 1;
-        onChoiceSelected(choiceId);
+        sceneController.submitHotspot(index);
         return;
       }
     }
@@ -87,7 +86,8 @@ class MemoryGridGame extends FlameGame with TapCallbacks {
         definition: definition,
         hotspotIndex: index,
       );
-      final selected = choiceId != null && choiceId == selectedChoiceId;
+      final selected =
+          choiceId != null && choiceId == sceneController.selectedChoiceId;
       final pop = _pressedTileIndex == index ? _pressPulse : 0.0;
       final inflatedRect = rect.inflate(pop * 8);
       final rounded = RRect.fromRectAndRadius(
